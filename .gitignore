@@ -1,0 +1,99 @@
+## ---------------------------------------------------------------
+## Sorties de compilation .NET
+## Regénérées à chaque build : ne doivent jamais être versionnées.
+## ---------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Ll]og/
+[Ll]ogs/
+*.dll
+*.exe
+*.pdb
+*.cache
+
+## ---------------------------------------------------------------
+## Visual Studio / Rider / VS Code
+## Fichiers propres à TON poste (fenêtres ouvertes, breakpoints...).
+## ---------------------------------------------------------------
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.csproj.user
+*.DotSettings.user
+
+# VS Code : on garde la config d'équipe utile, on ignore le reste
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+## ---------------------------------------------------------------
+## Secrets et configuration locale
+## appsettings.json EST versionné (chaîne LocalDB, rien de sensible).
+## appsettings.Development.json / .Local.json peuvent contenir des
+## identifiants : on les exclut par principe.
+## ---------------------------------------------------------------
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+*.pubxml
+*.pubxml.user
+*.publishproj
+PublishProfiles/
+secrets.json
+
+# Dépendances Azure/Docker générées par VS
+**/Properties/serviceDependencies.local.json
+**/Properties/serviceDependencies.local.json.user
+
+## ---------------------------------------------------------------
+## Bases de données locales
+## La base est recréée par `Update-Database` : jamais dans git.
+## Les MIGRATIONS, elles, sont du code source et DOIVENT être commitées.
+## ---------------------------------------------------------------
+*.mdf
+*.ldf
+*.ndf
+*.bak
+*.dbmdl
+*.jfm
+
+## ---------------------------------------------------------------
+## Paquets et outils
+## ---------------------------------------------------------------
+packages/
+!packages/build/
+*.nupkg
+*.snupkg
+node_modules/
+.sass-cache/
+BenchmarkDotNet.Artifacts/
+TestResults/
+[Tt]est[Rr]esult*/
+coverage*.json
+coverage*.xml
+*.coverage
+*.trx
+
+## ---------------------------------------------------------------
+## Uploads utilisateur (photos des annonces)
+## Décommente si tu stockes les photos dans wwwroot/uploads.
+## ---------------------------------------------------------------
+# **/wwwroot/uploads/
+
+## ---------------------------------------------------------------
+## Système
+## ---------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+*~
+*.swp
