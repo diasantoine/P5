@@ -64,6 +64,9 @@ namespace P5.Data
                       .HasForeignKey(r => r.VehiculeId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+
+            // Données de départ issues de l'inventaire du client.
+            builder.AppliquerDonneesInitiales();
         }
     }
 }
