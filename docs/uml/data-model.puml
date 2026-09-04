@@ -1,5 +1,5 @@
 @startuml data-model
-title Express Voitures — Modèle de données
+title Class diagram — Express Voitures (data model)
 
 hide circle
 skinparam shadowing false
@@ -12,78 +12,86 @@ skinparam class {
 }
 
 class Brand {
-  +int Id
-  +string Name <<unique>>
+  -id : Integer
+  -name : String
 }
 
 class CarModel {
-  +int Id
-  +string Name
-  +int BrandId
-  --
-  <<unique>> (BrandId, Name)
+  -id : Integer
+  -name : String
 }
 
 class Vehicle {
-  +int Id
-  +string? Vin <<unique si renseigné>>
-  +int Year
-  +int CarModelId
-  +string? Trim
-  +DateOnly PurchaseDate
-  +decimal PurchasePrice
-  +DateOnly? AvailabilityDate
-  +DateOnly? SaleDate
-  +string? Description
-  +string? PhotoUrl
-  __ calculées, non persistées __
-  +/decimal RepairsCost
-  +/decimal SalePrice
-  +/bool IsAvailable
+  -id : Integer
+  -vin : String [0..1]
+  -year : Integer
+  -trim : String [0..1]
+  -purchaseDate : Date
+  -purchasePrice : Decimal
+  -availabilityDate : Date [0..1]
+  -saleDate : Date [0..1]
+  -description : String [0..1]
+  -photoUrl : String [0..1]
+  --
+  +/repairsCost : Decimal
+  +/salePrice : Decimal
+  +/isAvailable : Boolean
 }
 
 class Repair {
-  +int Id
-  +string Description
-  +decimal Cost
-  +int VehicleId
+  -id : Integer
+  -description : String
+  -cost : Decimal
 }
 
 class IdentityUser <<ASP.NET Identity>> #EEEEEE {
-  +string Id
-  +string Email
-  ..
-  table AspNetUsers
+  -id : String
+  -email : String
 }
 
 note right of Vehicle
-  Un **exemplaire physique**,
-  pas une catégorie du catalogue.
+  {A Vehicle is one **physical unit** in stock,
+  not a catalogue category.}
 
-  SalePrice = PurchasePrice
-            + RepairsCost
-            + 500 EUR
+  {salePrice = purchasePrice + repairsCost + 500 EUR}
+  {salePrice, repairsCost and isAvailable are derived:
+  computed on read, never stored as columns}
 
-  Propriétés calculées : aucune
-  colonne correspondante en base.
-
-  SaleDate NULL = encore disponible.
+  {saleDate empty = still for sale}
 end note
 
 note bottom of Repair
-  Entité à part entière : la feuille
-  du client entassait plusieurs
-  réparations dans une seule cellule.
+  {A Repair is a first-class entity: the client's
+  spreadsheet packed several repairs into one cell,
+  which is not atomic.}
 end note
 
 note right of IdentityUser
-  Compte unique du gérant.
-  Aucune relation avec l'inventaire :
-  un seul utilisateur administre tout.
+  {Single manager account. No association with the
+  inventory: one user administers everything.}
 end note
 
-Brand "1" --> "0..*" CarModel : propose >
-CarModel "1" --> "0..*" Vehicle : est décliné en >
-Vehicle "1" *-- "0..*" Repair : subit >
+note left of Brand
+  {name is unique}
+end note
+
+note right of CarModel
+  {(brand, name) is unique}
+end note
+
+Brand "1" -- "0..*" CarModel : offers >
+CarModel "1" -- "0..*" Vehicle : stocked as >
+Vehicle "1" *-- "0..*" Repair : undergoes >
+
+legend bottom right
+  |= Notation |= Meaning |
+  | 1 | exactly one |
+  | 0..1 | zero or one (optional) |
+  | 0..* | zero to many |
+  | / | derived attribute, not persisted |
+  | filled diamond | composition: the part cannot exist without the whole |
+  Read a multiplicity at the end //opposite// the class you start from.
+  Foreign keys are not shown as attributes: the associations carry them.
+endlegend
 
 @enduml

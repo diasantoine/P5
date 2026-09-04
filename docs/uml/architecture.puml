@@ -1,0 +1,134 @@
+@startuml architecture
+title Class diagram — Express Voitures (application layers)
+
+hide circle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor White
+  BorderColor #34495E
+  ArrowColor #34495E
+}
+
+package "Presentation" {
+
+  class VehiclesController <<controller>> {
+    +index() : IActionResult
+    +details(id : Integer) : IActionResult
+    +create(form : VehicleFormViewModel) : IActionResult
+    +edit(id : Integer, form : VehicleFormViewModel) : IActionResult
+    +markAsSold(id : Integer, saleDate : Date) : IActionResult
+  }
+
+  class RepairsController <<controller>> {
+    +create(form : RepairFormViewModel) : IActionResult
+    +delete(id : Integer) : IActionResult
+  }
+
+  class VehicleFormViewModel {
+    -id : Integer
+    -vin : String [0..1]
+    -year : Integer
+    -carModelId : Integer
+    -trim : String [0..1]
+    -purchaseDate : Date
+    -purchasePrice : Decimal
+    -availabilityDate : Date [0..1]
+    -description : String [0..1]
+    -photo : IFormFile [0..1]
+    --
+    +toEntity() : Vehicle
+    +applyTo(vehicle : Vehicle) : void
+  }
+
+  class RepairFormViewModel {
+    -vehicleId : Integer
+    -description : String
+    -cost : Decimal
+    --
+    +toEntity() : Repair
+  }
+}
+
+package "Services" {
+
+  interface IVehicleService <<interface>> {
+    +getInventory() : Vehicle [0..*]
+    +getDetail(id : Integer) : Vehicle [0..1]
+    +getForEdit(id : Integer) : Vehicle [0..1]
+    +add(vehicle : Vehicle) : Integer
+    +update(vehicle : Vehicle) : Boolean
+    +markAsSold(id : Integer, saleDate : Date) : Boolean
+    +getCarModelOptions() : CarModelOption [0..*]
+  }
+
+  class VehicleService
+
+  interface IRepairService <<interface>> {
+    +add(repair : Repair) : Integer
+    +delete(id : Integer) : Integer [0..1]
+    +vehicleExists(vehicleId : Integer) : Boolean
+  }
+
+  class RepairService
+
+  interface IPhotoStorageService <<interface>> {
+    +save(file : IFormFile) : String
+  }
+
+  class PhotoStorageService
+}
+
+package "Data" {
+
+  class ApplicationDbContext <<DbContext>> {
+    +brands : Brand [0..*]
+    +carModels : CarModel [0..*]
+    +vehicles : Vehicle [0..*]
+    +repairs : Repair [0..*]
+  }
+}
+
+note top of VehiclesController
+  {[Authorize] on the class;
+  [AllowAnonymous] on index and details only:
+  closed by default}
+end note
+
+note right of VehicleFormViewModel
+  {saleDate is deliberately absent: a vehicle
+  is taken off sale only through markAsSold,
+  never through an edit form.}
+  {The computed attributes of Vehicle are absent
+  too: nothing computed can be posted.}
+end note
+
+note bottom of ApplicationDbContext
+  {The controllers never see this class.
+  Every query goes through a service.}
+end note
+
+IVehicleService <|.. VehicleService
+IRepairService <|.. RepairService
+IPhotoStorageService <|.. PhotoStorageService
+
+VehiclesController ..> IVehicleService : uses >
+VehiclesController ..> IPhotoStorageService : uses >
+VehiclesController ..> VehicleFormViewModel
+RepairsController ..> IRepairService : uses >
+RepairsController ..> IVehicleService : uses >
+RepairsController ..> RepairFormViewModel
+
+VehicleService ..> ApplicationDbContext : queries >
+RepairService ..> ApplicationDbContext : queries >
+
+legend bottom right
+  |= Notation |= Meaning |
+  | <<interface>> | contract; the controller depends on it, not on the implementation |
+  | dashed arrow | dependency (injected through the DI container) |
+  | dashed arrow, hollow head | realization: the class implements the interface |
+  | 0..* | zero to many |
+  All services are registered scoped, matching the DbContext lifetime.
+endlegend
+
+@enduml
