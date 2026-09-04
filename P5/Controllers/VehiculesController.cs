@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using P5.Models;
 using P5.Data;
 
+namespace P5.Controllers;
+
 public class VehiculesController : Controller
 {
     private readonly ApplicationDbContext _context;

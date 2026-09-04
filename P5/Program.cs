@@ -1,4 +1,6 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using P5.Data;
 
@@ -12,6 +14,17 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Culture unique et explicite : sans cela, le binding d'un decimal saisi "1800,50"
+// et le formatage des montants dependent de la culture du systeme hote.
+var cultureFr = new CultureInfo("fr-FR");
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture(cultureFr);
+    options.SupportedCultures = [cultureFr];
+    options.SupportedUICultures = [cultureFr];
+});
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -29,6 +42,13 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseRequestLocalization();
+
+// MapStaticAssets (plus bas) ne sert que les fichiers presents au build. Les photos
+// televersees a l'execution dans wwwroot/images ont besoin de UseStaticFiles.
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthorization();
