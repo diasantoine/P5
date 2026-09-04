@@ -88,7 +88,11 @@ public class VehiculesController : Controller
             return NotFound();
         }
 
-        var vehicule = await _context.Vehicules.FindAsync(id);
+        var vehicule = await _context.Vehicules
+            .Include(v => v.ModeleVoiture)
+                .ThenInclude(m => m!.Marque)
+            .Include(v => v.Reparations)
+            .FirstOrDefaultAsync(m => m.Id == id);
         if (vehicule == null)
         {
             return NotFound();
@@ -144,6 +148,9 @@ public class VehiculesController : Controller
         }
 
         var vehicule = await _context.Vehicules
+            .Include(v => v.ModeleVoiture)
+                .ThenInclude(m => m!.Marque)
+            .Include(v => v.Reparations)
             .FirstOrDefaultAsync(m => m.Id == id);
         if (vehicule == null)
         {
@@ -181,10 +188,10 @@ public class VehiculesController : Controller
     {
         var modeles = await _context.ModelesVoiture
             .Include(m => m.Marque)
+            .AsNoTracking()
             .OrderBy(m => m.Marque!.Nom)
             .ThenBy(m => m.Nom)
             .Select(m => new { m.Id, Libelle = m.Marque!.Nom + " " + m.Nom })
-            .AsNoTracking()
             .ToListAsync();
 
         ViewBag.ModeleVoitureId = new SelectList(modeles, "Id", "Libelle", modeleSelectionne);
