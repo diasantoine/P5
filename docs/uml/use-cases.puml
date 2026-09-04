@@ -1,0 +1,57 @@
+@startuml use-cases
+title Express Voitures — Cas d'utilisation
+
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor White
+  BorderColor #34495E
+}
+skinparam actor {
+  BackgroundColor White
+  BorderColor #34495E
+}
+
+actor "Visiteur" as visiteur
+actor "Jacques\n(gérant)" as gerant
+
+rectangle "Express Voitures" {
+
+  package "Consultation — accès public" {
+    usecase "Consulter l'inventaire" as UC1
+    usecase "Consulter une fiche véhicule" as UC2
+  }
+
+  package "Administration — accès restreint" {
+    usecase "S'authentifier" as UC3
+    usecase "Ajouter un véhicule" as UC4
+    usecase "Modifier une annonce\n(photo, description)" as UC5
+    usecase "Saisir une réparation" as UC6
+    usecase "Marquer un véhicule vendu" as UC7
+  }
+}
+
+visiteur --> UC1
+visiteur --> UC2
+
+gerant --|> visiteur
+
+gerant --> UC4
+gerant --> UC5
+gerant --> UC6
+gerant --> UC7
+
+UC4 ..> UC3 : <<include>>
+UC5 ..> UC3 : <<include>>
+UC6 ..> UC3 : <<include>>
+UC7 ..> UC3 : <<include>>
+
+legend bottom
+  Jacques hérite du visiteur : il consulte l'inventaire comme tout le monde.
+  « Marquer un véhicule vendu » renseigne SaleDate — aucune suppression,
+  l'historique de l'inventaire est conservé.
+  « Saisir une réparation » fait monter le prix de vente, qui reste calculé.
+endlegend
+
+@enduml

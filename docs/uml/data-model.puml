@@ -1,0 +1,89 @@
+@startuml data-model
+title Express Voitures — Modèle de données
+
+hide circle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam class {
+  BackgroundColor White
+  BorderColor #34495E
+  ArrowColor #34495E
+}
+
+class Brand {
+  +int Id
+  +string Name <<unique>>
+}
+
+class CarModel {
+  +int Id
+  +string Name
+  +int BrandId
+  --
+  <<unique>> (BrandId, Name)
+}
+
+class Vehicle {
+  +int Id
+  +string? Vin <<unique si renseigné>>
+  +int Year
+  +int CarModelId
+  +string? Trim
+  +DateOnly PurchaseDate
+  +decimal PurchasePrice
+  +DateOnly? AvailabilityDate
+  +DateOnly? SaleDate
+  +string? Description
+  +string? PhotoUrl
+  __ calculées, non persistées __
+  +/decimal RepairsCost
+  +/decimal SalePrice
+  +/bool IsAvailable
+}
+
+class Repair {
+  +int Id
+  +string Description
+  +decimal Cost
+  +int VehicleId
+}
+
+class IdentityUser <<ASP.NET Identity>> #EEEEEE {
+  +string Id
+  +string Email
+  ..
+  table AspNetUsers
+}
+
+note right of Vehicle
+  Un **exemplaire physique**,
+  pas une catégorie du catalogue.
+
+  SalePrice = PurchasePrice
+            + RepairsCost
+            + 500 EUR
+
+  Propriétés calculées : aucune
+  colonne correspondante en base.
+
+  SaleDate NULL = encore disponible.
+end note
+
+note bottom of Repair
+  Entité à part entière : la feuille
+  du client entassait plusieurs
+  réparations dans une seule cellule.
+end note
+
+note right of IdentityUser
+  Compte unique du gérant.
+  Aucune relation avec l'inventaire :
+  un seul utilisateur administre tout.
+end note
+
+Brand "1" --> "0..*" CarModel : propose >
+CarModel "1" --> "0..*" Vehicle : est décliné en >
+Vehicle "1" *-- "0..*" Repair : subit >
+
+@enduml
