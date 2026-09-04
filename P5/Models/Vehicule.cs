@@ -40,6 +40,10 @@ namespace P5.Models
 
         [Range(0, 1_000_000, ErrorMessage = "Le prix d'achat doit être positif.")]
         [DataType(DataType.Currency)]
+        // ASP.NET Core n'a pas de gabarit d'affichage pour DataType.Currency : sans
+        // DisplayFormat, DisplayFor rendrait "9900,00" au lieu de "9 900,00 €".
+        // ApplyFormatInEditMode reste à false pour que le champ de saisie reste brut.
+        [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Prix d'achat")]
         public decimal PrixAchat { get; set; }
 
@@ -71,11 +75,13 @@ namespace P5.Models
         // ---------------------------------------------------------------
 
         [NotMapped]
+        [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Coût des réparations")]
         public decimal CoutReparations => Reparations.Sum(r => r.Cout);
 
         /// <summary>Prix d'achat + réparations + 500 € (règle métier de Jacques).</summary>
         [NotMapped]
+        [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Prix de vente")]
         public decimal PrixVente => PrixAchat + CoutReparations + MargeFixe;
 

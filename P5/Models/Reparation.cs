@@ -18,6 +18,7 @@ namespace P5.Models
 
         [Range(0, 100_000, ErrorMessage = "Le coût doit être positif.")]
         [DataType(DataType.Currency)]
+        [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Coût")]
         public decimal Cout { get; set; }
 

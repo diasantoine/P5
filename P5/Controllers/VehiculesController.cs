@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using P5.Models;
 using P5.Data;
@@ -14,9 +15,18 @@ public class VehiculesController : Controller
     }
 
     // GET: VEHICULES
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
-        return View(await _context.Vehicules.ToListAsync());
+        // Les Include sont indispensables : sans Reparations, CoutReparations vaut 0
+        // et PrixVente affiche PrixAchat + 500 €, ce qui fausse la regle metier.
+        var vehicules = await _context.Vehicules
+            .Include(v => v.ModeleVoiture)
+                .ThenInclude(m => m!.Marque)
+            .Include(v => v.Reparations)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return View(vehicules);
     }
 
     // GET: VEHICULES/Details/5
@@ -28,6 +38,10 @@ public class VehiculesController : Controller
         }
 
         var vehicule = await _context.Vehicules
+            .Include(v => v.ModeleVoiture)
+                .ThenInclude(m => m!.Marque)
+            .Include(v => v.Reparations)
+            .AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
         if (vehicule == null)
         {
@@ -38,8 +52,9 @@ public class VehiculesController : Controller
     }
 
     // GET: VEHICULES/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        await PeuplerListeModelesAsync();
         return View();
     }
 
@@ -56,6 +71,10 @@ public class VehiculesController : Controller
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        // Le formulaire est reaffiche : la liste deroulante doit etre reconstruite,
+        // elle ne survit pas au POST.
+        await PeuplerListeModelesAsync(vehicule.ModeleVoitureId);
         return View(vehicule);
     }
 
@@ -72,6 +91,8 @@ public class VehiculesController : Controller
         {
             return NotFound();
         }
+
+        await PeuplerListeModelesAsync(vehicule.ModeleVoitureId);
         return View(vehicule);
     }
 
@@ -107,6 +128,8 @@ public class VehiculesController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
+
+        await PeuplerListeModelesAsync(vehicule.ModeleVoitureId);
         return View(vehicule);
     }
 
@@ -146,5 +169,22 @@ public class VehiculesController : Controller
     private bool VehiculeExists(int? id)
     {
         return _context.Vehicules.Any(e => e.Id == id);
+    }
+
+    /// <summary>
+    /// Alimente la liste deroulante des modeles, libelles "Marque Modele" : un nom de
+    /// modele seul serait ambigu, et un identifiant numerique inutilisable.
+    /// </summary>
+    private async Task PeuplerListeModelesAsync(int? modeleSelectionne = null)
+    {
+        var modeles = await _context.ModelesVoiture
+            .Include(m => m.Marque)
+            .OrderBy(m => m.Marque!.Nom)
+            .ThenBy(m => m.Nom)
+            .Select(m => new { m.Id, Libelle = m.Marque!.Nom + " " + m.Nom })
+            .AsNoTracking()
+            .ToListAsync();
+
+        ViewBag.ModeleVoitureId = new SelectList(modeles, "Id", "Libelle", modeleSelectionne);
     }
 }
