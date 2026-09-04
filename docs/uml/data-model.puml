@@ -71,6 +71,15 @@ note right of IdentityUser
   inventory: one user administers everything.}
 end note
 
+note left of Vehicle
+  {trim stays a plain attribute rather than an
+  entity: the 7 vehicles of the client's inventory
+  have 7 distinct trims (LE, Sport, TCe, XLT, LX,
+  S, SEL) and share none, so a table would
+  deduplicate nothing. Brand is a table because
+  "Ford" appears twice.}
+end note
+
 note left of Brand
   {name is unique}
 end note
