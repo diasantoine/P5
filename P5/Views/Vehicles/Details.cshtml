@@ -1,4 +1,4 @@
-@model P5.Models.Vehicule
+@model P5.Models.Vehicle
 
 @{
     ViewData["Title"] = "Details";
@@ -7,70 +7,70 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Vehicule</h4>
+    <h4>Vehicle</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CodeVin)
+            @Html.DisplayNameFor(model => model.Vin)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CodeVin)
+            @Html.DisplayFor(model => model.Vin)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Annee)
+            @Html.DisplayNameFor(model => model.Year)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Annee)
+            @Html.DisplayFor(model => model.Year)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModeleVoitureId)
+            @Html.DisplayNameFor(model => model.CarModelId)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModeleVoitureId)
+            @Html.DisplayFor(model => model.CarModelId)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModeleVoiture)
+            @Html.DisplayNameFor(model => model.CarModel)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModeleVoiture)
+            @Html.DisplayFor(model => model.CarModel)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Finition)
+            @Html.DisplayNameFor(model => model.Trim)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Finition)
+            @Html.DisplayFor(model => model.Trim)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateAchat)
+            @Html.DisplayNameFor(model => model.PurchaseDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateAchat)
+            @Html.DisplayFor(model => model.PurchaseDate)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PrixAchat)
+            @Html.DisplayNameFor(model => model.PurchasePrice)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PrixAchat)
+            @Html.DisplayFor(model => model.PurchasePrice)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateDisponibilite)
+            @Html.DisplayNameFor(model => model.AvailabilityDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateDisponibilite)
+            @Html.DisplayFor(model => model.AvailabilityDate)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateVente)
+            @Html.DisplayNameFor(model => model.SaleDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateVente)
+            @Html.DisplayFor(model => model.SaleDate)
         </dd>
     </dl>
         <dt class = "col-sm-2">
@@ -88,31 +88,31 @@
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Reparations)
+            @Html.DisplayNameFor(model => model.Repairs)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Reparations)
+            @Html.DisplayFor(model => model.Repairs)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CoutReparations)
+            @Html.DisplayNameFor(model => model.RepairsCost)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CoutReparations)
+            @Html.DisplayFor(model => model.RepairsCost)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PrixVente)
+            @Html.DisplayNameFor(model => model.SalePrice)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PrixVente)
+            @Html.DisplayFor(model => model.SalePrice)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EstDisponible)
+            @Html.DisplayNameFor(model => model.IsAvailable)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EstDisponible)
+            @Html.DisplayFor(model => model.IsAvailable)
         </dd>
     </dl>
 </div>

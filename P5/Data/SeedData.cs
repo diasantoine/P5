@@ -11,90 +11,90 @@ namespace P5.Data
     /// </summary>
     public static class SeedData
     {
-        public static void AppliquerDonneesInitiales(this ModelBuilder builder)
+        public static void SeedInitialData(this ModelBuilder builder)
         {
             // HasData impose des clés primaires explicites : EF doit pouvoir
             // comparer l'existant au souhaité pour générer les INSERT/UPDATE/DELETE.
 
-            builder.Entity<Marque>().HasData(
-                new Marque { Id = 1, Nom = "Mazda" },
-                new Marque { Id = 2, Nom = "Jeep" },
-                new Marque { Id = 3, Nom = "Renault" },
-                new Marque { Id = 4, Nom = "Ford" },
-                new Marque { Id = 5, Nom = "Honda" },
-                new Marque { Id = 6, Nom = "Volkswagen" });
+            builder.Entity<Brand>().HasData(
+                new Brand { Id = 1, Name = "Mazda" },
+                new Brand { Id = 2, Name = "Jeep" },
+                new Brand { Id = 3, Name = "Renault" },
+                new Brand { Id = 4, Name = "Ford" },
+                new Brand { Id = 5, Name = "Honda" },
+                new Brand { Id = 6, Name = "Volkswagen" });
 
-            builder.Entity<ModeleVoiture>().HasData(
-                new ModeleVoiture { Id = 1, Nom = "Miata",    MarqueId = 1 },
-                new ModeleVoiture { Id = 2, Nom = "Liberty",  MarqueId = 2 },
-                new ModeleVoiture { Id = 3, Nom = "Scénic",   MarqueId = 3 },
-                new ModeleVoiture { Id = 4, Nom = "Explorer", MarqueId = 4 },
-                new ModeleVoiture { Id = 5, Nom = "Civic",    MarqueId = 5 },
-                new ModeleVoiture { Id = 6, Nom = "GTI",      MarqueId = 6 },
-                new ModeleVoiture { Id = 7, Nom = "Edge",     MarqueId = 4 }); // 2e Ford
+            builder.Entity<CarModel>().HasData(
+                new CarModel { Id = 1, Name = "Miata",    BrandId = 1 },
+                new CarModel { Id = 2, Name = "Liberty",  BrandId = 2 },
+                new CarModel { Id = 3, Name = "Scénic",   BrandId = 3 },
+                new CarModel { Id = 4, Name = "Explorer", BrandId = 4 },
+                new CarModel { Id = 5, Name = "Civic",    BrandId = 5 },
+                new CarModel { Id = 6, Name = "GTI",      BrandId = 6 },
+                new CarModel { Id = 7, Name = "Edge",     BrandId = 4 }); // 2e Ford
 
-            builder.Entity<Vehicule>().HasData(
-                new Vehicule
+            builder.Entity<Vehicle>().HasData(
+                new Vehicle
                 {
-                    Id = 1, Annee = 2019, ModeleVoitureId = 1, Finition = "LE",
-                    DateAchat = new DateOnly(2022, 1, 7), PrixAchat = 1800m,
-                    DateDisponibilite = new DateOnly(2022, 4, 7),
-                    DateVente = new DateOnly(2022, 4, 8)
+                    Id = 1, Year = 2019, CarModelId = 1, Trim = "LE",
+                    PurchaseDate = new DateOnly(2022, 1, 7), PurchasePrice = 1800m,
+                    AvailabilityDate = new DateOnly(2022, 4, 7),
+                    SaleDate = new DateOnly(2022, 4, 8)
                 },
-                new Vehicule
+                new Vehicle
                 {
-                    Id = 2, Annee = 2007, ModeleVoitureId = 2, Finition = "Sport",
-                    DateAchat = new DateOnly(2022, 4, 2), PrixAchat = 4500m,
-                    DateDisponibilite = new DateOnly(2022, 4, 7),
-                    DateVente = new DateOnly(2022, 4, 9)
+                    Id = 2, Year = 2007, CarModelId = 2, Trim = "Sport",
+                    PurchaseDate = new DateOnly(2022, 4, 2), PurchasePrice = 4500m,
+                    AvailabilityDate = new DateOnly(2022, 4, 7),
+                    SaleDate = new DateOnly(2022, 4, 9)
                 },
-                new Vehicule
+                new Vehicle
                 {
-                    Id = 3, Annee = 2007, ModeleVoitureId = 3, Finition = "TCe",
-                    DateAchat = new DateOnly(2022, 4, 4), PrixAchat = 1800m,
-                    DateDisponibilite = new DateOnly(2022, 4, 8),
-                    DateVente = null // toujours disponible
+                    Id = 3, Year = 2007, CarModelId = 3, Trim = "TCe",
+                    PurchaseDate = new DateOnly(2022, 4, 4), PurchasePrice = 1800m,
+                    AvailabilityDate = new DateOnly(2022, 4, 8),
+                    SaleDate = null // toujours disponible
                 },
-                new Vehicule
+                new Vehicle
                 {
-                    Id = 4, Annee = 2017, ModeleVoitureId = 4, Finition = "XLT",
-                    DateAchat = new DateOnly(2022, 4, 5), PrixAchat = 24350m,
-                    DateDisponibilite = new DateOnly(2022, 4, 9),
-                    DateVente = null // toujours disponible
+                    Id = 4, Year = 2017, CarModelId = 4, Trim = "XLT",
+                    PurchaseDate = new DateOnly(2022, 4, 5), PurchasePrice = 24350m,
+                    AvailabilityDate = new DateOnly(2022, 4, 9),
+                    SaleDate = null // toujours disponible
                 },
-                new Vehicule
+                new Vehicle
                 {
-                    Id = 5, Annee = 2008, ModeleVoitureId = 5, Finition = "LX",
-                    DateAchat = new DateOnly(2022, 4, 6), PrixAchat = 4000m,
-                    DateDisponibilite = new DateOnly(2022, 4, 9),
-                    DateVente = new DateOnly(2022, 4, 9)
+                    Id = 5, Year = 2008, CarModelId = 5, Trim = "LX",
+                    PurchaseDate = new DateOnly(2022, 4, 6), PurchasePrice = 4000m,
+                    AvailabilityDate = new DateOnly(2022, 4, 9),
+                    SaleDate = new DateOnly(2022, 4, 9)
                 },
-                new Vehicule
+                new Vehicle
                 {
-                    Id = 6, Annee = 2016, ModeleVoitureId = 6, Finition = "S",
-                    DateAchat = new DateOnly(2022, 4, 6), PrixAchat = 15250m,
-                    DateDisponibilite = new DateOnly(2022, 4, 10),
-                    DateVente = new DateOnly(2022, 4, 12)
+                    Id = 6, Year = 2016, CarModelId = 6, Trim = "S",
+                    PurchaseDate = new DateOnly(2022, 4, 6), PurchasePrice = 15250m,
+                    AvailabilityDate = new DateOnly(2022, 4, 10),
+                    SaleDate = new DateOnly(2022, 4, 12)
                 },
-                new Vehicule
+                new Vehicle
                 {
-                    Id = 7, Annee = 2013, ModeleVoitureId = 7, Finition = "SEL",
-                    DateAchat = new DateOnly(2022, 4, 7), PrixAchat = 10990m,
-                    DateDisponibilite = new DateOnly(2022, 4, 11),
-                    DateVente = new DateOnly(2022, 4, 12)
+                    Id = 7, Year = 2013, CarModelId = 7, Trim = "SEL",
+                    PurchaseDate = new DateOnly(2022, 4, 7), PurchasePrice = 10990m,
+                    AvailabilityDate = new DateOnly(2022, 4, 11),
+                    SaleDate = new DateOnly(2022, 4, 12)
                 });
 
             // La feuille de calcul ne donne qu'un COÛT TOTAL par véhicule, jamais le
             // détail par intervention. Le libellé source est donc conservé tel quel
             // plutôt que d'inventer une répartition des montants.
-            builder.Entity<Reparation>().HasData(
-                new Reparation { Id = 1, VehiculeId = 1, Libelle = "Restauration complète",         Cout = 7600m },
-                new Reparation { Id = 2, VehiculeId = 2, Libelle = "Roulements des roues avant",    Cout = 350m },
-                new Reparation { Id = 3, VehiculeId = 3, Libelle = "Radiateur, freins",             Cout = 690m },
-                new Reparation { Id = 4, VehiculeId = 4, Libelle = "Pneus, freins",                 Cout = 1100m },
-                new Reparation { Id = 5, VehiculeId = 5, Libelle = "Climatisation, freins",         Cout = 475m },
-                new Reparation { Id = 6, VehiculeId = 6, Libelle = "Pneus",                         Cout = 440m },
-                new Reparation { Id = 7, VehiculeId = 7, Libelle = "Pneus, freins, climatisation",  Cout = 950m });
+            builder.Entity<Repair>().HasData(
+                new Repair { Id = 1, VehicleId = 1, Description = "Restauration complète",         Cost = 7600m },
+                new Repair { Id = 2, VehicleId = 2, Description = "Roulements des roues avant",    Cost = 350m },
+                new Repair { Id = 3, VehicleId = 3, Description = "Radiateur, freins",             Cost = 690m },
+                new Repair { Id = 4, VehicleId = 4, Description = "Pneus, freins",                 Cost = 1100m },
+                new Repair { Id = 5, VehicleId = 5, Description = "Climatisation, freins",         Cost = 475m },
+                new Repair { Id = 6, VehicleId = 6, Description = "Pneus",                         Cost = 440m },
+                new Repair { Id = 7, VehicleId = 7, Description = "Pneus, freins, climatisation",  Cost = 950m });
         }
     }
 }

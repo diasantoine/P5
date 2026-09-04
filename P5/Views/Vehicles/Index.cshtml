@@ -1,13 +1,13 @@
-@model IEnumerable<P5.Models.Vehicule>
+@model IEnumerable<P5.Models.Vehicle>
 
 @{
     ViewData["Title"] = "Inventaire";
-    var estAuthentifie = User.Identity?.IsAuthenticated ?? false;
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
 }
 
 <h1>Inventaire des véhicules</h1>
 
-@if (estAuthentifie)
+@if (isAuthenticated)
 {
     <p>
         <a asp-action="Create" class="btn btn-primary">Ajouter un véhicule</a>
@@ -27,11 +27,11 @@ else
                 <tr>
                     <th scope="col">Photo</th>
                     <th scope="col">Véhicule</th>
-                    <th scope="col">@Html.DisplayNameFor(model => model.Finition)</th>
-                    <th scope="col">@Html.DisplayNameFor(model => model.Annee)</th>
-                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PrixAchat)</th>
-                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.CoutReparations)</th>
-                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PrixVente)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.Trim)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.Year)</th>
+                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PurchasePrice)</th>
+                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.RepairsCost)</th>
+                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.SalePrice)</th>
                     <th scope="col">Disponibilité</th>
                     <th scope="col">Actions</th>
                 </tr>
@@ -39,9 +39,9 @@ else
             <tbody>
                 @foreach (var item in Model)
                 {
-                    @* La marque n'est accessible qu'à travers le modèle : Vehicule -> ModeleVoiture -> Marque.
+                    @* La marque n'est accessible qu'à travers le modèle : Vehicle -> CarModel -> Brand.
                        D'où le .ThenInclude() côté contrôleur. *@
-                    var designation = $"{item.ModeleVoiture?.Marque?.Nom} {item.ModeleVoiture?.Nom}".Trim();
+                    var designation = $"{item.CarModel?.Brand?.Name} {item.CarModel?.Name}".Trim();
 
                     <tr>
                         <td>
@@ -55,26 +55,26 @@ else
                             }
                         </td>
                         <td>@designation</td>
-                        <td>@item.Finition</td>
-                        <td>@item.Annee</td>
-                        <td class="text-end">@Html.DisplayFor(modelItem => item.PrixAchat)</td>
-                        <td class="text-end">@Html.DisplayFor(modelItem => item.CoutReparations)</td>
-                        <td class="text-end fw-bold">@Html.DisplayFor(modelItem => item.PrixVente)</td>
+                        <td>@item.Trim</td>
+                        <td>@item.Year</td>
+                        <td class="text-end">@Html.DisplayFor(modelItem => item.PurchasePrice)</td>
+                        <td class="text-end">@Html.DisplayFor(modelItem => item.RepairsCost)</td>
+                        <td class="text-end fw-bold">@Html.DisplayFor(modelItem => item.SalePrice)</td>
                         <td>
-                            @if (item.EstDisponible)
+                            @if (item.IsAvailable)
                             {
                                 <span class="badge text-bg-success">Disponible</span>
                             }
                             else
                             {
                                 <span class="badge text-bg-secondary">
-                                    Vendu le @item.DateVente?.ToString("dd/MM/yyyy")
+                                    Vendu le @item.SaleDate?.ToString("dd/MM/yyyy")
                                 </span>
                             }
                         </td>
                         <td>
                             <a asp-action="Details" asp-route-id="@item.Id">Détails</a>
-                            @if (estAuthentifie)
+                            @if (isAuthenticated)
                             {
                                 <text> | </text>
                                 <a asp-action="Edit" asp-route-id="@item.Id">Modifier</a>

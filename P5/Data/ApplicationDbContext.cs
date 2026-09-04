@@ -7,10 +7,10 @@ namespace P5.Data
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
     {
         // Un DbSet = une table. Sans DbSet, pas de table générée.
-        public DbSet<Marque> Marques => Set<Marque>();
-        public DbSet<ModeleVoiture> ModelesVoiture => Set<ModeleVoiture>();
-        public DbSet<Vehicule> Vehicules => Set<Vehicule>();
-        public DbSet<Reparation> Reparations => Set<Reparation>();
+        public DbSet<Brand> Brands => Set<Brand>();
+        public DbSet<CarModel> CarModels => Set<CarModel>();
+        public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+        public DbSet<Repair> Repairs => Set<Repair>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -21,52 +21,52 @@ namespace P5.Data
             // La configuration EF vit ici (couche Infrastructure) et non dans les
             // entités (couche Domain), qui restent de simples POCO sans dépendance à EF.
 
-            builder.Entity<Marque>(entity =>
+            builder.Entity<Brand>(entity =>
             {
-                entity.HasIndex(m => m.Nom).IsUnique();
+                entity.HasIndex(m => m.Name).IsUnique();
             });
 
-            builder.Entity<ModeleVoiture>(entity =>
+            builder.Entity<CarModel>(entity =>
             {
                 // Un même nom de modèle peut exister chez deux marques, mais pas deux fois
                 // chez la même.
-                entity.HasIndex(m => new { m.MarqueId, m.Nom }).IsUnique();
+                entity.HasIndex(m => new { m.BrandId, m.Name }).IsUnique();
 
-                entity.HasOne(m => m.Marque)
-                      .WithMany(ma => ma.Modeles)
-                      .HasForeignKey(m => m.MarqueId)
+                entity.HasOne(m => m.Brand)
+                      .WithMany(ma => ma.CarModels)
+                      .HasForeignKey(m => m.BrandId)
                       .OnDelete(DeleteBehavior.Restrict); // interdit de supprimer une marque utilisée
             });
 
-            builder.Entity<Vehicule>(entity =>
+            builder.Entity<Vehicle>(entity =>
             {
-                entity.Property(v => v.PrixAchat).HasPrecision(10, 2);
+                entity.Property(v => v.PurchasePrice).HasPrecision(10, 2);
 
                 // Unicité du VIN, mais seulement quand il est renseigné : sans ce filtre,
                 // SQL Server refuserait deux véhicules sans VIN.
-                entity.HasIndex(v => v.CodeVin)
+                entity.HasIndex(v => v.Vin)
                       .IsUnique()
-                      .HasFilter("[CodeVin] IS NOT NULL");
+                      .HasFilter("[Vin] IS NOT NULL");
 
-                entity.HasOne(v => v.ModeleVoiture)
-                      .WithMany(m => m.Vehicules)
-                      .HasForeignKey(v => v.ModeleVoitureId)
+                entity.HasOne(v => v.CarModel)
+                      .WithMany(m => m.Vehicles)
+                      .HasForeignKey(v => v.CarModelId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            builder.Entity<Reparation>(entity =>
+            builder.Entity<Repair>(entity =>
             {
-                entity.Property(r => r.Cout).HasPrecision(10, 2);
+                entity.Property(r => r.Cost).HasPrecision(10, 2);
 
                 // Cascade : une réparation n'a aucun sens sans son véhicule.
-                entity.HasOne(r => r.Vehicule)
-                      .WithMany(v => v.Reparations)
-                      .HasForeignKey(r => r.VehiculeId)
+                entity.HasOne(r => r.Vehicle)
+                      .WithMany(v => v.Repairs)
+                      .HasForeignKey(r => r.VehicleId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Données de départ issues de l'inventaire du client.
-            builder.AppliquerDonneesInitiales();
+            builder.SeedInitialData();
         }
     }
 }
