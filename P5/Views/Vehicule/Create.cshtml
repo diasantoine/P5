@@ -1,0 +1,114 @@
+@model P5.Models.Vehicule
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Vehicule</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="CodeVin" class="control-label"></label>
+                <input asp-for="CodeVin" class="form-control" />
+                <span asp-validation-for="CodeVin" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Annee" class="control-label"></label>
+                <input asp-for="Annee" class="form-control" />
+                <span asp-validation-for="Annee" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ModeleVoitureId" class="control-label"></label>
+                <input asp-for="ModeleVoitureId" class="form-control" />
+                <span asp-validation-for="ModeleVoitureId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ModeleVoiture" class="control-label"></label>
+                <input asp-for="ModeleVoiture" class="form-control" />
+                <span asp-validation-for="ModeleVoiture" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Finition" class="control-label"></label>
+                <input asp-for="Finition" class="form-control" />
+                <span asp-validation-for="Finition" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DateAchat" class="control-label"></label>
+                <input asp-for="DateAchat" class="form-control" />
+                <span asp-validation-for="DateAchat" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PrixAchat" class="control-label"></label>
+                <input asp-for="PrixAchat" class="form-control" />
+                <span asp-validation-for="PrixAchat" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DateDisponibilite" class="control-label"></label>
+                <input asp-for="DateDisponibilite" class="form-control" />
+                <span asp-validation-for="DateDisponibilite" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DateVente" class="control-label"></label>
+                <input asp-for="DateVente" class="form-control" />
+                <span asp-validation-for="DateVente" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PhotoUrl" class="control-label"></label>
+                <input asp-for="PhotoUrl" class="form-control" />
+                <span asp-validation-for="PhotoUrl" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Reparations" class="control-label"></label>
+                <input asp-for="Reparations" class="form-control" />
+                <span asp-validation-for="Reparations" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CoutReparations" class="control-label"></label>
+                <input asp-for="CoutReparations" class="form-control" />
+                <span asp-validation-for="CoutReparations" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PrixVente" class="control-label"></label>
+                <input asp-for="PrixVente" class="form-control" />
+                <span asp-validation-for="PrixVente" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EstDisponible" class="control-label"></label>
+                <input asp-for="EstDisponible" class="form-check-input" />
+                <span asp-validation-for="EstDisponible" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
