@@ -6,6 +6,9 @@ namespace P5.Data
     /// Crée le compte du gérant au démarrage. Contrairement à l'inventaire, il ne peut pas
     /// être inséré par une migration : le mot de passe doit être haché à l'exécution par
     /// UserManager.
+    /// Les identifiants viennent de la section de configuration AdminAccount ; ceux commités
+    /// dans appsettings.json sont des identifiants de démonstration, admis pour un prototype
+    /// jamais déployé, et à surcharger via les user-secrets ou une variable d'environnement.
     /// </summary>
     public static class IdentitySeed
     {
@@ -15,16 +18,29 @@ namespace P5.Data
             var email = configuration["AdminAccount:Email"];
             var password = configuration["AdminAccount:Password"];
 
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            var missing = new List<string>();
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                missing.Add("AdminAccount:Email");
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                missing.Add("AdminAccount:Password");
+            }
+
+            if (missing.Count > 0)
             {
                 // Sans identifiants, le site reste consultable : seul le back-office est inaccessible.
-                services.GetRequiredService<ILogger<ApplicationDbContext>>()
-                    .LogWarning("Compte gérant non créé : AdminAccount:Email ou AdminAccount:Password est absent.");
+                services.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("P5.Data.IdentitySeed")
+                    .LogWarning("Compte gérant non créé : {MissingKeys} absent de la configuration.",
+                        string.Join(" et ", missing));
                 return;
             }
 
             var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-            if (await userManager.FindByEmailAsync(email) is not null)
+            if (await userManager.FindByEmailAsync(email!) is not null)
             {
                 return;
             }
@@ -36,7 +52,7 @@ namespace P5.Data
                 EmailConfirmed = true // aucun IEmailSender n'est configuré sur ce prototype
             };
 
-            var result = await userManager.CreateAsync(manager, password);
+            var result = await userManager.CreateAsync(manager, password!);
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException(

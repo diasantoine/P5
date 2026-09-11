@@ -30,7 +30,7 @@
             Pour une voiture vendue, préférez « Marquer vendu » à la suppression : elle reste ainsi dans l'historique.
         </div>
 
-        <form asp-action="Delete">
+        <form asp-action="Delete" method="post">
             <input type="hidden" asp-for="Id" />
             <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
             <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-link">Annuler</a>

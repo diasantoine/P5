@@ -32,10 +32,9 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
             .AsNoTracking()
             .ToListAsync();
 
-        // La marge vient de la configuration : le service est le seul point qui la connaît.
         foreach (var vehicle in inventory)
         {
-            vehicle.Margin = _margin;
+            ApplyMargin(vehicle);
         }
 
         return inventory;
@@ -47,12 +46,16 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
             .AsNoTracking()
             .FirstOrDefaultAsync(v => v.Id == id);
 
-        // La marge vient de la configuration : le service est le seul point qui la connaît.
-        if (vehicle is not null)
-        {
-            vehicle.Margin = _margin;
-        }
+        return vehicle is null ? null : ApplyMargin(vehicle);
+    }
 
+    /// <summary>
+    /// Applique la marge lue dans la configuration. Tout véhicule destiné à l'affichage passe
+    /// par ici : c'est ce qui garantit qu'aucun n'affiche la marge par défaut de l'entité.
+    /// </summary>
+    private Vehicle ApplyMargin(Vehicle vehicle)
+    {
+        vehicle.Margin = _margin;
         return vehicle;
     }
 
