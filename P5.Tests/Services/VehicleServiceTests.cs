@@ -1,5 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using P5.Configuration;
 using P5.Data;
 using P5.Models;
 using P5.Services;
@@ -45,7 +47,7 @@ public class VehicleServiceTests
     public async Task GetInventoryAsync_LoadsBrandAndRepairs()
     {
         using var context = CreateContext();
-        var service = new VehicleService(context);
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
 
         var inventory = await service.GetInventoryAsync();
 
@@ -59,7 +61,7 @@ public class VehicleServiceTests
     public async Task GetDetailAsync_ReturnsNull_WhenIdIsUnknown()
     {
         using var context = CreateContext();
-        var service = new VehicleService(context);
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
 
         Assert.Null(await service.GetDetailAsync(999));
     }
@@ -68,7 +70,7 @@ public class VehicleServiceTests
     public async Task MarkAsSoldAsync_SetsSaleDate()
     {
         using var context = CreateContext();
-        var service = new VehicleService(context);
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
 
         var result = await service.MarkAsSoldAsync(1, new DateOnly(2026, 9, 4));
 
@@ -80,7 +82,7 @@ public class VehicleServiceTests
     public async Task MarkAsSoldAsync_ReturnsFalse_WhenVehicleDoesNotExist()
     {
         using var context = CreateContext();
-        var service = new VehicleService(context);
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
 
         Assert.False(await service.MarkAsSoldAsync(999, new DateOnly(2026, 9, 4)));
     }
@@ -89,7 +91,7 @@ public class VehicleServiceTests
     public async Task MarkAsSoldAsync_RefusesADateBeforePurchase()
     {
         using var context = CreateContext();
-        var service = new VehicleService(context);
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
 
         var result = await service.MarkAsSoldAsync(1, new DateOnly(2022, 4, 3));
 
@@ -101,10 +103,22 @@ public class VehicleServiceTests
     public async Task GetSpecificationOptionsAsync_LabelsBrandModelAndTrim()
     {
         using var context = CreateContext();
-        var service = new VehicleService(context);
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
 
         var options = await service.GetSpecificationOptionsAsync();
 
         Assert.Equal("Ford Explorer XLT", Assert.Single(options).Label);
+    }
+
+    [Fact]
+    public async Task GetDetailAsync_AppliesTheConfiguredMargin()
+    {
+        using var context = CreateContext();
+        var service = new VehicleService(context, Options.Create(new PricingOptions { FixedMargin = 700m }));
+
+        var vehicle = await service.GetDetailAsync(1);
+
+        Assert.Equal(700m, vehicle!.Margin);
+        Assert.Equal(24350m + 1100m + 700m, vehicle.SalePrice);
     }
 }

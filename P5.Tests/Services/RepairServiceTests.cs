@@ -1,5 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using P5.Configuration;
 using P5.Data;
 using P5.Models;
 using P5.Services;
@@ -44,7 +46,7 @@ public class RepairServiceTests
     {
         using var context = CreateContext();
         var repairs = new RepairService(context);
-        var vehicles = new VehicleService(context);
+        var vehicles = new VehicleService(context, Options.Create(new PricingOptions()));
 
         await repairs.AddAsync(new Repair { Description = "Carrosserie", Cost = 1100m, VehicleId = 1 });
 

@@ -71,4 +71,10 @@ public class VehicleTests
         var vehicle = new Vehicle { SaleDate = new DateOnly(2022, 4, 8) };
         Assert.False(vehicle.IsAvailable);
     }
+
+    [Fact]
+    public void SalePrice_UsesTheDefaultMargin_WhenNoneIsApplied()
+    {
+        Assert.Equal(500m, new Vehicle().Margin);
+    }
 }

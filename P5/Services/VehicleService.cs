@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using P5.Configuration;
 using P5.Data;
 using P5.Models;
 
 namespace P5.Services;
 
-public class VehicleService(ApplicationDbContext context) : IVehicleService
+public class VehicleService(ApplicationDbContext context, IOptions<PricingOptions> pricing) : IVehicleService
 {
     private readonly ApplicationDbContext _context = context;
+    private readonly decimal _margin = pricing.Value.FixedMargin;
 
     /// <summary>
     /// Les Include sont indispensables : sans Repairs, RepairsCost vaut 0 et SalePrice
@@ -21,17 +24,37 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
             .Include(v => v.Specification!).ThenInclude(s => s.Trim)
             .Include(v => v.Repairs);
 
-    public async Task<IReadOnlyList<Vehicle>> GetInventoryAsync() =>
-        await WithDependencies()
+    public async Task<IReadOnlyList<Vehicle>> GetInventoryAsync()
+    {
+        var inventory = await WithDependencies()
             .OrderBy(v => v.SaleDate == null ? 0 : 1)
             .ThenByDescending(v => v.PurchaseDate)
             .AsNoTracking()
             .ToListAsync();
 
-    public async Task<Vehicle?> GetDetailAsync(int id) =>
-        await WithDependencies()
+        // La marge vient de la configuration : le service est le seul point qui la connaît.
+        foreach (var vehicle in inventory)
+        {
+            vehicle.Margin = _margin;
+        }
+
+        return inventory;
+    }
+
+    public async Task<Vehicle?> GetDetailAsync(int id)
+    {
+        var vehicle = await WithDependencies()
             .AsNoTracking()
             .FirstOrDefaultAsync(v => v.Id == id);
+
+        // La marge vient de la configuration : le service est le seul point qui la connaît.
+        if (vehicle is not null)
+        {
+            vehicle.Margin = _margin;
+        }
+
+        return vehicle;
+    }
 
     public async Task<Vehicle?> GetForEditAsync(int id) =>
         await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == id);

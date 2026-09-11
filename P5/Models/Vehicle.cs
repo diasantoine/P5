@@ -12,8 +12,8 @@ namespace P5.Models
     /// </summary>
     public class Vehicle
     {
-        /// <summary>Marge fixe ajoutée au prix de revient (spécifications fonctionnelles).</summary>
-        public const decimal FixedMargin = 500m;
+        /// <summary>Marge retenue par le client, appliquée tant que la configuration n'en impose pas d'autre.</summary>
+        public const decimal DefaultMargin = 500m;
 
         public int Id { get; set; }
 
@@ -70,11 +70,18 @@ namespace P5.Models
         [Display(Name = "Coût des réparations")]
         public decimal RepairsCost => Repairs.Sum(r => r.Cost);
 
-        /// <summary>Prix d'achat + réparations + 500 € (règle métier de Jacques).</summary>
+        /// <summary>
+        /// Marge appliquée à cet exemplaire. Renseignée par le service depuis la configuration ;
+        /// la valeur par défaut est celle du client, donc un véhicule lu hors service reste juste.
+        /// </summary>
+        [NotMapped]
+        public decimal Margin { get; set; } = DefaultMargin;
+
+        /// <summary>Prix d'achat + réparations + marge (règle métier de Jacques).</summary>
         [NotMapped]
         [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Prix de vente")]
-        public decimal SalePrice => PurchasePrice + RepairsCost + FixedMargin;
+        public decimal SalePrice => PurchasePrice + RepairsCost + Margin;
 
         [NotMapped]
         [Display(Name = "Disponible")]
