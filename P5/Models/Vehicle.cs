@@ -38,9 +38,7 @@ namespace P5.Models
 
         [Range(0, 1_000_000, ErrorMessage = "Le prix d'achat doit être positif.")]
         [DataType(DataType.Currency)]
-        // ASP.NET Core n'a pas de gabarit d'affichage pour DataType.Currency : sans
-        // DisplayFormat, DisplayFor rendrait "9900,00" au lieu de "9 900,00 €".
-        // ApplyFormatInEditMode reste à false pour que le champ de saisie reste brut.
+        // ASP.NET Core n'a pas de gabarit d'affichage pour DataType.Currency.
         [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Prix d'achat")]
         public decimal PurchasePrice { get; set; }
@@ -65,12 +63,7 @@ namespace P5.Models
 
         public ICollection<Repair> Repairs { get; set; } = [];
 
-        // ---------------------------------------------------------------
-        // Propriétés calculées : [NotMapped] = aucune colonne en base.
-        // Elles se recalculent toujours à partir des données sources, donc
-        // aucun risque d'incohérence si une réparation est ajoutée plus tard.
-        // Nécessitent un .Include(v => v.Repairs) pour être justes.
-        // ---------------------------------------------------------------
+        // Calculées à la lecture depuis Repairs : un .Include(v => v.Repairs) est indispensable, sinon RepairsCost vaut 0.
 
         [NotMapped]
         [DisplayFormat(DataFormatString = "{0:C}")]

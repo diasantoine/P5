@@ -5,9 +5,6 @@ using P5.Models;
 
 namespace P5.Tests.Data;
 
-/// <summary>
-/// Vérifie la configuration du modèle EF Core sans toucher à une base : le modèle se construit en mémoire, aucune connexion n'est ouverte.
-/// </summary>
 public class ApplicationDbContextModelTests
 {
     private static IModel BuildModel()

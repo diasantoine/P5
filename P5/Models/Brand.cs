@@ -15,7 +15,6 @@ namespace P5.Models
         [Display(Name = "Marque")]
         public string Name { get; set; } = string.Empty;
 
-        // Propriété de navigation : les modèles rattachés à cette marque.
         public ICollection<CarModel> CarModels { get; set; } = [];
     }
 }

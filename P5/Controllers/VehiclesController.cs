@@ -94,7 +94,6 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    // Pas de GET : une action qui modifie l'etat ne doit jamais etre atteignable par un lien.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkAsSold(int id, DateOnly? saleDate)

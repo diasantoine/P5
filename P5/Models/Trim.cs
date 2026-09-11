@@ -21,7 +21,6 @@ namespace P5.Models
         [Display(Name = "Modèle")]
         public int CarModelId { get; set; }
 
-        // Nullable : EF ne la remplit que si on demande explicitement l'Include().
         public CarModel? CarModel { get; set; }
 
         public ICollection<Vehicle> Vehicles { get; set; } = [];

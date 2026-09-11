@@ -4,36 +4,20 @@ using P5.Models;
 namespace P5.Data
 {
     /// <summary>
-    /// Données de départ reprises de l'inventaire transmis par le client
-    /// (semaine du 7 au 13 avril 2022).
-    ///
-    /// Seed APPLICATIF : il s'exécute à chaque lancement (voir Program.cs), après
-    /// l'application des migrations, et n'écrit que si la base est vide. Sur une base
-    /// déjà remplie, il ne touche à rien : les données de Jacques ne sont jamais
-    /// écrasées par les données d'exemple.
-    ///
-    /// Ce choix remplace l'ancien seed déclaratif (HasData dans OnModelCreating), qui
-    /// figeait les données dans les migrations et se relisait mal. Les migrations ne
-    /// décrivent plus que le schéma ; les données de départ vivent ici, en C# lisible.
+    /// Données de départ reprises de l'inventaire transmis par le client (semaine du 7 au 13 avril 2022).
+    /// Exécuté au lancement (voir Program.cs) ; ne fait rien si la base contient déjà une marque.
     /// </summary>
     public static class SeedData
     {
-        /// <summary>
-        /// Insère l'inventaire de départ si, et seulement si, la base ne contient
-        /// encore aucune marque. La marque est la racine du catalogue : une base qui
-        /// en possède une a déjà été alimentée, par ce seed ou par l'utilisateur.
-        /// </summary>
+        /// <summary>La marque est la racine du catalogue : une base qui en possède une a déjà été alimentée, par ce seed ou par l'utilisateur.</summary>
         public static async Task SeedAsync(ApplicationDbContext db)
         {
-            // Protection : base non vide = on ne remplace rien.
             if (await db.Brands.AnyAsync())
             {
                 return;
             }
 
-            // Le graphe d'objets est construit de haut en bas (Marque > Modèle >
-            // Finition > Véhicule > Réparation). EF Core insère le tout dans le bon
-            // ordre et affecte lui-même les clés : aucun identifiant n'est codé en dur.
+            // Le graphe d'objets est construit de haut en bas (Marque > Modèle > Finition > Véhicule > Réparation).
             var mazda      = new Brand { Name = "Mazda" };
             var jeep       = new Brand { Name = "Jeep" };
             var renault    = new Brand { Name = "Renault" };
@@ -79,7 +63,7 @@ namespace P5.Data
                 PurchaseDate = purchaseDate,
                 PurchasePrice = purchasePrice,
                 AvailabilityDate = availabilityDate,
-                SaleDate = saleDate, // null = toujours disponible
+                SaleDate = saleDate,
                 Repairs = [new Repair { Description = repairDescription, Cost = repairCost }]
             };
     }

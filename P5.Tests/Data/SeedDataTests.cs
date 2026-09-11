@@ -5,13 +5,9 @@ using P5.Models;
 
 namespace P5.Tests.Data;
 
-/// <summary>
-/// Le seed applicatif s'exécute au lancement de l'application. Ces tests le font
-/// tourner contre une base SQLite en mémoire : réelle, jetable, et sans LocalDB.
-/// </summary>
+/// <summary>Le seed applicatif s'exécute au lancement de l'application.</summary>
 public sealed class SeedDataTests : IDisposable
 {
-    // La base en mémoire vit tant que cette connexion reste ouverte.
     private readonly SqliteConnection _connection = new("DataSource=:memory:");
 
     public SeedDataTests()

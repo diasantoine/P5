@@ -6,7 +6,6 @@ namespace P5.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
     {
-        // Un DbSet = une table. Sans DbSet, pas de table générée.
         public DbSet<Brand> Brands => Set<Brand>();
         public DbSet<CarModel> CarModels => Set<CarModel>();
         public DbSet<Trim> Trims => Set<Trim>();
@@ -15,12 +14,8 @@ namespace P5.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // INDISPENSABLE : configure les tables d'Identity (AspNetUsers, etc.).
-            // L'oublier casse toute l'authentification.
+            // base.OnModelCreating configure les tables d'Identity (AspNetUsers, etc.).
             base.OnModelCreating(builder);
-
-            // La configuration EF vit ici (couche Infrastructure) et non dans les
-            // entités (couche Domain), qui restent de simples POCO sans dépendance à EF.
 
             builder.Entity<Brand>(entity =>
             {
@@ -29,8 +24,7 @@ namespace P5.Data
 
             builder.Entity<CarModel>(entity =>
             {
-                // Un même nom de modèle peut exister chez deux marques, mais pas deux fois
-                // chez la même.
+                // Un même nom de modèle peut exister chez deux marques, mais pas deux fois chez la même.
                 entity.HasIndex(m => new { m.BrandId, m.Name }).IsUnique();
 
                 entity.HasOne(m => m.Brand)
@@ -41,8 +35,7 @@ namespace P5.Data
 
             builder.Entity<Trim>(entity =>
             {
-                // Même règle qu'entre marque et modèle : « LE » peut exister chez deux
-                // modèles différents, mais pas deux fois pour le même modèle.
+                // Même règle qu'entre marque et modèle : « LE » peut exister chez deux modèles différents, mais pas deux fois pour le même modèle.
                 entity.HasIndex(t => new { t.CarModelId, t.Name }).IsUnique();
 
                 entity.HasOne(t => t.CarModel)
@@ -55,8 +48,7 @@ namespace P5.Data
             {
                 entity.Property(v => v.PurchasePrice).HasPrecision(10, 2);
 
-                // Unicité du VIN, mais seulement quand il est renseigné : sans ce filtre,
-                // SQL Server refuserait deux véhicules sans VIN.
+                // Unicité du VIN, mais seulement quand il est renseigné : sans ce filtre, SQL Server refuserait deux véhicules sans VIN.
                 entity.HasIndex(v => v.Vin)
                       .IsUnique()
                       .HasFilter("[Vin] IS NOT NULL");
@@ -78,8 +70,7 @@ namespace P5.Data
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Les données de départ ne sont plus déclarées ici (HasData) mais insérées
-            // au lancement par SeedData.SeedAsync, voir Program.cs.
+            // Les données de départ ne sont plus déclarées ici (HasData) mais insérées au lancement par SeedData.SeedAsync, voir Program.cs.
         }
     }
 }

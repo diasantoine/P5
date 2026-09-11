@@ -19,7 +19,6 @@ namespace P5.Models
         [Display(Name = "Marque")]
         public int BrandId { get; set; }
 
-        // Nullable : EF ne la remplit que si on demande explicitement l'Include().
         public Brand? Brand { get; set; }
 
         // Les véhicules ne sont pas rattachés directement au modèle : ils le sont

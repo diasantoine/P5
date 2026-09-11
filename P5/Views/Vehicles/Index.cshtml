@@ -39,8 +39,6 @@ else
             <tbody>
                 @foreach (var item in Model)
                 {
-                    @* La marque et le modèle ne sont accessibles qu'à travers la finition :
-                       Vehicle -> Trim -> CarModel -> Brand. D'où les .ThenInclude() côté contrôleur. *@
                     var designation = $"{item.Trim?.CarModel?.Brand?.Name} {item.Trim?.CarModel?.Name}".Trim();
 
                     <tr>
