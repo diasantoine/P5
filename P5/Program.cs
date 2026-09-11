@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using P5.Configuration;
 using P5.Data;
 using P5.Services;
 
@@ -27,17 +28,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IRepairService, RepairService>();
+builder.Services.Configure<PricingOptions>(builder.Configuration.GetSection(PricingOptions.SectionName));
 
-// Le site n'a qu'un compte, celui du gérant : l'inscription publique est fermée par une
-// politique qu'aucun utilisateur ne peut satisfaire.
-builder.Services.AddAuthorization(options =>
-    options.AddPolicy("NoPublicRegistration", policy => policy.RequireAssertion(_ => false)));
-
-builder.Services.AddRazorPages(options =>
-{
-    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Register", "NoPublicRegistration");
-    options.Conventions.AuthorizeAreaPage("Identity", "/Account/RegisterConfirmation", "NoPublicRegistration");
-});
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
