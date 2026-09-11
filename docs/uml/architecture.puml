@@ -153,7 +153,6 @@ IVehicleService -[hidden]down- ApplicationDbContext
 ' ---- Dependencies, all pointing downward ----
 VehiclesController .down.> VehicleFormViewModel
 RepairsController .down.> RepairFormViewModel
-VehiclesController .down.> IPhotoStorageService
 VehiclesController .down.> IVehicleService
 RepairsController .down.> IVehicleService
 RepairsController .down.> IRepairService

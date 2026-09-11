@@ -40,8 +40,8 @@ class Vehicle {
   -saleDate : Date [0..1]
   -description : String [0..1]
   -photoUrl : String [0..1]
-  -margin : Decimal
   --
+  +/margin : Decimal
   +/repairsCost : Decimal
   +/salePrice : Decimal
   +/isAvailable : Boolean
