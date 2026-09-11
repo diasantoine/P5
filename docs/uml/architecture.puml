@@ -14,7 +14,8 @@ skinparam class {
 }
 
 ' Layout: one layer per row, top to bottom. Every dependency points downward,
-' so no arrow has to cross another one.
+' except the Configuration package, read from the side by VehicleService.
+' No arrow has to cross another one.
 
 package "Presentation" {
 
@@ -24,6 +25,7 @@ package "Presentation" {
     +create(form : VehicleFormViewModel) : IActionResult
     +edit(id : Integer, form : VehicleFormViewModel) : IActionResult
     +markAsSold(id : Integer, saleDate : Date) : IActionResult
+    +delete(id : Integer) : IActionResult
   }
 
   class RepairsController <<controller>> {
@@ -35,7 +37,7 @@ package "Presentation" {
     -id : Integer
     -vin : String [0..1]
     -year : Integer
-    -trimId : Integer
+    -specificationId : Integer
     -purchaseDate : Date
     -purchasePrice : Decimal
     -availabilityDate : Date [0..1]
@@ -72,7 +74,8 @@ package "Services" {
     +add(vehicle : Vehicle) : Integer
     +update(vehicle : Vehicle) : Boolean
     +markAsSold(id : Integer, saleDate : Date) : Boolean
-    +getTrimOptions() : TrimOption [0..*]
+    +delete(id : Integer) : Boolean
+    +getSpecificationOptions() : SpecificationOption [0..*]
   }
 
   interface IRepairService <<interface>> {
@@ -92,6 +95,7 @@ package "Data" {
     +brands : Brand [0..*]
     +carModels : CarModel [0..*]
     +trims : Trim [0..*]
+    +vehicleSpecifications : VehicleSpecification [0..*]
     +vehicles : Vehicle [0..*]
     +repairs : Repair [0..*]
   }
@@ -99,6 +103,23 @@ package "Data" {
   class SeedData <<static>> {
     +seedAsync(db : ApplicationDbContext) : void
   }
+
+  class IdentitySeed <<static>> {
+    +seedAdminAsync(services : IServiceProvider) : void
+  }
+}
+
+package "Configuration" {
+
+  class PricingOptions {
+    -fixedMargin : Decimal
+  }
+
+  note bottom of PricingOptions
+    {The margin is no longer a constant in the
+    code: it comes from configuration so it can
+    be changed without a new deployment.}
+  end note
 }
 
 ' ---- Row 1: form view models sit next to their controller ----
@@ -115,6 +136,10 @@ IRepairService <|.down. RepairService
 
 ' ---- Row 3: data ----
 SeedData -[hidden]right- ApplicationDbContext
+ApplicationDbContext -[hidden]right- IdentitySeed
+
+' ---- Configuration sits beside Data, read sideways by VehicleService ----
+IdentitySeed -[hidden]right- PricingOptions
 
 ' ---- Dependencies, all pointing downward ----
 VehiclesController .down.> VehicleFormViewModel
@@ -126,11 +151,12 @@ RepairsController .down.> IRepairService
 VehicleService .down.> ApplicationDbContext
 RepairService .down.> ApplicationDbContext
 SeedData .right.> ApplicationDbContext
+VehicleService .right.> PricingOptions : reads
 
 note top of VehiclesController
-  {Target: [Authorize] on the class,
-  [AllowAnonymous] on index and details only.
-  Not applied yet: the manager account is not seeded.}
+  {[Authorize] on the class;
+  [AllowAnonymous] on index and details only:
+  closed by default.}
 end note
 
 note bottom of VehicleFormViewModel
@@ -151,6 +177,14 @@ note bottom of SeedData
   are applied. Inserts the initial inventory only
   when the database is empty: existing data is
   never overwritten.}
+end note
+
+note bottom of IdentitySeed
+  {Also runs at startup, but cannot be a migration:
+  a password must be hashed at runtime, which a
+  migration cannot do. Credentials are read from
+  configuration; without them the manager account
+  is simply not created.}
 end note
 
 legend bottom right

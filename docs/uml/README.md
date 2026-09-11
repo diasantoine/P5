@@ -2,7 +2,7 @@
 
 | Fichier | Contenu |
 |---|---|
-| `data-model.puml` | Diagramme de classes du domaine — les cinq entités persistées |
+| `data-model.puml` | Diagramme de classes du domaine — les six entités persistées |
 | `architecture.puml` | Diagramme de classes des couches applicatives — contrôleurs, services, accès aux données |
 
 Les `.puml` sont la source ; les `.png` sont des artefacts régénérables,
@@ -51,16 +51,20 @@ java -jar "C:\Program Files\PlantUML\plantuml.jar" -checkonly docs\uml\*.puml
 
 ## État de synchronisation avec le code
 
-`data-model.puml` décrit les entités **après** le renommage anglais.
+`data-model.puml` décrit les six entités persistées, `VehicleSpecification`
+comprise : le véhicule ne porte plus qu'une clé étrangère vers cette table,
+qui porte elle-même le triplet marque + modèle + finition.
 
-`architecture.puml` décrit l'**architecture cible**. Les services, les
-ViewModels et le `RepairsController` existent désormais dans le code ; seuls
-le stockage de photo (`IPhotoStorageService`/`PhotoStorageService`, stéréotypés
-`<<planned>>`) et les attributs `[Authorize]`/`[AllowAnonymous]` restent
-planifiés, faute de compte gestionnaire seedé.
+`architecture.puml` décrit l'architecture telle qu'elle existe dans le code.
+Les services, les ViewModels, le `RepairsController` et les attributs
+`[Authorize]`/`[AllowAnonymous]` existent désormais tous ; seul le stockage de
+photo (`IPhotoStorageService`/`PhotoStorageService`, stéréotypés `<<planned>>`)
+reste à faire.
 
 ## Règle de mise à jour
 
 Toute modification d'une entité, d'une signature de service, d'une action de
 contrôleur ou d'un attribut `[Authorize]` doit être reportée ici dans le même
-commit. Un diagramme qui ne décrit plus le code est pire que pas de diagramme.
+commit. Toute modification d'une relation entre entités (cardinalité, ajout ou
+retrait d'une association) se reporte elle aussi ici dans le même commit. Un
+diagramme qui ne décrit plus le code est pire que pas de diagramme.

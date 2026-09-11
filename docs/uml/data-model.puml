@@ -26,6 +26,10 @@ class Trim {
   -name : String
 }
 
+class VehicleSpecification {
+  -id : Integer
+}
+
 class Vehicle {
   -id : Integer
   -vin : String [0..1]
@@ -36,10 +40,12 @@ class Vehicle {
   -saleDate : Date [0..1]
   -description : String [0..1]
   -photoUrl : String [0..1]
+  -margin : Decimal
   --
   +/repairsCost : Decimal
   +/salePrice : Decimal
   +/isAvailable : Boolean
+  +/designation : String
 }
 
 class Repair {
@@ -57,9 +63,13 @@ note right of Vehicle
   {A Vehicle is one **physical unit** in stock,
   not a catalogue category.}
 
-  {salePrice = purchasePrice + repairsCost + 500 EUR}
-  {salePrice, repairsCost and isAvailable are derived:
-  computed on read, never stored as columns}
+  {salePrice = purchasePrice + repairsCost + margin}
+  {margin is not persisted: supplied from
+  configuration when the vehicle is read,
+  500 EUR by default}
+  {repairsCost, salePrice, isAvailable and
+  designation are derived: computed on read,
+  never stored as columns}
 
   {saleDate empty = still for sale}
 end note
@@ -94,9 +104,36 @@ note right of CarModel
   {(brand, name) is unique}
 end note
 
+note right of VehicleSpecification
+  {Carries the (brand, model, trim) triple as one key.
+  A Vehicle holds only this key, so each characteristic
+  is one join away instead of traversing
+  Vehicle -> Trim -> CarModel -> Brand.}
+
+  {(brand, carModel, trim) is unique}
+
+  {Composite foreign keys make an inconsistent triple
+  impossible: (carModel, brand) must exist in CarModel,
+  and (trim, carModel) must exist in Trim. The database
+  refuses "Ford + Civic", not the application.}
+end note
+
+' ---- Layout: Brand > CarModel > Trim stacked on the left, facing
+' ---- VehicleSpecification on the right so the three associations to it
+' ---- run horizontally without crossing. Vehicle below, Repair further down.
+Brand -[hidden]down- CarModel
+CarModel -[hidden]down- Trim
+CarModel -[hidden]right- VehicleSpecification
+VehicleSpecification -[hidden]down- Vehicle
+Vehicle -[hidden]down- Repair
+Repair -[hidden]right- IdentityUser
+
 Brand "1" -- "0..*" CarModel : offers >
 CarModel "1" -- "0..*" Trim : comes as >
-Trim "1" -- "0..*" Vehicle : stocked as >
+Brand "1" -- "0..*" VehicleSpecification
+CarModel "1" -- "0..*" VehicleSpecification
+Trim "1" -- "0..*" VehicleSpecification
+VehicleSpecification "1" -- "0..*" Vehicle : stocked as >
 Vehicle "1" *-- "0..*" Repair : undergoes >
 
 legend bottom right
@@ -108,16 +145,21 @@ legend bottom right
   | filled diamond | composition: the part cannot exist without the whole |
   Read a multiplicity at the end //opposite// the class you start from.
   Foreign keys are not shown as attributes: the associations carry them.
-  A Vehicle reaches its CarModel and Brand only through its Trim.
+  A Vehicle reaches its Brand, CarModel and Trim through its
+  Specification: one join away, instead of the former chain
+  Vehicle -> Trim -> CarModel -> Brand.
 
   |= English |= Français |
   | Brand | marque |
   | CarModel | modèle |
   | Trim | finition |
+  | VehicleSpecification | spécification (marque + modèle + finition) |
   | Vehicle | véhicule (exemplaire en stock) |
   | Repair | réparation |
   | purchasePrice / salePrice | prix d'achat / prix de vente |
   | repairsCost | coût des réparations |
+  | margin | marge |
+  | designation | désignation |
   | availabilityDate / saleDate | date de disponibilité / date de vente |
 endlegend
 
