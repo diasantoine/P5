@@ -55,10 +55,9 @@ public class VehiclesController(IVehicleService vehicles) : Controller
             var id = await _vehicles.AddAsync(form.ToEntity());
             return RedirectToAction(nameof(Details), new { id });
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
-            // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.
-            ModelState.AddModelError(nameof(form.Vin), "Ce code VIN est déjà utilisé.");
+            AddSaveFailureError(ex, form);
             await PopulateSpecificationListAsync(form);
             return View(form);
         }
@@ -112,10 +111,9 @@ public class VehiclesController(IVehicleService vehicles) : Controller
             await _vehicles.UpdateAsync(vehicle);
             return RedirectToAction(nameof(Details), new { id });
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
-            // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.
-            ModelState.AddModelError(nameof(form.Vin), "Ce code VIN est déjà utilisé.");
+            AddSaveFailureError(ex, form);
             await PopulateSpecificationListAsync(form);
             return View(form);
         }
@@ -169,5 +167,32 @@ public class VehiclesController(IVehicleService vehicles) : Controller
     {
         var options = await _vehicles.GetSpecificationOptionsAsync();
         form.Specifications = options.Select(o => new SelectListItem(o.Label, o.Id.ToString()));
+    }
+
+    // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.
+    // Un autre DbUpdateException (ex. SpecificationId inconnu) ne doit pas accuser le VIN a tort.
+    private void AddSaveFailureError(DbUpdateException exception, VehicleFormViewModel form)
+    {
+        if (IsVinUniqueViolation(exception))
+        {
+            ModelState.AddModelError(nameof(form.Vin), "Ce code VIN est déjà utilisé.");
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, "L'enregistrement a échoué : vérifiez les informations saisies.");
+        }
+    }
+
+    private static bool IsVinUniqueViolation(DbUpdateException exception)
+    {
+        for (Exception? current = exception; current is not null; current = current.InnerException)
+        {
+            if (current.Message.Contains("IX_Vehicles_Vin", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

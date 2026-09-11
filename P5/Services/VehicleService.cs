@@ -84,7 +84,8 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
     public async Task<bool> MarkAsSoldAsync(int id, DateOnly saleDate)
     {
         var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == id);
-        if (vehicle is null || saleDate < vehicle.PurchaseDate)
+        // Une vente déjà enregistrée ne s'écrase pas : il faudrait d'abord remettre le véhicule en vente.
+        if (vehicle is null || vehicle.SaleDate is not null || saleDate < vehicle.PurchaseDate)
         {
             return false;
         }

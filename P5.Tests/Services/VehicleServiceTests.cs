@@ -88,6 +88,20 @@ public class VehicleServiceTests
     }
 
     [Fact]
+    public async Task MarkAsSoldAsync_RefusesToOverwriteAnExistingSaleDate()
+    {
+        using var context = CreateContext();
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
+
+        Assert.True(await service.MarkAsSoldAsync(1, new DateOnly(2026, 9, 4)));
+
+        var result = await service.MarkAsSoldAsync(1, new DateOnly(2026, 9, 5));
+
+        Assert.False(result);
+        Assert.Equal(new DateOnly(2026, 9, 4), context.Vehicles.Single().SaleDate);
+    }
+
+    [Fact]
     public async Task MarkAsSoldAsync_ReturnsFalse_WhenVehicleDoesNotExist()
     {
         using var context = CreateContext();

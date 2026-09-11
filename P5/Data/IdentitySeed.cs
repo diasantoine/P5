@@ -55,8 +55,13 @@ namespace P5.Data
             var result = await userManager.CreateAsync(manager, password!);
             if (!result.Succeeded)
             {
-                throw new InvalidOperationException(
-                    "Création du compte gérant impossible : " + string.Join(" ", result.Errors.Select(e => e.Description)));
+                // Un mot de passe rejete (ex. trop court) ne doit pas empecher le site de demarrer :
+                // comme pour des identifiants absents, seul le back-office reste inaccessible.
+                services.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("P5.Data.IdentitySeed")
+                    .LogError("Compte gérant non créé : {Errors}",
+                        string.Join(" ", result.Errors.Select(e => e.Description)));
+                return;
             }
         }
     }
