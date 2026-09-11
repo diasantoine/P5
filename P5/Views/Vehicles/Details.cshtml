@@ -28,21 +28,32 @@
 
     <div class="col-md-7">
         <h2 class="h5">Prix</h2>
+        @* Le prix de revient (achat, réparations, marge) est une information interne au garage : un visiteur anonyme ne voit que le prix de vente. *@
         <table class="table">
-            <caption>Décomposition du prix de vente.</caption>
+            @if (isAuthenticated)
+            {
+                <caption>Décomposition du prix de vente.</caption>
+            }
+            else
+            {
+                <caption>Prix de vente du véhicule.</caption>
+            }
             <tbody>
-                <tr>
-                    <th scope="row">@Html.DisplayNameFor(m => m.PurchasePrice)</th>
-                    <td class="text-end">@Html.DisplayFor(m => m.PurchasePrice)</td>
-                </tr>
-                <tr>
-                    <th scope="row">@Html.DisplayNameFor(m => m.RepairsCost)</th>
-                    <td class="text-end">@Html.DisplayFor(m => m.RepairsCost)</td>
-                </tr>
-                <tr>
-                    <th scope="row">Marge</th>
-                    <td class="text-end">@Model.Margin.ToString("C")</td>
-                </tr>
+                @if (isAuthenticated)
+                {
+                    <tr>
+                        <th scope="row">@Html.DisplayNameFor(m => m.PurchasePrice)</th>
+                        <td class="text-end">@Html.DisplayFor(m => m.PurchasePrice)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">@Html.DisplayNameFor(m => m.RepairsCost)</th>
+                        <td class="text-end">@Html.DisplayFor(m => m.RepairsCost)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Marge</th>
+                        <td class="text-end">@Model.Margin.ToString("C")</td>
+                    </tr>
+                }
                 <tr class="table-active fw-bold">
                     <th scope="row">@Html.DisplayNameFor(m => m.SalePrice)</th>
                     <td class="text-end">@Html.DisplayFor(m => m.SalePrice)</td>
@@ -50,47 +61,42 @@
             </tbody>
         </table>
 
-        <h2 class="h5">Réparations</h2>
-        @if (!Model.Repairs.Any())
+        @* Les réparations et leur coût sont une information interne au garage, pas un argument de vente pour un visiteur anonyme. *@
+        @if (isAuthenticated)
         {
-            <p class="text-muted">Aucune réparation enregistrée.</p>
-        }
-        else
-        {
-            <table class="table table-sm">
-                <caption>Réparations enregistrées pour ce véhicule.</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Réparation</th>
-                        <th scope="col" class="text-end">Coût</th>
-                        @if (isAuthenticated)
-                        {
-                            <th scope="col"><span class="visually-hidden">Actions</span></th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var repair in Model.Repairs)
-                    {
+            <h2 class="h5">Réparations</h2>
+            @if (!Model.Repairs.Any())
+            {
+                <p class="text-muted">Aucune réparation enregistrée.</p>
+            }
+            else
+            {
+                <table class="table table-sm">
+                    <caption>Réparations enregistrées pour ce véhicule.</caption>
+                    <thead>
                         <tr>
-                            <td>@repair.Description</td>
-                            <td class="text-end">@repair.Cost.ToString("C")</td>
-                            @if (isAuthenticated)
-                            {
+                            <th scope="col">Réparation</th>
+                            <th scope="col" class="text-end">Coût</th>
+                            <th scope="col"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var repair in Model.Repairs)
+                        {
+                            <tr>
+                                <td>@repair.Description</td>
+                                <td class="text-end">@repair.Cost.ToString("C")</td>
                                 <td class="text-end">
                                     <form asp-controller="Repairs" asp-action="Delete" asp-route-id="@repair.Id" method="post">
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer<span class="visually-hidden"> la réparation @repair.Description</span></button>
                                     </form>
                                 </td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
 
-        @if (isAuthenticated)
-        {
             <a asp-controller="Repairs" asp-action="Create" asp-route-vehicleId="@Model.Id" class="btn btn-sm btn-outline-secondary">
                 Ajouter une réparation
             </a>

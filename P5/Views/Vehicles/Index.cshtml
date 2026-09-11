@@ -28,8 +28,12 @@ else
                     <th scope="col">Photo</th>
                     <th scope="col">Véhicule</th>
                     <th scope="col">@Html.DisplayNameFor(model => model.Year)</th>
-                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PurchasePrice)</th>
-                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.RepairsCost)</th>
+                    @* Prix d'achat et coût des réparations sont des informations internes au garage, masquées aux visiteurs anonymes. *@
+                    @if (isAuthenticated)
+                    {
+                        <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PurchasePrice)</th>
+                        <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.RepairsCost)</th>
+                    }
                     <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.SalePrice)</th>
                     <th scope="col">Disponibilité</th>
                     <th scope="col">Actions</th>
@@ -51,8 +55,11 @@ else
                         </td>
                         <td>@item.Designation</td>
                         <td>@item.Year</td>
-                        <td class="text-end">@Html.DisplayFor(modelItem => item.PurchasePrice)</td>
-                        <td class="text-end">@Html.DisplayFor(modelItem => item.RepairsCost)</td>
+                        @if (isAuthenticated)
+                        {
+                            <td class="text-end">@Html.DisplayFor(modelItem => item.PurchasePrice)</td>
+                            <td class="text-end">@Html.DisplayFor(modelItem => item.RepairsCost)</td>
+                        }
                         <td class="text-end fw-bold">@Html.DisplayFor(modelItem => item.SalePrice)</td>
                         <td>
                             @if (item.IsAvailable)
