@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using P5.Models;
 
 namespace P5.ViewModels;
@@ -9,6 +11,8 @@ public class RepairFormViewModel
     public int VehicleId { get; set; }
 
     /// <summary>Affiche a l'utilisateur de quel vehicule il s'agit. Jamais reposte.</summary>
+    [BindNever]
+    [ValidateNever]
     public string VehicleDesignation { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Le libellé de la réparation est obligatoire.")]

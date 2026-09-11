@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using P5.Models;
 using P5.Validation;
@@ -49,6 +51,8 @@ public class VehicleFormViewModel
     public string? PhotoUrl { get; set; }
 
     /// <summary>Alimentee par le controleur, jamais postee.</summary>
+    [BindNever]
+    [ValidateNever]
     public IEnumerable<SelectListItem> Trims { get; set; } = [];
 
     public static VehicleFormViewModel FromEntity(Vehicle v) => new()

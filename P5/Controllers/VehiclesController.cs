@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using P5.Services;
 using P5.ViewModels;
 
@@ -44,8 +45,18 @@ public class VehiclesController(IVehicleService vehicles) : Controller
             return View(form);
         }
 
-        var id = await _vehicles.AddAsync(form.ToEntity());
-        return RedirectToAction(nameof(Details), new { id });
+        try
+        {
+            var id = await _vehicles.AddAsync(form.ToEntity());
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        catch (DbUpdateException)
+        {
+            // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.
+            ModelState.AddModelError(nameof(form.Vin), "Ce code VIN est déjà utilisé.");
+            await PopulateTrimListAsync(form);
+            return View(form);
+        }
     }
 
     public async Task<IActionResult> Edit(int? id)
@@ -90,8 +101,19 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         }
 
         form.ApplyTo(vehicle);
-        await _vehicles.UpdateAsync(vehicle);
-        return RedirectToAction(nameof(Details), new { id });
+
+        try
+        {
+            await _vehicles.UpdateAsync(vehicle);
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        catch (DbUpdateException)
+        {
+            // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.
+            ModelState.AddModelError(nameof(form.Vin), "Ce code VIN est déjà utilisé.");
+            await PopulateTrimListAsync(form);
+            return View(form);
+        }
     }
 
     [HttpPost]
