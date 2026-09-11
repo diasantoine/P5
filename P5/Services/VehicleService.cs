@@ -91,6 +91,19 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
         return true;
     }
 
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == id);
+        if (vehicle is null)
+        {
+            return false;
+        }
+
+        _context.Vehicles.Remove(vehicle);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<IReadOnlyList<SpecificationOption>> GetSpecificationOptionsAsync() =>
         await _context.VehicleSpecifications
             .OrderBy(s => s.Brand!.Name)

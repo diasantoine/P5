@@ -1,0 +1,39 @@
+@model P5.Models.Vehicle
+
+@{
+    ViewData["Title"] = "Supprimer ce véhicule ?";
+}
+
+<h1>Supprimer ce véhicule ?</h1>
+
+<div class="row">
+    <div class="col-md-7">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Designation)</dt>
+            <dd class="col-sm-9">@Model.Designation</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Year)</dt>
+            <dd class="col-sm-9">@Model.Year</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SalePrice)</dt>
+            <dd class="col-sm-9">@Model.SalePrice.ToString("C")</dd>
+        </dl>
+
+        @if (Model.Repairs.Any())
+        {
+            <div class="alert alert-warning" role="alert">
+                Cette suppression effacera aussi les @Model.Repairs.Count() réparation(s) enregistrée(s) pour ce véhicule.
+            </div>
+        }
+
+        <div class="alert alert-info" role="note">
+            Pour une voiture vendue, préférez « Marquer vendu » à la suppression : elle reste ainsi dans l'historique.
+        </div>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-link">Annuler</a>
+        </form>
+    </div>
+</div>

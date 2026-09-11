@@ -26,6 +26,9 @@ public interface IVehicleService
     /// <summary>Retire le vehicule de la vente en renseignant sa date de vente.</summary>
     Task<bool> MarkAsSoldAsync(int id, DateOnly saleDate);
 
+    /// <summary>Supprime le vehicule et, en cascade, ses reparations. False si l'identifiant est inconnu.</summary>
+    Task<bool> DeleteAsync(int id);
+
     /// <summary>Specifications disponibles, libellees "Marque Modele Finition", triees.</summary>
     Task<IReadOnlyList<SpecificationOption>> GetSpecificationOptionsAsync();
 }

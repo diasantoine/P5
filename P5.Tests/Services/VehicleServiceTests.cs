@@ -14,6 +14,15 @@ public class VehicleServiceTests
     {
         var connection = new SqliteConnection("DataSource=:memory:");
         connection.Open();
+
+        // SQLite n'applique les clés étrangères que si on le lui demande explicitement :
+        // sans ce PRAGMA, la suppression en cascade des réparations ne se produirait pas.
+        using (var pragma = connection.CreateCommand())
+        {
+            pragma.CommandText = "PRAGMA foreign_keys = ON;";
+            pragma.ExecuteNonQuery();
+        }
+
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseSqlite(connection, contextOwnsConnection: true)
             .Options;
@@ -120,5 +129,25 @@ public class VehicleServiceTests
 
         Assert.Equal(700m, vehicle!.Margin);
         Assert.Equal(24350m + 1100m + 700m, vehicle.SalePrice);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesTheVehicleAndItsRepairs()
+    {
+        using var context = CreateContext();
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
+
+        Assert.True(await service.DeleteAsync(1));
+        Assert.Empty(context.Vehicles);
+        Assert.Empty(context.Repairs);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ReturnsFalse_WhenIdIsUnknown()
+    {
+        using var context = CreateContext();
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
+
+        Assert.False(await service.DeleteAsync(999));
     }
 }

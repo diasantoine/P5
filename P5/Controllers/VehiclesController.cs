@@ -140,6 +140,31 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id is null)
+        {
+            return NotFound();
+        }
+
+        var vehicle = await _vehicles.GetDetailAsync(id.Value);
+        return vehicle is null ? NotFound() : View(vehicle);
+    }
+
+    // La suppression efface les réparations en cascade : elle passe par une confirmation
+    // et n'est jamais atteignable par un lien.
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        if (!await _vehicles.DeleteAsync(id))
+        {
+            return NotFound();
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
     private async Task PopulateSpecificationListAsync(VehicleFormViewModel form)
     {
         var options = await _vehicles.GetSpecificationOptionsAsync();
