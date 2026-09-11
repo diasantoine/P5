@@ -46,11 +46,13 @@ public sealed class SeedDataTests : IDisposable
 
         using var check = NewContext();
         var vehicle = await check.Vehicles
-            .Include(v => v.Trim).ThenInclude(t => t!.CarModel).ThenInclude(m => m!.Brand)
+            .Include(v => v.Specification!).ThenInclude(s => s.Brand)
+            .Include(v => v.Specification!).ThenInclude(s => s.CarModel)
+            .Include(v => v.Specification!).ThenInclude(s => s.Trim)
             .Include(v => v.Repairs)
-            .SingleAsync(v => v.Trim!.Name == trim && v.Trim.CarModel!.Name == carModel);
+            .SingleAsync(v => v.Specification!.Trim!.Name == trim && v.Specification.CarModel!.Name == carModel);
 
-        Assert.Equal(brand, vehicle.Trim!.CarModel!.Brand!.Name);
+        Assert.Equal(brand, vehicle.Specification!.Brand!.Name);
         Assert.Equal(year, vehicle.Year);
         Assert.Equal(salePrice, vehicle.SalePrice);
     }
@@ -67,6 +69,7 @@ public sealed class SeedDataTests : IDisposable
         Assert.Equal(6, await check.Brands.CountAsync());   // Ford est partagé par deux véhicules
         Assert.Equal(7, await check.CarModels.CountAsync());
         Assert.Equal(7, await check.Trims.CountAsync());
+        Assert.Equal(7, await check.VehicleSpecifications.CountAsync());
         Assert.Equal(7, await check.Vehicles.CountAsync());
         Assert.Equal(7, await check.Repairs.CountAsync());
     }

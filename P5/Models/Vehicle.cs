@@ -25,12 +25,11 @@ namespace P5.Models
         [Display(Name = "Année")]
         public int Year { get; set; }
 
-        // Le véhicule ne référence que sa finition : la marque et le modèle se
-        // déduisent par la chaîne Vehicle -> Trim -> CarModel -> Brand. Une seule
-        // clé étrangère, donc aucune incohérence possible entre modèle et finition.
+        // Une seule clé étrangère vers le catalogue : la spécification porte le triplet
+        // marque + modèle + finition, chacun accessible en une jointure depuis elle.
         [Display(Name = "Modèle et finition")]
-        public int TrimId { get; set; }
-        public Trim? Trim { get; set; }
+        public int SpecificationId { get; set; }
+        public VehicleSpecification? Specification { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Date d'achat")]
@@ -81,9 +80,8 @@ namespace P5.Models
         [Display(Name = "Disponible")]
         public bool IsAvailable => SaleDate is null;
 
-        // Necessite le chargement de la chaine Trim -> CarModel -> Brand (cf. WithDependencies dans VehicleService).
         [NotMapped]
         [Display(Name = "Véhicule")]
-        public string Designation => string.Join(' ', new[] { Trim?.CarModel?.Brand?.Name, Trim?.CarModel?.Name, Trim?.Name }.Where(s => !string.IsNullOrWhiteSpace(s)));
+        public string Designation => Specification?.Label ?? string.Empty;
     }
 }

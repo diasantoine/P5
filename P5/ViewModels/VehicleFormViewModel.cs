@@ -27,7 +27,7 @@ public class VehicleFormViewModel
     [Required(ErrorMessage = "Le modèle et la finition sont obligatoires.")]
     [Range(1, int.MaxValue, ErrorMessage = "Le modèle et la finition sont obligatoires.")]
     [Display(Name = "Modèle et finition")]
-    public int TrimId { get; set; }
+    public int SpecificationId { get; set; }
 
     [DataType(DataType.Date)]
     [Display(Name = "Date d'achat")]
@@ -53,14 +53,14 @@ public class VehicleFormViewModel
     /// <summary>Alimentee par le controleur, jamais postee.</summary>
     [BindNever]
     [ValidateNever]
-    public IEnumerable<SelectListItem> Trims { get; set; } = [];
+    public IEnumerable<SelectListItem> Specifications { get; set; } = [];
 
     public static VehicleFormViewModel FromEntity(Vehicle v) => new()
     {
         Id = v.Id,
         Vin = v.Vin,
         Year = v.Year,
-        TrimId = v.TrimId,
+        SpecificationId = v.SpecificationId,
         PurchaseDate = v.PurchaseDate,
         PurchasePrice = v.PurchasePrice,
         AvailabilityDate = v.AvailabilityDate,
@@ -73,7 +73,7 @@ public class VehicleFormViewModel
     {
         v.Vin = Vin;
         v.Year = Year;
-        v.TrimId = TrimId;
+        v.SpecificationId = SpecificationId;
         v.PurchaseDate = PurchaseDate;
         v.PurchasePrice = PurchasePrice;
         v.AvailabilityDate = AvailabilityDate;

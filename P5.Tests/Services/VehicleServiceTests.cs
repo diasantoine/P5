@@ -22,14 +22,16 @@ public class VehicleServiceTests
         var brand = new Brand { Id = 1, Name = "Ford" };
         var carModel = new CarModel { Id = 1, Name = "Explorer", BrandId = 1, Brand = brand };
         var trim = new Trim { Id = 1, Name = "XLT", CarModelId = 1, CarModel = carModel };
+        var spec = new VehicleSpecification { Id = 1, BrandId = 1, Brand = brand, CarModelId = 1, CarModel = carModel, TrimId = 1, Trim = trim };
         context.Brands.Add(brand);
         context.CarModels.Add(carModel);
         context.Trims.Add(trim);
+        context.VehicleSpecifications.Add(spec);
         context.Vehicles.Add(new Vehicle
         {
             Id = 1,
             Year = 2017,
-            TrimId = 1,
+            SpecificationId = 1,
             PurchaseDate = new DateOnly(2022, 4, 4),
             PurchasePrice = 24350m
         });
@@ -48,7 +50,7 @@ public class VehicleServiceTests
         var inventory = await service.GetInventoryAsync();
 
         var vehicle = Assert.Single(inventory);
-        Assert.Equal("Ford", vehicle.Trim?.CarModel?.Brand?.Name);
+        Assert.Equal("Ford", vehicle.Specification?.Brand?.Name);
         Assert.Equal(1100m, vehicle.RepairsCost);
         Assert.Equal(25950m, vehicle.SalePrice);
     }
@@ -96,12 +98,12 @@ public class VehicleServiceTests
     }
 
     [Fact]
-    public async Task GetTrimOptionsAsync_LabelsBrandModelAndTrim()
+    public async Task GetSpecificationOptionsAsync_LabelsBrandModelAndTrim()
     {
         using var context = CreateContext();
         var service = new VehicleService(context);
 
-        var options = await service.GetTrimOptionsAsync();
+        var options = await service.GetSpecificationOptionsAsync();
 
         Assert.Equal("Ford Explorer XLT", Assert.Single(options).Label);
     }

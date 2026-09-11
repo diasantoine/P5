@@ -31,7 +31,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
     public async Task<IActionResult> Create()
     {
         var form = new VehicleFormViewModel { Year = DateTime.Today.Year, PurchaseDate = DateOnly.FromDateTime(DateTime.Today) };
-        await PopulateTrimListAsync(form);
+        await PopulateSpecificationListAsync(form);
         return View(form);
     }
 
@@ -41,7 +41,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
     {
         if (!ModelState.IsValid)
         {
-            await PopulateTrimListAsync(form);
+            await PopulateSpecificationListAsync(form);
             return View(form);
         }
 
@@ -54,7 +54,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         {
             // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.
             ModelState.AddModelError(nameof(form.Vin), "Ce code VIN est déjà utilisé.");
-            await PopulateTrimListAsync(form);
+            await PopulateSpecificationListAsync(form);
             return View(form);
         }
     }
@@ -73,7 +73,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         }
 
         var form = VehicleFormViewModel.FromEntity(vehicle);
-        await PopulateTrimListAsync(form);
+        await PopulateSpecificationListAsync(form);
         return View(form);
     }
 
@@ -88,7 +88,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
 
         if (!ModelState.IsValid)
         {
-            await PopulateTrimListAsync(form);
+            await PopulateSpecificationListAsync(form);
             return View(form);
         }
 
@@ -111,7 +111,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         {
             // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.
             ModelState.AddModelError(nameof(form.Vin), "Ce code VIN est déjà utilisé.");
-            await PopulateTrimListAsync(form);
+            await PopulateSpecificationListAsync(form);
             return View(form);
         }
     }
@@ -135,9 +135,9 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    private async Task PopulateTrimListAsync(VehicleFormViewModel form)
+    private async Task PopulateSpecificationListAsync(VehicleFormViewModel form)
     {
-        var options = await _vehicles.GetTrimOptionsAsync();
-        form.Trims = options.Select(o => new SelectListItem(o.Label, o.Id.ToString()));
+        var options = await _vehicles.GetSpecificationOptionsAsync();
+        form.Specifications = options.Select(o => new SelectListItem(o.Label, o.Id.ToString()));
     }
 }

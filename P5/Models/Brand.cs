@@ -16,5 +16,7 @@ namespace P5.Models
         public string Name { get; set; } = string.Empty;
 
         public ICollection<CarModel> CarModels { get; set; } = [];
+
+        public ICollection<VehicleSpecification> Specifications { get; set; } = [];
     }
 }

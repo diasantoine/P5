@@ -9,17 +9,16 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
     private readonly ApplicationDbContext _context = context;
 
     /// <summary>
-    /// Les deux Include sont indispensables : sans Repairs, RepairsCost vaut 0
-    /// et SalePrice affiche PurchasePrice + 500 euros. La marque et le modele ne sont
-    /// accessibles qu'a travers la finition (Vehicle -> Trim -> CarModel -> Brand),
-    /// d'ou les deux ThenInclude en chaine. Les centraliser ici garantit qu'aucun
-    /// appelant ne peut les oublier.
+    /// Les Include sont indispensables : sans Repairs, RepairsCost vaut 0 et SalePrice
+    /// affiche PurchasePrice + 500 euros ; sans les trois ThenInclude, Designation ne
+    /// peut pas lire la marque, le modele et la finition sur la specification.
+    /// Les centraliser ici garantit qu'aucun appelant ne peut les oublier.
     /// </summary>
     private IQueryable<Vehicle> WithDependencies() =>
         _context.Vehicles
-            .Include(v => v.Trim)
-                .ThenInclude(t => t!.CarModel)
-                .ThenInclude(m => m!.Brand)
+            .Include(v => v.Specification!).ThenInclude(s => s.Brand)
+            .Include(v => v.Specification!).ThenInclude(s => s.CarModel)
+            .Include(v => v.Specification!).ThenInclude(s => s.Trim)
             .Include(v => v.Repairs);
 
     public async Task<IReadOnlyList<Vehicle>> GetInventoryAsync() =>
@@ -69,14 +68,12 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
         return true;
     }
 
-    public async Task<IReadOnlyList<TrimOption>> GetTrimOptionsAsync() =>
-        await _context.Trims
-            .Include(t => t.CarModel)
-                .ThenInclude(m => m!.Brand)
-            .OrderBy(t => t.CarModel!.Brand!.Name)
-            .ThenBy(t => t.CarModel!.Name)
-            .ThenBy(t => t.Name)
-            .Select(t => new TrimOption(t.Id, t.CarModel!.Brand!.Name + " " + t.CarModel.Name + " " + t.Name))
+    public async Task<IReadOnlyList<SpecificationOption>> GetSpecificationOptionsAsync() =>
+        await _context.VehicleSpecifications
+            .OrderBy(s => s.Brand!.Name)
+            .ThenBy(s => s.CarModel!.Name)
+            .ThenBy(s => s.Trim!.Name)
+            .Select(s => new SpecificationOption(s.Id, s.Brand!.Name + " " + s.CarModel!.Name + " " + s.Trim!.Name))
             .AsNoTracking()
             .ToListAsync();
 }

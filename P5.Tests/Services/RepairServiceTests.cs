@@ -22,14 +22,16 @@ public class RepairServiceTests
         var brand = new Brand { Id = 1, Name = "Ford" };
         var carModel = new CarModel { Id = 1, Name = "Explorer", BrandId = 1, Brand = brand };
         var trim = new Trim { Id = 1, Name = "XLT", CarModelId = 1, CarModel = carModel };
+        var spec = new VehicleSpecification { Id = 1, BrandId = 1, Brand = brand, CarModelId = 1, CarModel = carModel, TrimId = 1, Trim = trim };
         context.Brands.Add(brand);
         context.CarModels.Add(carModel);
         context.Trims.Add(trim);
+        context.VehicleSpecifications.Add(spec);
         context.Vehicles.Add(new Vehicle
         {
             Id = 1,
             Year = 2017,
-            TrimId = 1,
+            SpecificationId = 1,
             PurchaseDate = new DateOnly(2022, 4, 4),
             PurchasePrice = 24350m
         });
