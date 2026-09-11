@@ -27,7 +27,7 @@ else
                 <tr>
                     <th scope="col">Photo</th>
                     <th scope="col">Véhicule</th>
-                    <th scope="col">@Html.DisplayNameFor(model => model.Trim)</th>
+                    <th scope="col">Finition</th>
                     <th scope="col">@Html.DisplayNameFor(model => model.Year)</th>
                     <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PurchasePrice)</th>
                     <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.RepairsCost)</th>
@@ -39,9 +39,9 @@ else
             <tbody>
                 @foreach (var item in Model)
                 {
-                    @* La marque n'est accessible qu'à travers le modèle : Vehicle -> CarModel -> Brand.
-                       D'où le .ThenInclude() côté contrôleur. *@
-                    var designation = $"{item.CarModel?.Brand?.Name} {item.CarModel?.Name}".Trim();
+                    @* La marque et le modèle ne sont accessibles qu'à travers la finition :
+                       Vehicle -> Trim -> CarModel -> Brand. D'où les .ThenInclude() côté contrôleur. *@
+                    var designation = $"{item.Trim?.CarModel?.Brand?.Name} {item.Trim?.CarModel?.Name}".Trim();
 
                     <tr>
                         <td>
@@ -55,7 +55,7 @@ else
                             }
                         </td>
                         <td>@designation</td>
-                        <td>@item.Trim</td>
+                        <td>@item.Trim?.Name</td>
                         <td>@item.Year</td>
                         <td class="text-end">@Html.DisplayFor(modelItem => item.PurchasePrice)</td>
                         <td class="text-end">@Html.DisplayFor(modelItem => item.RepairsCost)</td>

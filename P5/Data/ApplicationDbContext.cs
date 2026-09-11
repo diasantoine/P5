@@ -9,6 +9,7 @@ namespace P5.Data
         // Un DbSet = une table. Sans DbSet, pas de table générée.
         public DbSet<Brand> Brands => Set<Brand>();
         public DbSet<CarModel> CarModels => Set<CarModel>();
+        public DbSet<Trim> Trims => Set<Trim>();
         public DbSet<Vehicle> Vehicles => Set<Vehicle>();
         public DbSet<Repair> Repairs => Set<Repair>();
 
@@ -38,6 +39,18 @@ namespace P5.Data
                       .OnDelete(DeleteBehavior.Restrict); // interdit de supprimer une marque utilisée
             });
 
+            builder.Entity<Trim>(entity =>
+            {
+                // Même règle qu'entre marque et modèle : « LE » peut exister chez deux
+                // modèles différents, mais pas deux fois pour le même modèle.
+                entity.HasIndex(t => new { t.CarModelId, t.Name }).IsUnique();
+
+                entity.HasOne(t => t.CarModel)
+                      .WithMany(m => m.Trims)
+                      .HasForeignKey(t => t.CarModelId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
             builder.Entity<Vehicle>(entity =>
             {
                 entity.Property(v => v.PurchasePrice).HasPrecision(10, 2);
@@ -48,10 +61,10 @@ namespace P5.Data
                       .IsUnique()
                       .HasFilter("[Vin] IS NOT NULL");
 
-                entity.HasOne(v => v.CarModel)
-                      .WithMany(m => m.Vehicles)
-                      .HasForeignKey(v => v.CarModelId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(v => v.Trim)
+                      .WithMany(t => t.Vehicles)
+                      .HasForeignKey(v => v.TrimId)
+                      .OnDelete(DeleteBehavior.Restrict); // interdit de supprimer une finition utilisée
             });
 
             builder.Entity<Repair>(entity =>
@@ -65,8 +78,8 @@ namespace P5.Data
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Données de départ issues de l'inventaire du client.
-            builder.SeedInitialData();
+            // Les données de départ ne sont plus déclarées ici (HasData) mais insérées
+            // au lancement par SeedData.SeedAsync, voir Program.cs.
         }
     }
 }

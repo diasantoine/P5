@@ -26,17 +26,11 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="CarModelId" class="control-label"></label>
-                <select asp-for="CarModelId" asp-items="ViewBag.CarModelId" class="form-select">
-                    <option value="">-- Choisir un modèle --</option>
+                <label asp-for="TrimId" class="control-label"></label>
+                <select asp-for="TrimId" asp-items="ViewBag.TrimId" class="form-select">
+                    <option value="">-- Choisir marque, modèle et finition --</option>
                 </select>
-                <span asp-validation-for="CarModelId" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Trim" class="control-label"></label>
-                <input asp-for="Trim" class="form-control" />
-                <span asp-validation-for="Trim" class="text-danger"></span>
+                <span asp-validation-for="TrimId" class="text-danger"></span>
             </div>
 
             <div class="form-group">

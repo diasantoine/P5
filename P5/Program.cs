@@ -29,6 +29,17 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+// Base de données prête au premier lancement, sans commande à taper :
+//  1. les migrations en attente sont appliquées (création de la base comprise) ;
+//  2. l'inventaire de départ est inséré, uniquement si la base est vide.
+// Le DbContext est "scoped" : hors requête HTTP, il faut ouvrir un scope soi-même.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await db.Database.MigrateAsync();
+    await SeedData.SeedAsync(db);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

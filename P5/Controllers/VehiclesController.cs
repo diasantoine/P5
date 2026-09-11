@@ -21,8 +21,11 @@ public class VehiclesController : Controller
     {
         // Les Include sont indispensables : sans Repairs, RepairsCost vaut 0
         // et SalePrice affiche PurchasePrice + 500 €, ce qui fausse la regle metier.
+        // La marque et le modele ne sont accessibles qu'a travers la finition :
+        // Vehicle -> Trim -> CarModel -> Brand, d'ou les deux ThenInclude.
         var vehicles = await _context.Vehicles
-            .Include(v => v.CarModel)
+            .Include(v => v.Trim)
+                .ThenInclude(t => t!.CarModel)
                 .ThenInclude(m => m!.Brand)
             .Include(v => v.Repairs)
             .AsNoTracking()
@@ -40,7 +43,8 @@ public class VehiclesController : Controller
         }
 
         var vehicle = await _context.Vehicles
-            .Include(v => v.CarModel)
+            .Include(v => v.Trim)
+                .ThenInclude(t => t!.CarModel)
                 .ThenInclude(m => m!.Brand)
             .Include(v => v.Repairs)
             .AsNoTracking()
@@ -56,7 +60,7 @@ public class VehiclesController : Controller
     // GET: VEHICLES/Create
     public async Task<IActionResult> Create()
     {
-        await PopulateCarModelListAsync();
+        await PopulateTrimListAsync();
         return View();
     }
 
@@ -65,7 +69,7 @@ public class VehiclesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Vin,Year,CarModelId,CarModel,Trim,PurchaseDate,PurchasePrice,AvailabilityDate,SaleDate,Description,PhotoUrl,Repairs,RepairsCost,SalePrice,IsAvailable")] Vehicle vehicle)
+    public async Task<IActionResult> Create([Bind("Id,Vin,Year,TrimId,PurchaseDate,PurchasePrice,AvailabilityDate,SaleDate,Description,PhotoUrl,Repairs,RepairsCost,SalePrice,IsAvailable")] Vehicle vehicle)
     {
         if (ModelState.IsValid)
         {
@@ -76,7 +80,7 @@ public class VehiclesController : Controller
 
         // Le formulaire est reaffiche : la liste deroulante doit etre reconstruite,
         // elle ne survit pas au POST.
-        await PopulateCarModelListAsync(vehicle.CarModelId);
+        await PopulateTrimListAsync(vehicle.TrimId);
         return View(vehicle);
     }
 
@@ -89,7 +93,8 @@ public class VehiclesController : Controller
         }
 
         var vehicle = await _context.Vehicles
-            .Include(v => v.CarModel)
+            .Include(v => v.Trim)
+                .ThenInclude(t => t!.CarModel)
                 .ThenInclude(m => m!.Brand)
             .Include(v => v.Repairs)
             .FirstOrDefaultAsync(m => m.Id == id);
@@ -98,7 +103,7 @@ public class VehiclesController : Controller
             return NotFound();
         }
 
-        await PopulateCarModelListAsync(vehicle.CarModelId);
+        await PopulateTrimListAsync(vehicle.TrimId);
         return View(vehicle);
     }
 
@@ -107,7 +112,7 @@ public class VehiclesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Vin,Year,CarModelId,CarModel,Trim,PurchaseDate,PurchasePrice,AvailabilityDate,SaleDate,Description,PhotoUrl,Repairs,RepairsCost,SalePrice,IsAvailable")] Vehicle vehicle)
+    public async Task<IActionResult> Edit(int? id, [Bind("Id,Vin,Year,TrimId,PurchaseDate,PurchasePrice,AvailabilityDate,SaleDate,Description,PhotoUrl,Repairs,RepairsCost,SalePrice,IsAvailable")] Vehicle vehicle)
     {
         if (id != vehicle.Id)
         {
@@ -135,7 +140,7 @@ public class VehiclesController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        await PopulateCarModelListAsync(vehicle.CarModelId);
+        await PopulateTrimListAsync(vehicle.TrimId);
         return View(vehicle);
     }
 
@@ -148,7 +153,8 @@ public class VehiclesController : Controller
         }
 
         var vehicle = await _context.Vehicles
-            .Include(v => v.CarModel)
+            .Include(v => v.Trim)
+                .ThenInclude(t => t!.CarModel)
                 .ThenInclude(m => m!.Brand)
             .Include(v => v.Repairs)
             .FirstOrDefaultAsync(m => m.Id == id);
@@ -181,19 +187,21 @@ public class VehiclesController : Controller
     }
 
     /// <summary>
-    /// Alimente la liste deroulante des modeles, libelles "Marque Modele" : un nom de
-    /// modele seul serait ambigu, et un identifiant numerique inutilisable.
+    /// Alimente la liste deroulante des finitions, libellees "Marque Modele Finition" :
+    /// une finition seule ("LE") serait ambigue, et un identifiant numerique inutilisable.
+    /// Une seule liste pour les trois niveaux du catalogue : c'est la finition qui
+    /// porte la reference, la marque et le modele en decoulent.
     /// </summary>
-    private async Task PopulateCarModelListAsync(int? selectedCarModelId = null)
+    private async Task PopulateTrimListAsync(int? selectedTrimId = null)
     {
-        var carModels = await _context.CarModels
-            .Include(m => m.Brand)
+        var trims = await _context.Trims
             .AsNoTracking()
-            .OrderBy(m => m.Brand!.Name)
-            .ThenBy(m => m.Name)
-            .Select(m => new { m.Id, Label = m.Brand!.Name + " " + m.Name })
+            .OrderBy(t => t.CarModel!.Brand!.Name)
+            .ThenBy(t => t.CarModel!.Name)
+            .ThenBy(t => t.Name)
+            .Select(t => new { t.Id, Label = t.CarModel!.Brand!.Name + " " + t.CarModel.Name + " " + t.Name })
             .ToListAsync();
 
-        ViewBag.CarModelId = new SelectList(carModels, "Id", "Label", selectedCarModelId);
+        ViewBag.TrimId = new SelectList(trims, "Id", "Label", selectedTrimId);
     }
 }

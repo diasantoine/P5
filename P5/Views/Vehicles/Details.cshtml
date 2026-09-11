@@ -25,24 +25,24 @@
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CarModelId)
+            Marque
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CarModelId)
+            @Model.Trim?.CarModel?.Brand?.Name
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CarModel)
+            Modèle
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CarModel)
+            @Model.Trim?.CarModel?.Name
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Trim)
+            Finition
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Trim)
+            @Model.Trim?.Name
         </dd>
     </dl>
         <dt class = "col-sm-2">

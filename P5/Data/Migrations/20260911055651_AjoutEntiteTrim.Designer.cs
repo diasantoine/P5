@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using P5.Data;
 
@@ -11,9 +12,11 @@ using P5.Data;
 namespace P5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260911055651_AjoutEntiteTrim")]
+    partial class AjoutEntiteTrim
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -243,6 +246,38 @@ namespace P5.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Brands");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Mazda"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Jeep"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Renault"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Ford"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Honda"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Volkswagen"
+                        });
                 });
 
             modelBuilder.Entity("P5.Models.CarModel", b =>
@@ -267,6 +302,50 @@ namespace P5.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("CarModels");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BrandId = 1,
+                            Name = "Miata"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BrandId = 2,
+                            Name = "Liberty"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BrandId = 3,
+                            Name = "Scénic"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BrandId = 4,
+                            Name = "Explorer"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BrandId = 5,
+                            Name = "Civic"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BrandId = 6,
+                            Name = "GTI"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BrandId = 4,
+                            Name = "Edge"
+                        });
                 });
 
             modelBuilder.Entity("P5.Models.Repair", b =>
@@ -294,6 +373,57 @@ namespace P5.Data.Migrations
                     b.HasIndex("VehicleId");
 
                     b.ToTable("Repairs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Cost = 7600m,
+                            Description = "Restauration complète",
+                            VehicleId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Cost = 350m,
+                            Description = "Roulements des roues avant",
+                            VehicleId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Cost = 690m,
+                            Description = "Radiateur, freins",
+                            VehicleId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Cost = 1100m,
+                            Description = "Pneus, freins",
+                            VehicleId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Cost = 475m,
+                            Description = "Climatisation, freins",
+                            VehicleId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Cost = 440m,
+                            Description = "Pneus",
+                            VehicleId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Cost = 950m,
+                            Description = "Pneus, freins, climatisation",
+                            VehicleId = 7
+                        });
                 });
 
             modelBuilder.Entity("P5.Models.Trim", b =>
@@ -318,6 +448,50 @@ namespace P5.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Trims");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CarModelId = 1,
+                            Name = "LE"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CarModelId = 2,
+                            Name = "Sport"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CarModelId = 3,
+                            Name = "TCe"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CarModelId = 4,
+                            Name = "XLT"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CarModelId = 5,
+                            Name = "LX"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CarModelId = 6,
+                            Name = "S"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CarModelId = 7,
+                            Name = "SEL"
+                        });
                 });
 
             modelBuilder.Entity("P5.Models.Vehicle", b =>
@@ -368,6 +542,76 @@ namespace P5.Data.Migrations
                         .HasFilter("[Vin] IS NOT NULL");
 
                     b.ToTable("Vehicles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AvailabilityDate = new DateOnly(2022, 4, 7),
+                            PurchaseDate = new DateOnly(2022, 1, 7),
+                            PurchasePrice = 1800m,
+                            SaleDate = new DateOnly(2022, 4, 8),
+                            TrimId = 1,
+                            Year = 2019
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AvailabilityDate = new DateOnly(2022, 4, 7),
+                            PurchaseDate = new DateOnly(2022, 4, 2),
+                            PurchasePrice = 4500m,
+                            SaleDate = new DateOnly(2022, 4, 9),
+                            TrimId = 2,
+                            Year = 2007
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AvailabilityDate = new DateOnly(2022, 4, 8),
+                            PurchaseDate = new DateOnly(2022, 4, 4),
+                            PurchasePrice = 1800m,
+                            TrimId = 3,
+                            Year = 2007
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AvailabilityDate = new DateOnly(2022, 4, 9),
+                            PurchaseDate = new DateOnly(2022, 4, 5),
+                            PurchasePrice = 24350m,
+                            TrimId = 4,
+                            Year = 2017
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AvailabilityDate = new DateOnly(2022, 4, 9),
+                            PurchaseDate = new DateOnly(2022, 4, 6),
+                            PurchasePrice = 4000m,
+                            SaleDate = new DateOnly(2022, 4, 9),
+                            TrimId = 5,
+                            Year = 2008
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AvailabilityDate = new DateOnly(2022, 4, 10),
+                            PurchaseDate = new DateOnly(2022, 4, 6),
+                            PurchasePrice = 15250m,
+                            SaleDate = new DateOnly(2022, 4, 12),
+                            TrimId = 6,
+                            Year = 2016
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AvailabilityDate = new DateOnly(2022, 4, 11),
+                            PurchaseDate = new DateOnly(2022, 4, 7),
+                            PurchasePrice = 10990m,
+                            SaleDate = new DateOnly(2022, 4, 12),
+                            TrimId = 7,
+                            Year = 2013
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

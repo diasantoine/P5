@@ -6,95 +6,81 @@ namespace P5.Data
     /// <summary>
     /// Données de départ reprises de l'inventaire transmis par le client
     /// (semaine du 7 au 13 avril 2022).
-    /// Insérées par la migration : un clone du dépôt suivi d'un "database update"
-    /// reproduit exactement la même base.
+    ///
+    /// Seed APPLICATIF : il s'exécute à chaque lancement (voir Program.cs), après
+    /// l'application des migrations, et n'écrit que si la base est vide. Sur une base
+    /// déjà remplie, il ne touche à rien : les données de Jacques ne sont jamais
+    /// écrasées par les données d'exemple.
+    ///
+    /// Ce choix remplace l'ancien seed déclaratif (HasData dans OnModelCreating), qui
+    /// figeait les données dans les migrations et se relisait mal. Les migrations ne
+    /// décrivent plus que le schéma ; les données de départ vivent ici, en C# lisible.
     /// </summary>
     public static class SeedData
     {
-        public static void SeedInitialData(this ModelBuilder builder)
+        /// <summary>
+        /// Insère l'inventaire de départ si, et seulement si, la base ne contient
+        /// encore aucune marque. La marque est la racine du catalogue : une base qui
+        /// en possède une a déjà été alimentée, par ce seed ou par l'utilisateur.
+        /// </summary>
+        public static async Task SeedAsync(ApplicationDbContext db)
         {
-            // HasData impose des clés primaires explicites : EF doit pouvoir
-            // comparer l'existant au souhaité pour générer les INSERT/UPDATE/DELETE.
+            // Protection : base non vide = on ne remplace rien.
+            if (await db.Brands.AnyAsync())
+            {
+                return;
+            }
 
-            builder.Entity<Brand>().HasData(
-                new Brand { Id = 1, Name = "Mazda" },
-                new Brand { Id = 2, Name = "Jeep" },
-                new Brand { Id = 3, Name = "Renault" },
-                new Brand { Id = 4, Name = "Ford" },
-                new Brand { Id = 5, Name = "Honda" },
-                new Brand { Id = 6, Name = "Volkswagen" });
+            // Le graphe d'objets est construit de haut en bas (Marque > Modèle >
+            // Finition > Véhicule > Réparation). EF Core insère le tout dans le bon
+            // ordre et affecte lui-même les clés : aucun identifiant n'est codé en dur.
+            var mazda      = new Brand { Name = "Mazda" };
+            var jeep       = new Brand { Name = "Jeep" };
+            var renault    = new Brand { Name = "Renault" };
+            var ford       = new Brand { Name = "Ford" };
+            var honda      = new Brand { Name = "Honda" };
+            var volkswagen = new Brand { Name = "Volkswagen" };
 
-            builder.Entity<CarModel>().HasData(
-                new CarModel { Id = 1, Name = "Miata",    BrandId = 1 },
-                new CarModel { Id = 2, Name = "Liberty",  BrandId = 2 },
-                new CarModel { Id = 3, Name = "Scénic",   BrandId = 3 },
-                new CarModel { Id = 4, Name = "Explorer", BrandId = 4 },
-                new CarModel { Id = 5, Name = "Civic",    BrandId = 5 },
-                new CarModel { Id = 6, Name = "GTI",      BrandId = 6 },
-                new CarModel { Id = 7, Name = "Edge",     BrandId = 4 }); // 2e Ford
-
-            builder.Entity<Vehicle>().HasData(
-                new Vehicle
-                {
-                    Id = 1, Year = 2019, CarModelId = 1, Trim = "LE",
-                    PurchaseDate = new DateOnly(2022, 1, 7), PurchasePrice = 1800m,
-                    AvailabilityDate = new DateOnly(2022, 4, 7),
-                    SaleDate = new DateOnly(2022, 4, 8)
-                },
-                new Vehicle
-                {
-                    Id = 2, Year = 2007, CarModelId = 2, Trim = "Sport",
-                    PurchaseDate = new DateOnly(2022, 4, 2), PurchasePrice = 4500m,
-                    AvailabilityDate = new DateOnly(2022, 4, 7),
-                    SaleDate = new DateOnly(2022, 4, 9)
-                },
-                new Vehicle
-                {
-                    Id = 3, Year = 2007, CarModelId = 3, Trim = "TCe",
-                    PurchaseDate = new DateOnly(2022, 4, 4), PurchasePrice = 1800m,
-                    AvailabilityDate = new DateOnly(2022, 4, 8),
-                    SaleDate = null // toujours disponible
-                },
-                new Vehicle
-                {
-                    Id = 4, Year = 2017, CarModelId = 4, Trim = "XLT",
-                    PurchaseDate = new DateOnly(2022, 4, 5), PurchasePrice = 24350m,
-                    AvailabilityDate = new DateOnly(2022, 4, 9),
-                    SaleDate = null // toujours disponible
-                },
-                new Vehicle
-                {
-                    Id = 5, Year = 2008, CarModelId = 5, Trim = "LX",
-                    PurchaseDate = new DateOnly(2022, 4, 6), PurchasePrice = 4000m,
-                    AvailabilityDate = new DateOnly(2022, 4, 9),
-                    SaleDate = new DateOnly(2022, 4, 9)
-                },
-                new Vehicle
-                {
-                    Id = 6, Year = 2016, CarModelId = 6, Trim = "S",
-                    PurchaseDate = new DateOnly(2022, 4, 6), PurchasePrice = 15250m,
-                    AvailabilityDate = new DateOnly(2022, 4, 10),
-                    SaleDate = new DateOnly(2022, 4, 12)
-                },
-                new Vehicle
-                {
-                    Id = 7, Year = 2013, CarModelId = 7, Trim = "SEL",
-                    PurchaseDate = new DateOnly(2022, 4, 7), PurchasePrice = 10990m,
-                    AvailabilityDate = new DateOnly(2022, 4, 11),
-                    SaleDate = new DateOnly(2022, 4, 12)
-                });
+            var miataLe       = Trim(mazda,      "Miata",    "LE");
+            var libertySport  = Trim(jeep,       "Liberty",  "Sport");
+            var scenicTce     = Trim(renault,    "Scénic",   "TCe");
+            var explorerXlt   = Trim(ford,       "Explorer", "XLT");
+            var civicLx       = Trim(honda,      "Civic",    "LX");
+            var gtiS          = Trim(volkswagen, "GTI",      "S");
+            var edgeSel       = Trim(ford,       "Edge",     "SEL"); // 2e Ford : la marque est partagée
 
             // La feuille de calcul ne donne qu'un COÛT TOTAL par véhicule, jamais le
             // détail par intervention. Le libellé source est donc conservé tel quel
             // plutôt que d'inventer une répartition des montants.
-            builder.Entity<Repair>().HasData(
-                new Repair { Id = 1, VehicleId = 1, Description = "Restauration complète",         Cost = 7600m },
-                new Repair { Id = 2, VehicleId = 2, Description = "Roulements des roues avant",    Cost = 350m },
-                new Repair { Id = 3, VehicleId = 3, Description = "Radiateur, freins",             Cost = 690m },
-                new Repair { Id = 4, VehicleId = 4, Description = "Pneus, freins",                 Cost = 1100m },
-                new Repair { Id = 5, VehicleId = 5, Description = "Climatisation, freins",         Cost = 475m },
-                new Repair { Id = 6, VehicleId = 6, Description = "Pneus",                         Cost = 440m },
-                new Repair { Id = 7, VehicleId = 7, Description = "Pneus, freins, climatisation",  Cost = 950m });
+            db.Vehicles.AddRange(
+                Vehicle(miataLe,      2019, new(2022, 1, 7), 1800m,  new(2022, 4, 7),  new(2022, 4, 8),  "Restauration complète",        7600m),
+                Vehicle(libertySport, 2007, new(2022, 4, 2), 4500m,  new(2022, 4, 7),  new(2022, 4, 9),  "Roulements des roues avant",   350m),
+                Vehicle(scenicTce,    2007, new(2022, 4, 4), 1800m,  new(2022, 4, 8),  null,             "Radiateur, freins",            690m),
+                Vehicle(explorerXlt,  2017, new(2022, 4, 5), 24350m, new(2022, 4, 9),  null,             "Pneus, freins",                1100m),
+                Vehicle(civicLx,      2008, new(2022, 4, 6), 4000m,  new(2022, 4, 9),  new(2022, 4, 9),  "Climatisation, freins",        475m),
+                Vehicle(gtiS,         2016, new(2022, 4, 6), 15250m, new(2022, 4, 10), new(2022, 4, 12), "Pneus",                        440m),
+                Vehicle(edgeSel,      2013, new(2022, 4, 7), 10990m, new(2022, 4, 11), new(2022, 4, 12), "Pneus, freins, climatisation", 950m));
+
+            await db.SaveChangesAsync();
         }
+
+        /// <summary>Crée un modèle chez une marque et l'une de ses finitions.</summary>
+        private static Trim Trim(Brand brand, string carModelName, string trimName)
+            => new() { Name = trimName, CarModel = new CarModel { Name = carModelName, Brand = brand } };
+
+        /// <summary>Un véhicule de l'inventaire, avec sa réparation unique telle que la feuille la libelle.</summary>
+        private static Vehicle Vehicle(
+            Trim trim, int year, DateOnly purchaseDate, decimal purchasePrice,
+            DateOnly availabilityDate, DateOnly? saleDate, string repairDescription, decimal repairCost)
+            => new()
+            {
+                Trim = trim,
+                Year = year,
+                PurchaseDate = purchaseDate,
+                PurchasePrice = purchasePrice,
+                AvailabilityDate = availabilityDate,
+                SaleDate = saleDate, // null = toujours disponible
+                Repairs = [new Repair { Description = repairDescription, Cost = repairCost }]
+            };
     }
 }

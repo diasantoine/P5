@@ -7,7 +7,8 @@ namespace P5.Models
     /// <summary>
     /// Un véhicule PHYSIQUE du stock : l'exemplaire précis acheté par Jacques,
     /// avec son propre prix d'achat, ses propres réparations et sa propre vente.
-    /// À ne pas confondre avec <see cref="CarModel"/>, qui est une catégorie du catalogue.
+    /// À ne pas confondre avec <see cref="CarModel"/> ou <see cref="Trim"/>, qui sont
+    /// des catégories du catalogue.
     /// </summary>
     public class Vehicle
     {
@@ -24,15 +25,12 @@ namespace P5.Models
         [Display(Name = "Année")]
         public int Year { get; set; }
 
-        [Display(Name = "Modèle")]
-        public int CarModelId { get; set; }
-        public CarModel? CarModel { get; set; }
-
-        // Conservée en texte libre : les 7 lignes de l'inventaire montrent 7 finitions
-        // distinctes (LE, Sport, TCe, XLT...) — aucune mutualisation à en tirer.
-        [StringLength(30)]
-        [Display(Name = "Finition")]
-        public string? Trim { get; set; }
+        // Le véhicule ne référence que sa finition : la marque et le modèle se
+        // déduisent par la chaîne Vehicle -> Trim -> CarModel -> Brand. Une seule
+        // clé étrangère, donc aucune incohérence possible entre modèle et finition.
+        [Display(Name = "Modèle et finition")]
+        public int TrimId { get; set; }
+        public Trim? Trim { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Date d'achat")]
