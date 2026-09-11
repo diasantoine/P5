@@ -53,11 +53,11 @@ java -jar "C:\Program Files\PlantUML\plantuml.jar" -checkonly docs\uml\*.puml
 
 `data-model.puml` décrit les entités **après** le renommage anglais.
 
-`architecture.puml` décrit l'**architecture cible** : les services, les
-ViewModels et le `RepairsController` qu'il représente sont planifiés
-(tâches 3, 4, 7 et 8 du plan de finalisation) mais pas encore tous écrits. Il
-devient exact au fur et à mesure de leur implémentation, et doit être relu à
-ce moment-là.
+`architecture.puml` décrit l'**architecture cible**. Les services, les
+ViewModels et le `RepairsController` existent désormais dans le code ; seuls
+le stockage de photo (`IPhotoStorageService`/`PhotoStorageService`, stéréotypés
+`<<planned>>`) et les attributs `[Authorize]`/`[AllowAnonymous]` restent
+planifiés, faute de compte gestionnaire seedé.
 
 ## Règle de mise à jour
 

@@ -40,11 +40,15 @@ package "Presentation" {
     -purchasePrice : Decimal
     -availabilityDate : Date [0..1]
     -description : String [0..1]
-    -photo : IFormFile [0..1]
+    -photoUrl : String [0..1]
     --
     +toEntity() : Vehicle
     +applyTo(vehicle : Vehicle) : void
   }
+
+  note bottom of VehicleFormViewModel
+    {photo upload (IFormFile) planned}
+  end note
 
   class RepairFormViewModel {
     -vehicleId : Integer
@@ -57,7 +61,7 @@ package "Presentation" {
 
 package "Services" {
 
-  interface IPhotoStorageService <<interface>> {
+  interface IPhotoStorageService <<interface>> <<planned>> {
     +save(file : IFormFile) : String
   }
 
@@ -77,7 +81,7 @@ package "Services" {
     +vehicleExists(vehicleId : Integer) : Boolean
   }
 
-  class PhotoStorageService
+  class PhotoStorageService <<planned>>
   class VehicleService
   class RepairService
 }
@@ -124,9 +128,9 @@ RepairService .down.> ApplicationDbContext
 SeedData .right.> ApplicationDbContext
 
 note top of VehiclesController
-  {[Authorize] on the class;
-  [AllowAnonymous] on index and details only:
-  closed by default}
+  {Target: [Authorize] on the class,
+  [AllowAnonymous] on index and details only.
+  Not applied yet: the manager account is not seeded.}
 end note
 
 note bottom of VehicleFormViewModel
@@ -155,6 +159,7 @@ legend bottom right
   | dashed arrow | dependency: the source uses the target (injected through the DI container) |
   | dashed arrow, hollow head | realization: the class implements the interface |
   | 0..* | zero to many |
+  | <<planned>> | designed, not yet implemented |
   All services are registered scoped, matching the DbContext lifetime.
 endlegend
 
