@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using P5.Models;
 using P5.Services;
 using P5.ViewModels;
 
@@ -26,7 +27,7 @@ public class RepairsController(IRepairService repairs, IVehicleService vehicles)
         return View(new RepairFormViewModel
         {
             VehicleId = vehicleId,
-            VehicleDesignation = $"{vehicle.Trim?.CarModel?.Brand?.Name} {vehicle.Trim?.CarModel?.Name} {vehicle.Trim?.Name}".Trim()
+            VehicleDesignation = BuildDesignation(vehicle)
         });
     }
 
@@ -34,13 +35,17 @@ public class RepairsController(IRepairService repairs, IVehicleService vehicles)
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(RepairFormViewModel form)
     {
-        if (!await _repairs.VehicleExistsAsync(form.VehicleId))
+        var vehicle = await _vehicles.GetDetailAsync(form.VehicleId);
+        if (vehicle is null)
         {
             return NotFound();
         }
 
         if (!ModelState.IsValid)
         {
+            // VehicleDesignation n'est jamais reposte (cf. RepairFormViewModel) : il faut
+            // la reconstituer ici pour que le formulaire renvoye ne l'affiche pas vide.
+            form.VehicleDesignation = BuildDesignation(vehicle);
             return View(form);
         }
 
@@ -57,4 +62,7 @@ public class RepairsController(IRepairService repairs, IVehicleService vehicles)
             ? NotFound()
             : RedirectToAction("Details", "Vehicles", new { id = vehicleId });
     }
+
+    private static string BuildDesignation(Vehicle vehicle) =>
+        $"{vehicle.Trim?.CarModel?.Brand?.Name} {vehicle.Trim?.CarModel?.Name} {vehicle.Trim?.Name}".Trim();
 }
