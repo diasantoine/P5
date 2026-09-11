@@ -64,6 +64,10 @@
                     <tr>
                         <th scope="col">Réparation</th>
                         <th scope="col" class="text-end">Coût</th>
+                        @if (isAuthenticated)
+                        {
+                            <th scope="col"><span class="visually-hidden">Actions</span></th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -72,10 +76,25 @@
                         <tr>
                             <td>@repair.Description</td>
                             <td class="text-end">@repair.Cost.ToString("C")</td>
+                            @if (isAuthenticated)
+                            {
+                                <td class="text-end">
+                                    <form asp-controller="Repairs" asp-action="Delete" asp-route-id="@repair.Id" method="post">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                    </form>
+                                </td>
+                            }
                         </tr>
                     }
                 </tbody>
             </table>
+        }
+
+        @if (isAuthenticated)
+        {
+            <a asp-controller="Repairs" asp-action="Create" asp-route-vehicleId="@Model.Id" class="btn btn-sm btn-outline-secondary">
+                Ajouter une réparation
+            </a>
         }
 
         <h2 class="h5">Disponibilité</h2>
