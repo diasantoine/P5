@@ -28,6 +28,17 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IRepairService, RepairService>();
 
+// Le site n'a qu'un compte, celui du gérant : l'inscription publique est fermée par une
+// politique qu'aucun utilisateur ne peut satisfaire.
+builder.Services.AddAuthorization(options =>
+    options.AddPolicy("NoPublicRegistration", policy => policy.RequireAssertion(_ => false)));
+
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Register", "NoPublicRegistration");
+    options.Conventions.AuthorizeAreaPage("Identity", "/Account/RegisterConfirmation", "NoPublicRegistration");
+});
+
 var app = builder.Build();
 
 // Base de données prête au premier lancement, sans commande à taper :
@@ -38,6 +49,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await db.Database.MigrateAsync();
     await SeedData.SeedAsync(db);
+    await IdentitySeed.SeedAdminAsync(scope.ServiceProvider);
 }
 
 if (app.Environment.IsDevelopment())

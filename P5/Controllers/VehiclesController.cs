@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -6,12 +7,16 @@ using P5.ViewModels;
 
 namespace P5.Controllers;
 
+// Fermé par défaut ; seules Index et Details, les pages publiques de la vitrine, restent accessibles aux anonymes.
+[Authorize]
 public class VehiclesController(IVehicleService vehicles) : Controller
 {
     private readonly IVehicleService _vehicles = vehicles;
 
+    [AllowAnonymous]
     public async Task<IActionResult> Index() => View(await _vehicles.GetInventoryAsync());
 
+    [AllowAnonymous]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
