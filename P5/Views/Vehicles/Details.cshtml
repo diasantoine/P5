@@ -1,19 +1,18 @@
 @model P5.Models.Vehicle
 
 @{
-    var designation = $"{Model.Trim?.CarModel?.Brand?.Name} {Model.Trim?.CarModel?.Name}".Trim();
-    ViewData["Title"] = designation;
+    ViewData["Title"] = Model.Designation;
     var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
 }
 
-<h1>@designation @Model.Trim?.Name</h1>
+<h1>@Model.Designation</h1>
 <p class="text-muted">Millésime @Model.Year@(string.IsNullOrWhiteSpace(Model.Vin) ? "" : $" — VIN {Model.Vin}")</p>
 
 <div class="row">
     <div class="col-md-5">
         @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
         {
-            <img src="@Model.PhotoUrl" alt="Photo du véhicule : @designation" class="img-fluid rounded mb-3" />
+            <img src="@Model.PhotoUrl" alt="Photo du véhicule : @Model.Designation" class="img-fluid rounded mb-3" />
         }
         else
         {
@@ -80,7 +79,7 @@
                             {
                                 <td class="text-end">
                                     <form asp-controller="Repairs" asp-action="Delete" asp-route-id="@repair.Id" method="post">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer<span class="visually-hidden"> la réparation @repair.Description</span></button>
                                     </form>
                                 </td>
                             }

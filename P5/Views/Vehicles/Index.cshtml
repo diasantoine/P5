@@ -27,7 +27,6 @@ else
                 <tr>
                     <th scope="col">Photo</th>
                     <th scope="col">Véhicule</th>
-                    <th scope="col">Finition</th>
                     <th scope="col">@Html.DisplayNameFor(model => model.Year)</th>
                     <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PurchasePrice)</th>
                     <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.RepairsCost)</th>
@@ -39,21 +38,18 @@ else
             <tbody>
                 @foreach (var item in Model)
                 {
-                    var designation = $"{item.Trim?.CarModel?.Brand?.Name} {item.Trim?.CarModel?.Name}".Trim();
-
                     <tr>
                         <td>
                             @if (!string.IsNullOrWhiteSpace(item.PhotoUrl))
                             {
-                                <img src="@item.PhotoUrl" alt="Photo du véhicule : @designation" width="80" class="img-thumbnail" />
+                                <img src="@item.PhotoUrl" alt="Photo du véhicule : @item.Designation" width="80" class="img-thumbnail" />
                             }
                             else
                             {
                                 <span class="text-muted">—</span>
                             }
                         </td>
-                        <td>@designation</td>
-                        <td>@item.Trim?.Name</td>
+                        <td>@item.Designation</td>
                         <td>@item.Year</td>
                         <td class="text-end">@Html.DisplayFor(modelItem => item.PurchasePrice)</td>
                         <td class="text-end">@Html.DisplayFor(modelItem => item.RepairsCost)</td>

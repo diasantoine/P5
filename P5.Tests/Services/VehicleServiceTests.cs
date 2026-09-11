@@ -84,6 +84,18 @@ public class VehicleServiceTests
     }
 
     [Fact]
+    public async Task MarkAsSoldAsync_RefusesADateBeforePurchase()
+    {
+        using var context = CreateContext();
+        var service = new VehicleService(context);
+
+        var result = await service.MarkAsSoldAsync(1, new DateOnly(2022, 4, 3));
+
+        Assert.False(result);
+        Assert.Null(context.Vehicles.Single().SaleDate);
+    }
+
+    [Fact]
     public async Task GetTrimOptionsAsync_LabelsBrandModelAndTrim()
     {
         using var context = CreateContext();

@@ -59,7 +59,7 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
     public async Task<bool> MarkAsSoldAsync(int id, DateOnly saleDate)
     {
         var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == id);
-        if (vehicle is null)
+        if (vehicle is null || saleDate < vehicle.PurchaseDate)
         {
             return false;
         }

@@ -122,6 +122,11 @@ public class VehiclesController(IVehicleService vehicles) : Controller
     {
         var date = saleDate ?? DateOnly.FromDateTime(DateTime.Today);
 
+        if (date > DateOnly.FromDateTime(DateTime.Today))
+        {
+            return BadRequest();
+        }
+
         if (!await _vehicles.MarkAsSoldAsync(id, date))
         {
             return NotFound();

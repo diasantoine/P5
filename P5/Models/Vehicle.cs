@@ -39,6 +39,7 @@ namespace P5.Models
         [Range(0, 1_000_000, ErrorMessage = "Le prix d'achat doit être positif.")]
         [DataType(DataType.Currency)]
         // ASP.NET Core n'a pas de gabarit d'affichage pour DataType.Currency.
+        // ApplyFormatInEditMode reste à false : le champ de saisie doit rester brut.
         [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Prix d'achat")]
         public decimal PurchasePrice { get; set; }
@@ -79,5 +80,10 @@ namespace P5.Models
         [NotMapped]
         [Display(Name = "Disponible")]
         public bool IsAvailable => SaleDate is null;
+
+        // Necessite le chargement de la chaine Trim -> CarModel -> Brand (cf. WithDependencies dans VehicleService).
+        [NotMapped]
+        [Display(Name = "Véhicule")]
+        public string Designation => string.Join(' ', new[] { Trim?.CarModel?.Brand?.Name, Trim?.CarModel?.Name, Trim?.Name }.Where(s => !string.IsNullOrWhiteSpace(s)));
     }
 }
