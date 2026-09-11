@@ -21,11 +21,15 @@ class CarModel {
   -name : String
 }
 
+class Trim {
+  -id : Integer
+  -name : String
+}
+
 class Vehicle {
   -id : Integer
   -vin : String [0..1]
   -year : Integer
-  -trim : String [0..1]
   -purchaseDate : Date
   -purchasePrice : Decimal
   -availabilityDate : Date [0..1]
@@ -71,13 +75,15 @@ note right of IdentityUser
   inventory: one user administers everything.}
 end note
 
-note left of Vehicle
-  {trim stays a plain attribute rather than an
-  entity: the 7 vehicles of the client's inventory
-  have 7 distinct trims (LE, Sport, TCe, XLT, LX,
-  S, SEL) and share none, so a table would
-  deduplicate nothing. Brand is a table because
-  "Ford" appears twice.}
+note left of Trim
+  {(carModel, name) is unique}
+
+  {Brand, CarModel and Trim are the three levels of
+  one catalogue hierarchy. Extracting the first two
+  and keeping the third as free text would be
+  inconsistent. A trim belongs to a model: "LE" at
+  Mazda is unrelated to "LE" at another make,
+  hence uniqueness per model, not globally.}
 end note
 
 note left of Brand
@@ -89,7 +95,8 @@ note right of CarModel
 end note
 
 Brand "1" -- "0..*" CarModel : offers >
-CarModel "1" -- "0..*" Vehicle : stocked as >
+CarModel "1" -- "0..*" Trim : comes as >
+Trim "1" -- "0..*" Vehicle : stocked as >
 Vehicle "1" *-- "0..*" Repair : undergoes >
 
 legend bottom right
@@ -101,6 +108,17 @@ legend bottom right
   | filled diamond | composition: the part cannot exist without the whole |
   Read a multiplicity at the end //opposite// the class you start from.
   Foreign keys are not shown as attributes: the associations carry them.
+  A Vehicle reaches its CarModel and Brand only through its Trim.
+
+  |= English |= Français |
+  | Brand | marque |
+  | CarModel | modèle |
+  | Trim | finition |
+  | Vehicle | véhicule (exemplaire en stock) |
+  | Repair | réparation |
+  | purchasePrice / salePrice | prix d'achat / prix de vente |
+  | repairsCost | coût des réparations |
+  | availabilityDate / saleDate | date de disponibilité / date de vente |
 endlegend
 
 @enduml

@@ -2,7 +2,7 @@
 
 | Fichier | Contenu |
 |---|---|
-| `data-model.puml` | Diagramme de classes du domaine — les quatre entités persistées |
+| `data-model.puml` | Diagramme de classes du domaine — les cinq entités persistées |
 | `architecture.puml` | Diagramme de classes des couches applicatives — contrôleurs, services, accès aux données |
 
 Les `.puml` sont la source ; les `.png` sont des artefacts régénérables,
@@ -25,6 +25,8 @@ versionnés parce que le README racine les affiche.
   une colonne, il se recalcule à chaque lecture.
 - **Les contraintes sont entre accolades**, selon l'usage UML.
 - Chaque diagramme embarque une **table de notation** expliquant ses symboles.
+- Le diagramme du domaine embarque aussi un **lexique anglais/français** :
+  un relecteur qui cherche « finition » doit trouver `Trim` sans effort.
 
 Aucun diagramme de cas d'utilisation n'est produit : les acteurs en bonshommes
 bâton ont été écartés. Les droits d'accès sont exprimés en contraintes sur le

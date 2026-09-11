@@ -4,11 +4,17 @@ title Class diagram — Express Voitures (application layers)
 hide circle
 skinparam shadowing false
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 70
 skinparam class {
   BackgroundColor White
   BorderColor #34495E
   ArrowColor #34495E
 }
+
+' Layout: one layer per row, top to bottom. Every dependency points downward,
+' so no arrow has to cross another one.
 
 package "Presentation" {
 
@@ -29,8 +35,7 @@ package "Presentation" {
     -id : Integer
     -vin : String [0..1]
     -year : Integer
-    -carModelId : Integer
-    -trim : String [0..1]
+    -trimId : Integer
     -purchaseDate : Date
     -purchasePrice : Decimal
     -availabilityDate : Date [0..1]
@@ -52,6 +57,10 @@ package "Presentation" {
 
 package "Services" {
 
+  interface IPhotoStorageService <<interface>> {
+    +save(file : IFormFile) : String
+  }
+
   interface IVehicleService <<interface>> {
     +getInventory() : Vehicle [0..*]
     +getDetail(id : Integer) : Vehicle [0..1]
@@ -59,10 +68,8 @@ package "Services" {
     +add(vehicle : Vehicle) : Integer
     +update(vehicle : Vehicle) : Boolean
     +markAsSold(id : Integer, saleDate : Date) : Boolean
-    +getCarModelOptions() : CarModelOption [0..*]
+    +getTrimOptions() : TrimOption [0..*]
   }
-
-  class VehicleService
 
   interface IRepairService <<interface>> {
     +add(repair : Repair) : Integer
@@ -70,13 +77,9 @@ package "Services" {
     +vehicleExists(vehicleId : Integer) : Boolean
   }
 
-  class RepairService
-
-  interface IPhotoStorageService <<interface>> {
-    +save(file : IFormFile) : String
-  }
-
   class PhotoStorageService
+  class VehicleService
+  class RepairService
 }
 
 package "Data" {
@@ -84,10 +87,41 @@ package "Data" {
   class ApplicationDbContext <<DbContext>> {
     +brands : Brand [0..*]
     +carModels : CarModel [0..*]
+    +trims : Trim [0..*]
     +vehicles : Vehicle [0..*]
     +repairs : Repair [0..*]
   }
+
+  class SeedData <<static>> {
+    +seedAsync(db : ApplicationDbContext) : void
+  }
 }
+
+' ---- Row 1: form view models sit next to their controller ----
+VehicleFormViewModel -[hidden]right- VehiclesController
+VehiclesController -[hidden]right- RepairsController
+RepairsController -[hidden]right- RepairFormViewModel
+
+' ---- Row 2: interfaces, then their implementations right below ----
+IPhotoStorageService -[hidden]right- IVehicleService
+IVehicleService -[hidden]right- IRepairService
+IPhotoStorageService <|.down. PhotoStorageService
+IVehicleService <|.down. VehicleService
+IRepairService <|.down. RepairService
+
+' ---- Row 3: data ----
+SeedData -[hidden]right- ApplicationDbContext
+
+' ---- Dependencies, all pointing downward ----
+VehiclesController .down.> VehicleFormViewModel
+RepairsController .down.> RepairFormViewModel
+VehiclesController .down.> IPhotoStorageService
+VehiclesController .down.> IVehicleService
+RepairsController .down.> IVehicleService
+RepairsController .down.> IRepairService
+VehicleService .down.> ApplicationDbContext
+RepairService .down.> ApplicationDbContext
+SeedData .right.> ApplicationDbContext
 
 note top of VehiclesController
   {[Authorize] on the class;
@@ -95,11 +129,11 @@ note top of VehiclesController
   closed by default}
 end note
 
-note right of VehicleFormViewModel
+note bottom of VehicleFormViewModel
   {saleDate is deliberately absent: a vehicle
   is taken off sale only through markAsSold,
-  never through an edit form.}
-  {The computed attributes of Vehicle are absent
+  never through an edit form.
+  The computed attributes of Vehicle are absent
   too: nothing computed can be posted.}
 end note
 
@@ -108,24 +142,17 @@ note bottom of ApplicationDbContext
   Every query goes through a service.}
 end note
 
-IVehicleService <|.. VehicleService
-IRepairService <|.. RepairService
-IPhotoStorageService <|.. PhotoStorageService
-
-VehiclesController ..> IVehicleService : uses >
-VehiclesController ..> IPhotoStorageService : uses >
-VehiclesController ..> VehicleFormViewModel
-RepairsController ..> IRepairService : uses >
-RepairsController ..> IVehicleService : uses >
-RepairsController ..> RepairFormViewModel
-
-VehicleService ..> ApplicationDbContext : queries >
-RepairService ..> ApplicationDbContext : queries >
+note bottom of SeedData
+  {Runs at startup, after the pending migrations
+  are applied. Inserts the initial inventory only
+  when the database is empty: existing data is
+  never overwritten.}
+end note
 
 legend bottom right
   |= Notation |= Meaning |
   | <<interface>> | contract; the controller depends on it, not on the implementation |
-  | dashed arrow | dependency (injected through the DI container) |
+  | dashed arrow | dependency: the source uses the target (injected through the DI container) |
   | dashed arrow, hollow head | realization: the class implements the interface |
   | 0..* | zero to many |
   All services are registered scoped, matching the DbContext lifetime.
