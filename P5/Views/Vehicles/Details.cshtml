@@ -1,122 +1,110 @@
 @model P5.Models.Vehicle
 
 @{
-    ViewData["Title"] = "Details";
+    var designation = $"{Model.Trim?.CarModel?.Brand?.Name} {Model.Trim?.CarModel?.Name}".Trim();
+    ViewData["Title"] = designation;
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
 }
 
-<h1>Details</h1>
+<h1>@designation @Model.Trim?.Name</h1>
+<p class="text-muted">Millésime @Model.Year@(string.IsNullOrWhiteSpace(Model.Vin) ? "" : $" — VIN {Model.Vin}")</p>
 
-<div>
-    <h4>Vehicle</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Vin)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Vin)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Year)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Year)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            Marque
-        </dt>
-        <dd class = "col-sm-10">
-            @Model.Trim?.CarModel?.Brand?.Name
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            Modèle
-        </dt>
-        <dd class = "col-sm-10">
-            @Model.Trim?.CarModel?.Name
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            Finition
-        </dt>
-        <dd class = "col-sm-10">
-            @Model.Trim?.Name
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchaseDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PurchaseDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchasePrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PurchasePrice)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AvailabilityDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AvailabilityDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SaleDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SaleDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhotoUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhotoUrl)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Repairs)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Repairs)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RepairsCost)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RepairsCost)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SalePrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SalePrice)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsAvailable)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsAvailable)
-        </dd>
-    </dl>
+<div class="row">
+    <div class="col-md-5">
+        @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+        {
+            <img src="@Model.PhotoUrl" alt="Photo du véhicule : @designation" class="img-fluid rounded mb-3" />
+        }
+        else
+        {
+            <p class="text-muted">Aucune photo pour ce véhicule.</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <h2 class="h5">Description</h2>
+            <p>@Model.Description</p>
+        }
+    </div>
+
+    <div class="col-md-7">
+        <h2 class="h5">Prix</h2>
+        <table class="table">
+            <caption>Décomposition du prix de vente.</caption>
+            <tbody>
+                <tr>
+                    <th scope="row">@Html.DisplayNameFor(m => m.PurchasePrice)</th>
+                    <td class="text-end">@Html.DisplayFor(m => m.PurchasePrice)</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Html.DisplayNameFor(m => m.RepairsCost)</th>
+                    <td class="text-end">@Html.DisplayFor(m => m.RepairsCost)</td>
+                </tr>
+                <tr>
+                    <th scope="row">Marge</th>
+                    <td class="text-end">@P5.Models.Vehicle.FixedMargin.ToString("C")</td>
+                </tr>
+                <tr class="table-active fw-bold">
+                    <th scope="row">@Html.DisplayNameFor(m => m.SalePrice)</th>
+                    <td class="text-end">@Html.DisplayFor(m => m.SalePrice)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="h5">Réparations</h2>
+        @if (!Model.Repairs.Any())
+        {
+            <p class="text-muted">Aucune réparation enregistrée.</p>
+        }
+        else
+        {
+            <table class="table table-sm">
+                <caption>Réparations enregistrées pour ce véhicule.</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Réparation</th>
+                        <th scope="col" class="text-end">Coût</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var repair in Model.Repairs)
+                    {
+                        <tr>
+                            <td>@repair.Description</td>
+                            <td class="text-end">@repair.Cost.ToString("C")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <h2 class="h5">Disponibilité</h2>
+        @if (Model.IsAvailable)
+        {
+            <p><span class="badge text-bg-success">Disponible</span></p>
+        }
+        else
+        {
+            <p><span class="badge text-bg-secondary">Vendu le @Model.SaleDate?.ToString("dd/MM/yyyy")</span></p>
+        }
+
+        @if (isAuthenticated)
+        {
+            <div class="d-flex gap-2 mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Modifier l'annonce</a>
+
+                @if (Model.IsAvailable)
+                {
+                    <form asp-action="MarkAsSold" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+                        <label for="saleDate" class="visually-hidden">Date de vente</label>
+                        <input type="date" id="saleDate" name="saleDate"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" />
+                        <button type="submit" class="btn btn-warning text-nowrap">Marquer vendu</button>
+                    </form>
+                }
+            </div>
+        }
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<p class="mt-4"><a asp-action="Index">Retour à l'inventaire</a></p>

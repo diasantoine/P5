@@ -94,6 +94,21 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    // Pas de GET : une action qui modifie l'etat ne doit jamais etre atteignable par un lien.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MarkAsSold(int id, DateOnly? saleDate)
+    {
+        var date = saleDate ?? DateOnly.FromDateTime(DateTime.Today);
+
+        if (!await _vehicles.MarkAsSoldAsync(id, date))
+        {
+            return NotFound();
+        }
+
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
     private async Task PopulateTrimListAsync(VehicleFormViewModel form)
     {
         var options = await _vehicles.GetTrimOptionsAsync();
