@@ -6,7 +6,7 @@ skinparam shadowing false
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 skinparam nodesep 60
-skinparam ranksep 70
+skinparam ranksep 95
 skinparam class {
   BackgroundColor White
   BorderColor #34495E
@@ -122,16 +122,20 @@ package "Configuration" {
   end note
 }
 
-' ---- Row 1: form view models sit next to their controller ----
-VehicleFormViewModel -[hidden]right- VehiclesController
+' ---- Presentation: two columns of two rows, each controller above its own
+' ---- view model, instead of four classes side by side ----
+VehiclesController -[hidden]down- VehicleFormViewModel
+RepairsController -[hidden]down- RepairFormViewModel
 VehiclesController -[hidden]right- RepairsController
-RepairsController -[hidden]right- RepairFormViewModel
 
-' ---- Row 2: interfaces, then their implementations right below ----
-IPhotoStorageService -[hidden]right- IVehicleService
+' ---- Services: IVehicleService/VehicleService and IPhotoStorageService/
+' ---- PhotoStorageService stacked in one column (interface, then its
+' ---- implementation, then the planned interface, then its implementation),
+' ---- IRepairService/RepairService forming a second column beside it ----
 IVehicleService -[hidden]right- IRepairService
-IPhotoStorageService <|.down. PhotoStorageService
 IVehicleService <|.down. VehicleService
+VehicleService -[hidden]down- IPhotoStorageService
+IPhotoStorageService <|.down. PhotoStorageService
 IRepairService <|.down. RepairService
 
 ' ---- Row 3: data ----
@@ -140,6 +144,11 @@ ApplicationDbContext -[hidden]right- IdentitySeed
 
 ' ---- Configuration sits beside Data, read sideways by VehicleService ----
 IdentitySeed -[hidden]right- PricingOptions
+
+' ---- Chain the three layers vertically so the packages stack instead of
+' ---- spreading out sideways ----
+VehiclesController -[hidden]down- IVehicleService
+IVehicleService -[hidden]down- ApplicationDbContext
 
 ' ---- Dependencies, all pointing downward ----
 VehiclesController .down.> VehicleFormViewModel
