@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using P5.Models;
 using P5.Services;
+using P5.ViewModels;
 
 namespace P5.Controllers;
 
@@ -29,73 +29,74 @@ public class VehiclesController(IVehicleService vehicles) : Controller
 
     public async Task<IActionResult> Create()
     {
-        await PopulateTrimListAsync();
-        return View();
+        var form = new VehicleFormViewModel { Year = DateTime.Today.Year, PurchaseDate = DateOnly.FromDateTime(DateTime.Today) };
+        await PopulateTrimListAsync(form);
+        return View(form);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Vin,Year,TrimId,PurchaseDate,PurchasePrice,AvailabilityDate,SaleDate,Description,PhotoUrl,Repairs,RepairsCost,SalePrice,IsAvailable")] Vehicle vehicle)
+    public async Task<IActionResult> Create(VehicleFormViewModel form)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            await _vehicles.AddAsync(vehicle);
-            return RedirectToAction(nameof(Index));
+            await PopulateTrimListAsync(form);
+            return View(form);
         }
 
-        // Le formulaire est reaffiche : la liste deroulante doit etre reconstruite,
-        // elle ne survit pas au POST.
-        await PopulateTrimListAsync(vehicle.TrimId);
-        return View(vehicle);
+        var id = await _vehicles.AddAsync(form.ToEntity());
+        return RedirectToAction(nameof(Details), new { id });
     }
 
     public async Task<IActionResult> Edit(int? id)
     {
-        if (id == null)
+        if (id is null)
         {
             return NotFound();
         }
 
-        var vehicle = await _vehicles.GetForEditAsync(id.Value);
-        if (vehicle == null)
+        var vehicle = await _vehicles.GetDetailAsync(id.Value);
+        if (vehicle is null)
         {
             return NotFound();
         }
 
-        await PopulateTrimListAsync(vehicle.TrimId);
-        return View(vehicle);
+        var form = VehicleFormViewModel.FromEntity(vehicle);
+        await PopulateTrimListAsync(form);
+        return View(form);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Vin,Year,TrimId,PurchaseDate,PurchasePrice,AvailabilityDate,SaleDate,Description,PhotoUrl,Repairs,RepairsCost,SalePrice,IsAvailable")] Vehicle vehicle)
+    public async Task<IActionResult> Edit(int id, VehicleFormViewModel form)
     {
-        if (id != vehicle.Id)
+        if (id != form.Id)
         {
             return NotFound();
         }
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            if (!await _vehicles.UpdateAsync(vehicle))
-            {
-                return NotFound();
-            }
-
-            return RedirectToAction(nameof(Index));
+            await PopulateTrimListAsync(form);
+            return View(form);
         }
 
-        await PopulateTrimListAsync(vehicle.TrimId);
-        return View(vehicle);
+        // On recharge l'entite suivie : les champs absents du formulaire (SaleDate,
+        // les reparations) conservent ainsi leur valeur en base.
+        var vehicle = await _vehicles.GetForEditAsync(id);
+        if (vehicle is null)
+        {
+            return NotFound();
+        }
+
+        form.ApplyTo(vehicle);
+        await _vehicles.UpdateAsync(vehicle);
+        return RedirectToAction(nameof(Details), new { id });
     }
 
-    /// <summary>
-    /// Alimente la liste deroulante des finitions, libellees "Marque Modele Finition" :
-    /// une finition seule ("LE") serait ambigue, et un identifiant numerique inutilisable.
-    /// </summary>
-    private async Task PopulateTrimListAsync(int? selectedTrimId = null)
+    private async Task PopulateTrimListAsync(VehicleFormViewModel form)
     {
-        var trims = await _vehicles.GetTrimOptionsAsync();
-        ViewBag.TrimId = new SelectList(trims, nameof(TrimOption.Id), nameof(TrimOption.Label), selectedTrimId);
+        var options = await _vehicles.GetTrimOptionsAsync();
+        form.Trims = options.Select(o => new SelectListItem(o.Label, o.Id.ToString()));
     }
 }

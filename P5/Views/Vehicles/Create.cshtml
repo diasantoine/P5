@@ -1,101 +1,78 @@
-@model P5.Models.Vehicle
+@model P5.ViewModels.VehicleFormViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Ajouter un véhicule";
 }
 
-<h1>Create</h1>
-
-<h4>Vehicle</h4>
+<h1>Ajouter un véhicule</h1>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="Vin" class="control-label"></label>
-                <input asp-for="Vin" class="form-control" />
-                <span asp-validation-for="Vin" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Year" class="control-label"></label>
-                <input asp-for="Year" class="form-control" />
-                <span asp-validation-for="Year" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="TrimId" class="control-label"></label>
-                <select asp-for="TrimId" asp-items="ViewBag.TrimId" class="form-select">
+            <div class="mb-3">
+                <label asp-for="TrimId" class="form-label"></label>
+                <select asp-for="TrimId" asp-items="Model.Trims" class="form-select">
                     <option value="">-- Choisir marque, modèle et finition --</option>
                 </select>
                 <span asp-validation-for="TrimId" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="PurchaseDate" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Year" class="form-label"></label>
+                <input asp-for="Year" class="form-control" />
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Vin" class="form-label"></label>
+                <input asp-for="Vin" class="form-control" />
+                <span asp-validation-for="Vin" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PurchaseDate" class="form-label"></label>
                 <input asp-for="PurchaseDate" class="form-control" />
                 <span asp-validation-for="PurchaseDate" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="PurchasePrice" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="PurchasePrice" class="form-label"></label>
                 <input asp-for="PurchasePrice" class="form-control" />
                 <span asp-validation-for="PurchasePrice" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="AvailabilityDate" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="AvailabilityDate" class="form-label"></label>
                 <input asp-for="AvailabilityDate" class="form-control" />
                 <span asp-validation-for="AvailabilityDate" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="SaleDate" class="control-label"></label>
-                <input asp-for="SaleDate" class="form-control" />
-                <span asp-validation-for="SaleDate" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="PhotoUrl" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="PhotoUrl" class="form-label"></label>
                 <input asp-for="PhotoUrl" class="form-control" />
                 <span asp-validation-for="PhotoUrl" class="text-danger"></span>
             </div>
 
-            @* Les réparations sont une collection : elles se saisissent véhicule par
-               véhicule, pas dans un champ texte. À traiter dans une étape dédiée. *@
-
-            <div class="form-group">
-                <label asp-for="RepairsCost" class="control-label"></label>
-                <input asp-for="RepairsCost" class="form-control" />
-                <span asp-validation-for="RepairsCost" class="text-danger"></span>
+            <div class="alert alert-info" role="note">
+                Le prix de vente est calculé automatiquement : prix d'achat + coût des réparations + 500 €.
+                Les réparations se saisissent depuis la fiche du véhicule, après enregistrement.
             </div>
 
-            <div class="form-group">
-                <label asp-for="SalePrice" class="control-label"></label>
-                <input asp-for="SalePrice" class="form-control" />
-                <span asp-validation-for="SalePrice" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="IsAvailable" class="control-label"></label>
-                <input asp-for="IsAvailable" class="form-check-input" />
-                <span asp-validation-for="IsAvailable" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a asp-action="Index" class="btn btn-link">Annuler</a>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
