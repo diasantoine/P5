@@ -1,0 +1,41 @@
+@page
+@model P5.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Se connecter";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-5">
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label"></label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.Password" class="form-label"></label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="Input.RememberMe" class="form-check-input" />
+                <label asp-for="Input.RememberMe" class="form-check-label"></label>
+            </div>
+
+            @* Les deux boutons de la maquette : « Se connecter » envoie le formulaire, « S'inscrire » mène à une autre page, c'est donc un lien. *@
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+                <span>ou</span>
+                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-primary">S'inscrire</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

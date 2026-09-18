@@ -1,0 +1,9 @@
+@page
+@model P5.Areas.Identity.Pages.Account.AccessDeniedModel
+@{
+    ViewData["Title"] = "Accès refusé";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Cette page est réservée au gérant du site. Votre compte permet de consulter l'inventaire, pas de le modifier.</p>
+<p><a asp-area="" asp-controller="Vehicles" asp-action="Index">Retour à l'inventaire</a></p>
