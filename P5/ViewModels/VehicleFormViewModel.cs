@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using P5.Models;
+using P5.Services;
 using P5.Validation;
 
 namespace P5.ViewModels;
@@ -24,9 +24,27 @@ public class VehicleFormViewModel
     [Display(Name = "Année")]
     public int Year { get; set; }
 
-    [Required(ErrorMessage = "Le modèle et la finition sont obligatoires.")]
-    [Range(1, int.MaxValue, ErrorMessage = "Le modèle et la finition sont obligatoires.")]
-    [Display(Name = "Modèle et finition")]
+    [Required(ErrorMessage = "La marque est obligatoire.")]
+    [StringLength(50, ErrorMessage = "50 caractères maximum.")]
+    [Display(Name = "Marque")]
+    public string BrandName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Le modèle est obligatoire.")]
+    [StringLength(50, ErrorMessage = "50 caractères maximum.")]
+    [Display(Name = "Modèle")]
+    public string ModelName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "La finition est obligatoire.")]
+    [StringLength(30, ErrorMessage = "30 caractères maximum.")]
+    [Display(Name = "Finition")]
+    public string TrimName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Jamais postee : le controleur la deduit des trois noms saisis, en retrouvant ou en creant
+    /// l'entree de catalogue. Un formulaire forge ne peut donc pas viser une specification arbitraire.
+    /// </summary>
+    [BindNever]
+    [ValidateNever]
     public int SpecificationId { get; set; }
 
     [DataType(DataType.Date)]
@@ -50,10 +68,10 @@ public class VehicleFormViewModel
     [Display(Name = "Photo")]
     public string? PhotoUrl { get; set; }
 
-    /// <summary>Alimentee par le controleur, jamais postee.</summary>
+    /// <summary>Suggestions de saisie, alimentees par le controleur, jamais postees.</summary>
     [BindNever]
     [ValidateNever]
-    public IEnumerable<SelectListItem> Specifications { get; set; } = [];
+    public CatalogueNames? Catalogue { get; set; }
 
     /// <summary>Marge de la configuration, pour l'apercu du prix de vente. Affichee, jamais postee.</summary>
     [BindNever]
@@ -71,6 +89,9 @@ public class VehicleFormViewModel
         Vin = v.Vin,
         Year = v.Year,
         SpecificationId = v.SpecificationId,
+        BrandName = v.Specification?.Brand?.Name ?? string.Empty,
+        ModelName = v.Specification?.CarModel?.Name ?? string.Empty,
+        TrimName = v.Specification?.Trim?.Name ?? string.Empty,
         PurchaseDate = v.PurchaseDate,
         PurchasePrice = v.PurchasePrice,
         AvailabilityDate = v.AvailabilityDate,

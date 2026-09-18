@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using P5.Configuration;
@@ -57,6 +56,7 @@ public class VehiclesController(IVehicleService vehicles, IOptions<PricingOption
 
         try
         {
+            form.SpecificationId = await _vehicles.GetOrCreateSpecificationIdAsync(form.BrandName, form.ModelName, form.TrimName);
             var id = await _vehicles.AddAsync(form.ToEntity());
             return RedirectToAction(nameof(Details), new { id });
         }
@@ -109,10 +109,10 @@ public class VehiclesController(IVehicleService vehicles, IOptions<PricingOption
             return NotFound();
         }
 
-        form.ApplyTo(vehicle);
-
         try
         {
+            form.SpecificationId = await _vehicles.GetOrCreateSpecificationIdAsync(form.BrandName, form.ModelName, form.TrimName);
+            form.ApplyTo(vehicle);
             await _vehicles.UpdateAsync(vehicle);
             return RedirectToAction(nameof(Details), new { id });
         }
@@ -171,8 +171,7 @@ public class VehiclesController(IVehicleService vehicles, IOptions<PricingOption
     // Tout ce que le formulaire affiche sans jamais le poster : a refaire a chaque renvoi de la vue.
     private async Task PopulateFormAsync(VehicleFormViewModel form)
     {
-        var options = await _vehicles.GetSpecificationOptionsAsync();
-        form.Specifications = options.Select(o => new SelectListItem(o.Label, o.Id.ToString()));
+        form.Catalogue = await _vehicles.GetCatalogueNamesAsync();
 
         // Apercu du prix de vente : la marge vient de la configuration, les reparations de la base.
         form.Margin = _pricing.FixedMargin;

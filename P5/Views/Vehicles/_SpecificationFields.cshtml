@@ -1,0 +1,43 @@
+@model P5.ViewModels.VehicleFormViewModel
+
+@* Trois champs étiquetés, comme sur la maquette. Les listes de suggestions (datalist) proposent ce que
+   le catalogue connaît déjà, pour éviter « Ford » et « ford », sans empêcher de saisir une nouveauté :
+   à l'enregistrement, le service retrouve l'entrée de catalogue ou crée ce qui manque. *@
+<div class="mb-3">
+    <label asp-for="BrandName" class="form-label"></label>
+    <input asp-for="BrandName" class="form-control" list="brand-suggestions" autocomplete="off" aria-describedby="brand-help" />
+    <div id="brand-help" class="form-text">Le constructeur, par exemple « Ford ». Pas le modèle.</div>
+    <span asp-validation-for="BrandName" class="text-danger"></span>
+    <datalist id="brand-suggestions">
+        @foreach (var name in Model.Catalogue?.Brands ?? [])
+        {
+            <option value="@name"></option>
+        }
+    </datalist>
+</div>
+
+<div class="mb-3">
+    <label asp-for="ModelName" class="form-label"></label>
+    <input asp-for="ModelName" class="form-control" list="model-suggestions" autocomplete="off" aria-describedby="model-help" />
+    <div id="model-help" class="form-text">Le modèle de la marque, par exemple « Edge ».</div>
+    <span asp-validation-for="ModelName" class="text-danger"></span>
+    <datalist id="model-suggestions">
+        @foreach (var name in Model.Catalogue?.Models ?? [])
+        {
+            <option value="@name"></option>
+        }
+    </datalist>
+</div>
+
+<div class="mb-3">
+    <label asp-for="TrimName" class="form-label"></label>
+    <input asp-for="TrimName" class="form-control" list="trim-suggestions" autocomplete="off" aria-describedby="trim-help" />
+    <div id="trim-help" class="form-text">Le niveau de finition, par exemple « SEL ».</div>
+    <span asp-validation-for="TrimName" class="text-danger"></span>
+    <datalist id="trim-suggestions">
+        @foreach (var name in Model.Catalogue?.Trims ?? [])
+        {
+            <option value="@name"></option>
+        }
+    </datalist>
+</div>

@@ -12,13 +12,8 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="mb-3">
-                <label asp-for="SpecificationId" class="form-label"></label>
-                <select asp-for="SpecificationId" asp-items="Model.Specifications" class="form-select">
-                    <option value="">-- Choisir marque, modèle et finition --</option>
-                </select>
-                <span asp-validation-for="SpecificationId" class="text-danger"></span>
-            </div>
+            <partial name="_SpecificationFields" model="Model" />
+
 
             <div class="mb-3">
                 <label asp-for="Year" class="form-label"></label>
