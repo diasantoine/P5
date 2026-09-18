@@ -20,6 +20,8 @@ public class VehicleFormViewModel
     [Display(Name = "Code VIN")]
     public string? Vin { get; set; }
 
+    // [Required] explicite sur les types valeur : sans lui, MVC en ajoute un implicite dont le message est en anglais.
+    [Required(ErrorMessage = "L'année est obligatoire.")]
     [VehicleYear]
     [Display(Name = "Année")]
     public int Year { get; set; }
@@ -47,10 +49,12 @@ public class VehicleFormViewModel
     [ValidateNever]
     public int SpecificationId { get; set; }
 
+    [Required(ErrorMessage = "La date d'achat est obligatoire.")]
     [DataType(DataType.Date)]
     [Display(Name = "Date d'achat")]
     public DateOnly PurchaseDate { get; set; }
 
+    [Required(ErrorMessage = "Le prix d'achat est obligatoire.")]
     [Range(0, 1_000_000, ErrorMessage = "Le prix d'achat doit être positif.")]
     [Display(Name = "Prix d'achat")]
     public decimal PurchasePrice { get; set; }

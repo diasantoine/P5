@@ -20,6 +20,7 @@ public class RepairFormViewModel
     [Display(Name = "Réparation")]
     public string Description { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Le coût est obligatoire.")]
     [Range(0, 100_000, ErrorMessage = "Le coût doit être positif.")]
     [Display(Name = "Coût")]
     public decimal Cost { get; set; }

@@ -29,7 +29,17 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = [cultureFr];
 });
 
-builder.Services.AddControllersWithViews();
+// MVC rédige en anglais les messages qu'il produit lui-même (champ non numérique, valeur illisible,
+// champ obligatoire d'un type valeur). Ils sont vus par l'utilisateur, donc traduits.
+builder.Services.AddControllersWithViews(options =>
+{
+    var messages = options.ModelBindingMessageProvider;
+    messages.SetValueMustBeANumberAccessor(field => $"Le champ « {field} » doit être un nombre.");
+    messages.SetValueMustNotBeNullAccessor(field => $"Le champ « {field} » est obligatoire.");
+    messages.SetAttemptedValueIsInvalidAccessor((value, field) => $"La valeur « {value} » n'est pas valide pour « {field} ».");
+    messages.SetValueIsInvalidAccessor(value => $"La valeur « {value} » n'est pas valide.");
+    messages.SetMissingBindRequiredValueAccessor(field => $"Le champ « {field} » est obligatoire.");
+});
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IRepairService, RepairService>();
 builder.Services.AddScoped<IPhotoStorageService, PhotoStorageService>();

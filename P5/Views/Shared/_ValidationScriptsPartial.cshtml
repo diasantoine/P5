@@ -1,2 +1,4 @@
-﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+@* Après jQuery Validate : remplace ses règles « number » et « range » par des versions qui lisent la virgule décimale française. *@
+<script src="~/js/validation-fr.js" asp-append-version="true"></script>
