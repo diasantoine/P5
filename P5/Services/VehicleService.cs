@@ -12,10 +12,8 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
     private readonly decimal _margin = pricing.Value.FixedMargin;
 
     /// <summary>
-    /// Les Include sont indispensables : sans Repairs, RepairsCost vaut 0 et SalePrice
-    /// affiche PurchasePrice + 500 euros ; sans les trois ThenInclude, Designation ne
-    /// peut pas lire la marque, le modele et la finition sur la specification.
-    /// Les centraliser ici garantit qu'aucun appelant ne peut les oublier.
+    /// Charge les réparations et, via la spécification, la marque, le modèle et la
+    /// finition, nécessaires au calcul du prix de vente et à la désignation du véhicule.
     /// </summary>
     private IQueryable<Vehicle> WithDependencies() =>
         _context.Vehicles
@@ -50,8 +48,7 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
     }
 
     /// <summary>
-    /// Applique la marge lue dans la configuration. Tout véhicule destiné à l'affichage passe
-    /// par ici : c'est ce qui garantit qu'aucun n'affiche la marge par défaut de l'entité.
+    /// Applique la marge lue dans la configuration à un véhicule destiné à l'affichage.
     /// </summary>
     private Vehicle ApplyMargin(Vehicle vehicle)
     {
@@ -84,7 +81,7 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
     public async Task<bool> MarkAsSoldAsync(int id, DateOnly saleDate)
     {
         var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == id);
-        // Une vente déjà enregistrée ne s'écrase pas : il faudrait d'abord remettre le véhicule en vente.
+        // Une vente déjà enregistrée ne s'écrase pas.
         if (vehicle is null || vehicle.SaleDate is not null || saleDate < vehicle.PurchaseDate)
         {
             return false;
@@ -109,10 +106,9 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
     }
 
     /// <summary>
-    /// Chaque niveau n'est cherche que si son parent existe deja : un modele ne peut pas exister
-    /// sous une marque qu'on vient de creer. Les entites nouvelles sont reliees par leurs navigations,
-    /// EF en deduit les cles etrangeres (y compris les composites) et tout part en un seul
-    /// SaveChanges, donc en une seule transaction : le catalogue n'est jamais a moitie ecrit.
+    /// Chaque niveau n'est recherché que si son parent existe déjà : un modèle ne peut pas
+    /// exister sous une marque tout juste créée. Les entités nouvelles sont reliées par leurs
+    /// navigations et enregistrées en une seule transaction.
     /// </summary>
     public async Task<int> GetOrCreateSpecificationIdAsync(string brandName, string modelName, string trimName)
     {

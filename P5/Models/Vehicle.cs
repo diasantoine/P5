@@ -5,14 +5,13 @@ using P5.Validation;
 namespace P5.Models
 {
     /// <summary>
-    /// Un véhicule PHYSIQUE du stock : l'exemplaire précis acheté par Jacques,
-    /// avec son propre prix d'achat, ses propres réparations et sa propre vente.
-    /// À ne pas confondre avec <see cref="CarModel"/> ou <see cref="Trim"/>, qui sont
-    /// des catégories du catalogue.
+    /// Un véhicule physique du stock, avec son propre prix d'achat, ses propres
+    /// réparations et sa propre vente. À ne pas confondre avec <see cref="CarModel"/>
+    /// ou <see cref="Trim"/>, qui sont des catégories du catalogue.
     /// </summary>
     public class Vehicle
     {
-        /// <summary>Marge retenue par le client, appliquée tant que la configuration n'en impose pas d'autre.</summary>
+        /// <summary>Marge par défaut, appliquée tant que la configuration n'en impose pas d'autre.</summary>
         public const decimal DefaultMargin = 500m;
 
         public int Id { get; set; }
@@ -37,8 +36,7 @@ namespace P5.Models
 
         [Range(0, 1_000_000, ErrorMessage = "Le prix d'achat doit être positif.")]
         [DataType(DataType.Currency)]
-        // ASP.NET Core n'a pas de gabarit d'affichage pour DataType.Currency.
-        // ApplyFormatInEditMode reste à false : le champ de saisie doit rester brut.
+        // Affiché au format monétaire ; le champ de saisie garde la valeur brute.
         [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Prix d'achat")]
         public decimal PurchasePrice { get; set; }
@@ -63,7 +61,7 @@ namespace P5.Models
 
         public ICollection<Repair> Repairs { get; set; } = [];
 
-        // Calculées à la lecture depuis Repairs : un .Include(v => v.Repairs) est indispensable, sinon RepairsCost vaut 0.
+        // Calculées à la lecture depuis Repairs, chargées via .Include(v => v.Repairs).
 
         [NotMapped]
         [DisplayFormat(DataFormatString = "{0:C}")]
@@ -71,13 +69,12 @@ namespace P5.Models
         public decimal RepairsCost => Repairs.Sum(r => r.Cost);
 
         /// <summary>
-        /// Marge appliquée à cet exemplaire. Renseignée par le service depuis la configuration ;
-        /// la valeur par défaut est celle du client, donc un véhicule lu hors service reste juste.
+        /// Marge appliquée à cet exemplaire, renseignée par le service depuis la configuration.
         /// </summary>
         [NotMapped]
         public decimal Margin { get; set; } = DefaultMargin;
 
-        /// <summary>Prix d'achat + réparations + marge (règle métier de Jacques).</summary>
+        /// <summary>Prix d'achat + réparations + marge.</summary>
         [NotMapped]
         [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Prix de vente")]

@@ -5,7 +5,7 @@ public class PhotoStorageService(IWebHostEnvironment environment) : IPhotoStorag
     public const long MaxSizeInBytes = 5 * 1024 * 1024;
     private const string UrlPrefix = "/uploads/vehicles/";
 
-    // L'extension seule ne prouve rien : on verifie aussi les premiers octets du fichier.
+    // Extensions acceptées, avec les premiers octets attendus pour chacune.
     private static readonly Dictionary<string, byte[][]> Signatures = new(StringComparer.OrdinalIgnoreCase)
     {
         [".jpg"] = [[0xFF, 0xD8, 0xFF]],
@@ -45,8 +45,7 @@ public class PhotoStorageService(IWebHostEnvironment environment) : IPhotoStorag
     {
         Directory.CreateDirectory(_folder);
 
-        // Le nom envoye par le navigateur n'est jamais reutilise : il pourrait contenir un chemin
-        // (« ..\..\web.config ») ou ecraser la photo d'une autre annonce.
+        // Le fichier est enregistré sous un nom aléatoire, pas sous celui envoyé par le navigateur.
         var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(file.FileName).ToLowerInvariant()}";
 
         await using var target = File.Create(Path.Combine(_folder, fileName));
@@ -57,13 +56,13 @@ public class PhotoStorageService(IWebHostEnvironment environment) : IPhotoStorag
 
     public void Delete(string? photoUrl)
     {
-        // Les photos du jeu de depart ou une adresse externe ne sont pas a nous : on n'y touche pas.
+        // Ne supprime que les adresses produites par ce service.
         if (string.IsNullOrEmpty(photoUrl) || !photoUrl.StartsWith(UrlPrefix, StringComparison.Ordinal))
         {
             return;
         }
 
-        // GetFileName ecarte tout « ../ » : on ne supprime que dans le dossier des photos.
+        // GetFileName écarte tout « ../ » : on ne supprime que dans le dossier des photos.
         var path = Path.Combine(_folder, Path.GetFileName(photoUrl));
         if (File.Exists(path))
         {

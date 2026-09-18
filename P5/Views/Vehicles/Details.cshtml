@@ -29,19 +29,16 @@
     </div>
 
     <div class="col-md-7">
-        @* Bloc d'actions de la maquette (écran 05), au-dessus du prix. Réservé au gérant : un inscrit
-           sans rôle voit la même fiche qu'un visiteur anonyme (écran 07). *@
+        @* Actions réservées au gérant. *@
         @if (isAdmin)
         {
             <p class="mb-1">Vous avez publié cette annonce, vous pouvez la :</p>
             <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
-                @* « modifier » et « supprimer » NAVIGUENT vers une autre page : ce sont des liens.
-                   La suppression réelle est un POST, sur la page de confirmation. *@
+                @* Liens vers la page de modification et vers la page de confirmation de suppression. *@
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="link-secondary">modifier<span class="visually-hidden"> l'annonce</span></a>
                 <a asp-action="Delete" asp-route-id="@Model.Id" class="link-danger">supprimer<span class="visually-hidden"> l'annonce</span></a>
 
-                @* « Marquer comme vendu » AGIT : c'est un bouton dans un formulaire POST. Absent de la
-                   maquette, ajouté parce qu'une voiture vendue doit rester dans l'historique au lieu d'être effacée. *@
+                @* « Marquer comme vendu » agit : c'est un bouton dans un formulaire POST. *@
                 @if (Model.IsAvailable)
                 {
                     <form asp-action="MarkAsSold" asp-route-id="@Model.Id" method="post" class="d-flex flex-wrap gap-2 align-items-center">
@@ -83,7 +80,7 @@
             </tbody>
         </table>
 
-        @* Les quatre caractéristiques empilées de la maquette. *@
+        @* Les quatre caractéristiques du véhicule, affichées empilées. *@
         <h2 class="h5">Caractéristiques</h2>
         <dl class="row">
             <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Year)</dt>
@@ -109,8 +106,7 @@
             <p><span class="badge text-bg-secondary">Vendu le @Model.SaleDate?.ToString("dd/MM/yyyy")</span></p>
         }
 
-        @* Le trait pointillé de l'écran 07 : les réparations vivent sous la colonne de droite.
-           Information interne au garage, comme le prix de revient : réservée au gérant. *@
+        @* Réparations : information interne au garage, comme le prix de revient, réservée au gérant. *@
         @if (isAdmin)
         {
             <hr class="dashed-separator" />

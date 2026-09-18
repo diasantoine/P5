@@ -4,8 +4,6 @@ namespace P5.Models
 {
     /// <summary>
     /// Une réparation unitaire effectuée sur un véhicule.
-    /// Entité séparée car la feuille de calcul entassait plusieurs réparations
-    /// dans une seule cellule ("Pneus, freins, climatisation") : non atomique.
     /// </summary>
     public class Repair
     {

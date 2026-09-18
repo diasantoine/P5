@@ -7,8 +7,8 @@ using P5.ViewModels;
 namespace P5.Controllers;
 
 /// <summary>
-/// Aucune action publique : les reparations relevent entierement du back-office, reserve au gerant.
-/// Toutes les redirections ramenent sur la fiche du vehicule concerne.
+/// Aucune action publique : les réparations relèvent entièrement du back-office, réservé au gérant.
+/// Toutes les redirections ramènent sur la fiche du véhicule concerné.
 /// </summary>
 [Authorize(Roles = AppRoles.Admin)]
 public class RepairsController(IRepairService repairs, IVehicleService vehicles) : Controller
@@ -42,8 +42,8 @@ public class RepairsController(IRepairService repairs, IVehicleService vehicles)
 
         if (!ModelState.IsValid)
         {
-            // VehicleDesignation n'est jamais reposte (cf. RepairFormViewModel) : il faut
-            // la reconstituer ici pour que le formulaire renvoye ne l'affiche pas vide.
+            // VehicleDesignation n'est jamais reposté (cf. RepairFormViewModel) : elle est
+            // reconstituée ici pour que le formulaire renvoyé ne l'affiche pas vide.
             var vehicle = await _vehicles.GetDetailAsync(form.VehicleId);
             form.VehicleDesignation = vehicle?.Designation ?? string.Empty;
             return View(form);

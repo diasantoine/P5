@@ -5,8 +5,7 @@ using P5.Security;
 
 namespace P5.Tests.Controllers;
 
-// L'inscription est ouverte : [Authorize] seul laisserait n'importe quel inscrit modifier l'inventaire.
-// Ces tests verrouillent l'exigence du client, « je dois être le seul à pouvoir apporter des modifications ».
+// Vérifie que les actions de modification exigent le rôle Admin, et que seules Index et Details restent publiques.
 public class AuthorizationTests
 {
     [Theory]

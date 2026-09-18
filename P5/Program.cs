@@ -14,13 +14,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Aucun IEmailSender n'est configuré sur ce prototype : exiger un compte confirmé empêcherait tout inscrit de se connecter.
+// Un compte n'a pas besoin d'être confirmé par email pour se connecter.
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddErrorDescriber<FrenchIdentityErrorDescriber>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Culture unique et explicite : sans cela, le binding et le formatage des decimaux dependent de la culture du systeme hote.
+// Culture fixée explicitement : le binding et le formatage des décimaux sont ainsi indépendants de la culture du système hôte.
 var cultureFr = new CultureInfo("fr-FR");
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -74,7 +74,7 @@ app.UseHttpsRedirection();
 
 app.UseRequestLocalization();
 
-// MapStaticAssets ne sert que les fichiers presents au build ; les photos televersees a l'execution ont besoin de UseStaticFiles.
+// MapStaticAssets ne sert que les fichiers présents au build ; les photos téléversées à l'exécution ont besoin de UseStaticFiles.
 app.UseStaticFiles();
 
 app.UseRouting();

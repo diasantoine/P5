@@ -8,9 +8,8 @@ using P5.Validation;
 namespace P5.ViewModels;
 
 /// <summary>
-/// Surface de saisie des formulaires Create et Edit. Volontairement plus pauvre que
-/// l'entite : SaleDate, les proprietes calculees et les navigations n'y figurent pas,
-/// donc aucun champ poste ne peut les atteindre (over-posting).
+/// Surface de saisie des formulaires Create et Edit. SaleDate, les propriétés
+/// calculées et les navigations n'y figurent pas.
 /// </summary>
 public class VehicleFormViewModel
 {
@@ -20,7 +19,7 @@ public class VehicleFormViewModel
     [Display(Name = "Code VIN")]
     public string? Vin { get; set; }
 
-    // [Required] explicite sur les types valeur : sans lui, MVC en ajoute un implicite dont le message est en anglais.
+    // [Required] explicite, pour un message d'erreur en français sur ce type valeur.
     [Required(ErrorMessage = "L'année est obligatoire.")]
     [VehicleYear]
     [Display(Name = "Année")]
@@ -42,8 +41,8 @@ public class VehicleFormViewModel
     public string TrimName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Jamais postee : le controleur la deduit des trois noms saisis, en retrouvant ou en creant
-    /// l'entree de catalogue. Un formulaire forge ne peut donc pas viser une specification arbitraire.
+    /// Jamais postée : le contrôleur la déduit des trois noms saisis, en retrouvant
+    /// ou en créant l'entrée de catalogue.
     /// </summary>
     [BindNever]
     [ValidateNever]
@@ -68,29 +67,29 @@ public class VehicleFormViewModel
     [Display(Name = "Description de l'annonce")]
     public string? Description { get; set; }
 
-    /// <summary>Fichier televerse. Facultatif : sans lui, l'annonce garde sa photo actuelle.</summary>
+    /// <summary>Fichier téléversé, facultatif : la photo actuelle est conservée si aucun fichier n'est envoyé.</summary>
     [Display(Name = "Photo")]
     public IFormFile? Photo { get; set; }
 
     /// <summary>
-    /// Adresse de la photo actuelle, pour l'afficher dans le formulaire. Jamais postee : c'est le
-    /// service de stockage qui la fabrique, sinon un formulaire forge pourrait pointer n'importe ou.
+    /// Adresse de la photo actuelle, pour l'affichage dans le formulaire.
+    /// Jamais postée : c'est le service de stockage qui la fabrique.
     /// </summary>
     [BindNever]
     [ValidateNever]
     public string? PhotoUrl { get; set; }
 
-    /// <summary>Suggestions de saisie, alimentees par le controleur, jamais postees.</summary>
+    /// <summary>Suggestions de saisie, alimentées par le contrôleur, jamais postées.</summary>
     [BindNever]
     [ValidateNever]
     public CatalogueNames? Catalogue { get; set; }
 
-    /// <summary>Marge de la configuration, pour l'apercu du prix de vente. Affichee, jamais postee.</summary>
+    /// <summary>Marge de la configuration, pour l'aperçu du prix de vente. Affichée, jamais postée.</summary>
     [BindNever]
     [ValidateNever]
     public decimal Margin { get; set; }
 
-    /// <summary>Cout des reparations deja saisies, pour l'apercu du prix de vente. Affiche, jamais poste.</summary>
+    /// <summary>Coût des réparations déjà saisies, pour l'aperçu du prix de vente. Affiché, jamais posté.</summary>
     [BindNever]
     [ValidateNever]
     public decimal RepairsCost { get; set; }
@@ -111,7 +110,7 @@ public class VehicleFormViewModel
         PhotoUrl = v.PhotoUrl
     };
 
-    /// <summary>Reporte les champs saisis sur l'entite, sans jamais toucher SaleDate ni PhotoUrl (geree par le controleur).</summary>
+    /// <summary>Reporte les champs saisis sur l'entité, sans jamais toucher SaleDate ni PhotoUrl (gérée par le contrôleur).</summary>
     public void ApplyTo(Vehicle v)
     {
         v.Vin = Vin;

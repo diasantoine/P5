@@ -4,7 +4,7 @@ using P5.Models;
 namespace P5.Data
 {
     /// <summary>
-    /// Données de départ reprises de l'inventaire transmis par le client (semaine du 7 au 13 avril 2022).
+    /// Données de départ de l'inventaire (semaine du 7 au 13 avril 2022).
     /// Exécuté au lancement (voir Program.cs) ; ne fait rien si la base contient déjà une marque.
     /// </summary>
     public static class SeedData
@@ -33,9 +33,7 @@ namespace P5.Data
             var gtiS          = Spec(volkswagen, "GTI",      "S");
             var edgeSel       = Spec(ford,       "Edge",     "SEL"); // 2e Ford : la marque est partagée
 
-            // La feuille de calcul ne donne qu'un COÛT TOTAL par véhicule, jamais le
-            // détail par intervention. Le libellé source est donc conservé tel quel
-            // plutôt que d'inventer une répartition des montants.
+            // Chaque véhicule n'a qu'une réparation, avec un libellé et un coût global.
             db.Vehicles.AddRange(
                 Vehicle(miataLe,      2019, new(2022, 1, 7), 1800m,  new(2022, 4, 7),  new(2022, 4, 8),  "Restauration complète",        7600m),
                 Vehicle(libertySport, 2007, new(2022, 4, 2), 4500m,  new(2022, 4, 7),  new(2022, 4, 9),  "Roulements des roues avant",   350m),
@@ -56,7 +54,7 @@ namespace P5.Data
             return new VehicleSpecification { Brand = brand, CarModel = carModel, Trim = trim };
         }
 
-        /// <summary>Un véhicule de l'inventaire, avec sa réparation unique telle que la feuille la libelle.</summary>
+        /// <summary>Un véhicule de l'inventaire, avec sa réparation unique.</summary>
         private static Vehicle Vehicle(
             VehicleSpecification spec, int year, DateOnly purchaseDate, decimal purchasePrice,
             DateOnly availabilityDate, DateOnly? saleDate, string repairDescription, decimal repairCost)

@@ -27,7 +27,7 @@ public sealed class SeedDataTests : IDisposable
         return new ApplicationDbContext(options);
     }
 
-    /// <summary>Les 7 lignes de l'inventaire du client, telles que le site doit les afficher.</summary>
+    /// <summary>Les 7 lignes de l'inventaire de départ, telles qu'elles doivent apparaître sur le site.</summary>
     [Theory]
     [InlineData("Mazda", "Miata", "LE", 2019, 9900)]
     [InlineData("Jeep", "Liberty", "Sport", 2007, 5350)]

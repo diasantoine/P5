@@ -21,7 +21,7 @@ body {
   margin-bottom: 60px;
 }
 
-/* Trait pointillé de la maquette, entre la fiche et les réparations. */
+/* Trait pointillé entre la fiche et les réparations. */
 .dashed-separator {
   border: 0;
   border-top: 2px dashed var(--bs-secondary-color);

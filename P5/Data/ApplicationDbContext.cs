@@ -28,9 +28,8 @@ namespace P5.Data
                 // Un même nom de modèle peut exister chez deux marques, mais pas deux fois chez la même.
                 entity.HasIndex(m => new { m.BrandId, m.Name }).IsUnique();
 
-                // Clé alternative : permet à VehicleSpecification de pointer le COUPLE
-                // (modèle, marque) plutôt que le modèle seul, donc d'interdire en base
-                // un modèle qui n'appartient pas à la marque choisie.
+                // Clé alternative : VehicleSpecification pointe le couple (modèle, marque),
+                // ce qui interdit en base un modèle qui n'appartient pas à la marque choisie.
                 entity.HasAlternateKey(m => new { m.Id, m.BrandId });
 
                 entity.HasOne(m => m.Brand)
@@ -79,7 +78,7 @@ namespace P5.Data
             {
                 entity.Property(v => v.PurchasePrice).HasPrecision(10, 2);
 
-                // Unicité du VIN, mais seulement quand il est renseigné : sans ce filtre, SQL Server refuserait deux véhicules sans VIN.
+                // Unicité du VIN uniquement quand il est renseigné : plusieurs véhicules peuvent rester sans VIN.
                 entity.HasIndex(v => v.Vin)
                       .IsUnique()
                       .HasFilter("[Vin] IS NOT NULL");
@@ -101,7 +100,7 @@ namespace P5.Data
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Les données de départ ne sont plus déclarées ici (HasData) mais insérées au lancement par SeedData.SeedAsync, voir Program.cs.
+            // Les données de départ sont insérées au lancement par SeedData.SeedAsync (voir Program.cs).
         }
     }
 }

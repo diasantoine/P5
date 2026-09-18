@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace P5.Areas.Identity.Pages.Account
 {
     /// <summary>
-    /// Remplace la page de connexion d'Identity, en anglais, par celle de la maquette.
-    /// Une page du projet placée au même chemin l'emporte sur celle de la bibliothèque.
+    /// Page de connexion, en français.
     /// </summary>
     [AllowAnonymous]
     public class LoginModel(SignInManager<IdentityUser> signInManager) : PageModel
@@ -39,7 +38,7 @@ namespace P5.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string? returnUrl = null)
         {
-            // Un cookie de connexion externe entamée ailleurs ne doit pas survivre à l'affichage de cette page.
+            // Déconnecte un éventuel cookie de connexion externe ouvert avant l'affichage de cette page.
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
             ReturnUrl = returnUrl;
         }
@@ -52,8 +51,7 @@ namespace P5.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            // lockoutOnFailure : après plusieurs échecs, le compte se verrouille quelques minutes.
-            // C'est la parade aux essais de mots de passe en rafale sur le compte du gérant.
+            // lockoutOnFailure : le compte se verrouille quelques minutes après plusieurs échecs.
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
 
             if (result.Succeeded)

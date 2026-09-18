@@ -5,9 +5,8 @@ namespace P5.Models
 {
     /// <summary>
     /// Une entrée du catalogue : le triplet marque + modèle + finition qu'un véhicule
-    /// référence par une seule clé étrangère. Depuis cette table, chacune des trois
-    /// caractéristiques est à une seule jointure, au lieu de la cascade
-    /// Vehicle -> Trim -> CarModel -> Brand.
+    /// référence par une seule clé étrangère. Chacune des trois caractéristiques est
+    /// accessible en une seule jointure depuis cette table.
     /// </summary>
     public class VehicleSpecification
     {

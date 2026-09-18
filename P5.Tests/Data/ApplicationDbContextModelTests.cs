@@ -73,8 +73,8 @@ public class ApplicationDbContextModelTests
     }
 
     /// <summary>
-    /// La garantie demandée par le mentor : les clés étrangères composites empêchent
-    /// d'enregistrer une spécification dont le modèle n'appartient pas à la marque déclarée.
+    /// Les clés étrangères composites empêchent d'enregistrer une spécification
+    /// dont le modèle n'appartient pas à la marque déclarée.
     /// </summary>
     [Fact]
     public async Task Specification_CannotPersistAModelThatBelongsToAnotherBrand()

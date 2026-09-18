@@ -10,7 +10,7 @@ public class RepairFormViewModel
     [Required]
     public int VehicleId { get; set; }
 
-    /// <summary>Affiche a l'utilisateur de quel vehicule il s'agit. Jamais reposte.</summary>
+    /// <summary>Affiche à l'utilisateur de quel véhicule il s'agit. Jamais reposté.</summary>
     [BindNever]
     [ValidateNever]
     public string VehicleDesignation { get; set; } = string.Empty;

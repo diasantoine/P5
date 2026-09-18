@@ -4,8 +4,6 @@ namespace P5.Models
 {
     /// <summary>
     /// Référentiel des modèles du catalogue (Explorer, Civic...).
-    /// Nommé "CarModel" et non "Model" pour éviter la confusion avec
-    /// la notion de "Model" au sens MVC.
     /// </summary>
     public class CarModel
     {

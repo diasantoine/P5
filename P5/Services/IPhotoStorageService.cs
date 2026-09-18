@@ -1,17 +1,17 @@
 namespace P5.Services;
 
 /// <summary>
-/// Stockage des photos d'annonces. Le controleur ne sait pas ou ni comment les fichiers sont ecrits :
-/// on pourrait passer du disque a un stockage en ligne sans le toucher.
+/// Stockage des photos d'annonces. Le contrôleur ne connaît pas l'emplacement
+/// ni le mode d'écriture des fichiers.
 /// </summary>
 public interface IPhotoStorageService
 {
-    /// <summary>Message d'erreur en francais si le fichier est refuse, null s'il est acceptable.</summary>
+    /// <summary>Message d'erreur en français si le fichier est refusé, null s'il est acceptable.</summary>
     string? Validate(IFormFile file);
 
-    /// <summary>Ecrit le fichier sous un nom aleatoire et retourne son adresse, a ranger dans Vehicle.PhotoUrl.</summary>
+    /// <summary>Écrit le fichier sous un nom aléatoire et retourne son adresse, à ranger dans Vehicle.PhotoUrl.</summary>
     Task<string> SaveAsync(IFormFile file);
 
-    /// <summary>Supprime une photo televersee. Ignore toute adresse qui ne vient pas de ce service.</summary>
+    /// <summary>Supprime une photo téléversée. Ignore toute adresse qui ne vient pas de ce service.</summary>
     void Delete(string? photoUrl);
 }

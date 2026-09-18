@@ -4,10 +4,8 @@ namespace P5.Models
 {
     /// <summary>
     /// Référentiel des finitions du catalogue (LE, XLT, Sport...), troisième niveau
-    /// de la hiérarchie Marque > Modèle > Finition.
-    /// Une finition n'a de sens que pour un modèle donné : « LE » chez Mazda n'a rien
-    /// à voir avec « LE » chez un autre constructeur, d'où le rattachement à
-    /// <see cref="CarModel"/> et non une table mondiale de libellés.
+    /// de la hiérarchie Marque > Modèle > Finition, rattachées à un <see cref="CarModel"/> :
+    /// « LE » chez Mazda est distincte de « LE » chez un autre constructeur.
     /// </summary>
     public class Trim
     {

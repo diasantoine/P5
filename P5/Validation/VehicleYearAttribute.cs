@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace P5.Validation
 {
     /// <summary>
-    /// Contrainte métier issue des spécifications : Jacques n'achète jamais de
-    /// véhicule antérieur à 1990, et ne doit pas pouvoir saisir 2117 par erreur.
-    /// Un attribut dédié est nécessaire car [Range] n'accepte que des constantes,
-    /// alors que la borne haute doit suivre l'année courante.
+    /// Valide que l'année est comprise entre 1990 et l'année prochaine.
+    /// La borne haute suit l'année courante.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public sealed class VehicleYearAttribute : ValidationAttribute

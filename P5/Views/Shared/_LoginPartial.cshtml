@@ -5,8 +5,7 @@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
-    @* « Ajouter une voiture » ne s'affiche qu'à qui a le droit de publier : le gérant. Le masquer n'est
-       qu'un confort, la vraie protection est [Authorize(Roles = Admin)] sur le contrôleur. *@
+    @* « Ajouter une voiture » ne s'affiche qu'au gérant. *@
     @if (User.IsInRole(AppRoles.Admin))
     {
         <li class="nav-item">
@@ -17,7 +16,7 @@
         <span class="navbar-text">Bonjour @User.Identity?.Name !</span>
     </li>
     <li class="nav-item">
-        @* Se déconnecter CHANGE l'état de la session : c'est un bouton dans un POST, jamais un lien. *@
+        @* Se déconnecter change l'état de la session : c'est un bouton dans un POST, jamais un lien. *@
         <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Vehicles", new { area = "" })" method="post">
             <button type="submit" class="nav-link btn btn-link text-dark">Se déconnecter</button>
         </form>

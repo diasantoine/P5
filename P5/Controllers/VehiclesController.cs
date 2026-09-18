@@ -9,8 +9,8 @@ using P5.ViewModels;
 
 namespace P5.Controllers;
 
-// Fermé par défaut ; seules Index et Details, les pages publiques de la vitrine, restent accessibles à tous.
-// L'inscription est ouverte : être connecté ne suffit donc pas, il faut le rôle du gérant pour écrire.
+// Fermé par défaut : seules Index et Details restent accessibles à tous.
+// Écrire dans l'inventaire exige le rôle du gérant.
 [Authorize(Roles = AppRoles.Admin)]
 public class VehiclesController(IVehicleService vehicles, IPhotoStorageService photos, IOptions<PricingOptions> pricing) : Controller
 {
@@ -71,7 +71,7 @@ public class VehiclesController(IVehicleService vehicles, IPhotoStorageService p
         }
         catch (DbUpdateException ex)
         {
-            // L'annonce n'a pas ete enregistree : sa photo ne doit pas rester orpheline sur le disque.
+            // L'écriture a échoué : la photo déjà enregistrée sur le disque est supprimée.
             _photos.Delete(newPhotoUrl);
             AddSaveFailureError(ex, form);
             await PopulateFormAsync(form);
@@ -113,8 +113,8 @@ public class VehiclesController(IVehicleService vehicles, IPhotoStorageService p
             return View(form);
         }
 
-        // On recharge l'entite suivie : les champs absents du formulaire (SaleDate,
-        // les reparations) conservent ainsi leur valeur en base.
+        // On recharge l'entité suivie : les champs absents du formulaire (SaleDate,
+        // les réparations) conservent leur valeur en base.
         var vehicle = await _vehicles.GetForEditAsync(id);
         if (vehicle is null)
         {
@@ -134,7 +134,7 @@ public class VehiclesController(IVehicleService vehicles, IPhotoStorageService p
 
             await _vehicles.UpdateAsync(vehicle);
 
-            // L'ancienne photo n'est supprimee qu'une fois la nouvelle enregistree en base.
+            // L'ancienne photo n'est supprimée qu'une fois la nouvelle enregistrée en base.
             if (newPhotoUrl is not null)
             {
                 _photos.Delete(previousPhotoUrl);
@@ -197,15 +197,15 @@ public class VehiclesController(IVehicleService vehicles, IPhotoStorageService p
         return RedirectToAction(nameof(Index));
     }
 
-    // Tout ce que le formulaire affiche sans jamais le poster : a refaire a chaque renvoi de la vue.
+    // Tout ce que le formulaire affiche sans jamais le poster : à reconstituer à chaque renvoi de la vue.
     private async Task PopulateFormAsync(VehicleFormViewModel form)
     {
         form.Catalogue = await _vehicles.GetCatalogueNamesAsync();
 
-        // Apercu du prix de vente : la marge vient de la configuration, les reparations de la base.
+        // Aperçu du prix de vente : la marge vient de la configuration, les réparations de la base.
         form.Margin = _pricing.FixedMargin;
 
-        // En modification, le cout des reparations et la photo actuelle viennent de la base, jamais du formulaire.
+        // En modification, le coût des réparations et la photo actuelle viennent de la base, jamais du formulaire.
         var current = form.Id == 0 ? null : await _vehicles.GetDetailAsync(form.Id);
         form.RepairsCost = current?.RepairsCost ?? 0m;
         form.PhotoUrl = current?.PhotoUrl;
@@ -219,8 +219,8 @@ public class VehiclesController(IVehicleService vehicles, IPhotoStorageService p
         }
     }
 
-    // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.
-    // Un autre DbUpdateException (ex. SpecificationId inconnu) ne doit pas accuser le VIN a tort.
+    // Traduit un échec d'écriture en erreur de formulaire : sur le champ VIN si l'index unique
+    // du VIN est en cause, générale sinon.
     private void AddSaveFailureError(DbUpdateException exception, VehicleFormViewModel form)
     {
         if (IsVinUniqueViolation(exception))

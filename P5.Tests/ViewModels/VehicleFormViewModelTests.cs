@@ -28,7 +28,7 @@ public class VehicleFormViewModelTests
         Assert.Same(repair, Assert.Single(v.Repairs));
     }
 
-    // Margin et RepairsCost ne servent qu'a l'apercu du prix de vente : un formulaire forge ne doit pas pouvoir les poster.
+    // Ces propriétés servent uniquement à l'aperçu et ne sont jamais liées aux données postées.
     [Theory]
     [InlineData(nameof(VehicleFormViewModel.Margin))]
     [InlineData(nameof(VehicleFormViewModel.RepairsCost))]

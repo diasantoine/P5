@@ -15,8 +15,8 @@ public class VehicleServiceTests
         var connection = new SqliteConnection("DataSource=:memory:");
         connection.Open();
 
-        // SQLite n'applique les clés étrangères que si on le lui demande explicitement :
-        // sans ce PRAGMA, la suppression en cascade des réparations ne se produirait pas.
+        // Active les clés étrangères, désactivées par défaut sous SQLite, pour que la
+        // suppression en cascade des réparations fonctionne.
         using (var pragma = connection.CreateCommand())
         {
             pragma.CommandText = "PRAGMA foreign_keys = ON;";

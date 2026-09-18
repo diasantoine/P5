@@ -3,8 +3,7 @@ using P5.Security;
 
 namespace P5.Tests.Security;
 
-// Identity rédige ses messages en anglais. La règle du projet : identifiants en anglais,
-// texte vu par l'utilisateur en français. Ces messages-là sont vus à l'inscription.
+// Vérifie que les messages d'erreur affichés à l'inscription sont traduits en français.
 public class FrenchIdentityErrorDescriberTests
 {
     private readonly IdentityErrorDescriber _describer = new FrenchIdentityErrorDescriber();

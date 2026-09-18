@@ -15,7 +15,7 @@ namespace P5.Security
             Description = "Cette adresse email est déjà utilisée."
         };
 
-        // Le nom d'utilisateur EST l'adresse email : le même message évite d'en afficher deux différents.
+        // Le nom d'utilisateur est l'adresse email : le même message évite d'en afficher deux différents.
         public override IdentityError DuplicateUserName(string userName) => new()
         {
             Code = nameof(DuplicateUserName),

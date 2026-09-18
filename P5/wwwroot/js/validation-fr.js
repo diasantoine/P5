@@ -1,7 +1,5 @@
-// jQuery Validate ne connaît que la notation anglaise des nombres : « 1800.50 ».
-// Le site est en culture française : le serveur affiche et attend « 1800,50 ». Sans ce fichier,
-// le navigateur refuserait le prix que le serveur vient lui-même de pré-remplir dans le formulaire.
-// On redéfinit donc les deux règles qui lisent un nombre, pour qu'elles acceptent la virgule.
+// Remplace les règles "number" et "range" de jQuery Validate par des versions
+// qui lisent la virgule décimale française.
 (function ($) {
     if (!$ || !$.validator) {
         return;
@@ -9,7 +7,7 @@
 
     // « 10 990,50 » -> 10990.5 ; tout ce qui n'est pas un nombre français donne NaN.
     function parseFrenchNumber(value) {
-        var cleaned = String(value).replace(/[\s  ]/g, '');
+        var cleaned = String(value).replace(/[\s\u00a0\u202f]/g, '');
         return /^-?\d+(,\d+)?$/.test(cleaned) ? Number(cleaned.replace(',', '.')) : NaN;
     }
 

@@ -4,12 +4,9 @@ using P5.Security;
 namespace P5.Data
 {
     /// <summary>
-    /// Crée le compte du gérant au démarrage. Contrairement à l'inventaire, il ne peut pas
-    /// être inséré par une migration : le mot de passe doit être haché à l'exécution par
-    /// UserManager.
-    /// Les identifiants viennent de la section de configuration AdminAccount ; ceux commités
-    /// dans appsettings.json sont des identifiants de démonstration, admis pour un prototype
-    /// jamais déployé, et à surcharger via les user-secrets ou une variable d'environnement.
+    /// Crée le compte du gérant au démarrage, avec un mot de passe haché par UserManager.
+    /// Les identifiants viennent de la section de configuration AdminAccount, à surcharger
+    /// via les user-secrets ou une variable d'environnement.
     /// </summary>
     public static class IdentitySeed
     {
@@ -50,7 +47,7 @@ namespace P5.Data
             var existing = await userManager.FindByEmailAsync(email!);
             if (existing is not null)
             {
-                // Une base créée avant l'ouverture de l'inscription contient déjà le compte, sans rôle.
+                // Le compte existe déjà : on vérifie seulement qu'il porte le rôle.
                 await EnsureAdminRoleAsync(userManager, existing);
                 return;
             }
@@ -59,13 +56,13 @@ namespace P5.Data
             {
                 UserName = email,
                 Email = email,
-                EmailConfirmed = true // aucun IEmailSender n'est configuré sur ce prototype
+                EmailConfirmed = true // le compte est confirmé immédiatement, sans envoi d'email
             };
 
             var result = await userManager.CreateAsync(manager, password!);
             if (!result.Succeeded)
             {
-                // Un mot de passe rejete (ex. trop court) ne doit pas empecher le site de demarrer :
+                // Le site démarre même si le mot de passe est rejeté (ex. trop court) :
                 // comme pour des identifiants absents, seul le back-office reste inaccessible.
                 services.GetRequiredService<ILoggerFactory>()
                     .CreateLogger("P5.Data.IdentitySeed")

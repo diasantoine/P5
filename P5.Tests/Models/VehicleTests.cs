@@ -5,8 +5,7 @@ namespace P5.Tests.Models;
 public class VehicleTests
 {
     /// <summary>
-    /// Les 7 lignes de l'inventaire transmis par le client, avec leur prix de vente
-    /// attendu. Si un jour la marge change, c'est ici que le projet doit crier.
+    /// Les 7 lignes de l'inventaire de départ, avec leur prix de vente attendu.
     /// </summary>
     public static TheoryData<decimal, decimal[], decimal> Inventory => new()
     {

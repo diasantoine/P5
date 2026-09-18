@@ -3,38 +3,38 @@ using P5.Models;
 namespace P5.Services;
 
 /// <summary>
-/// Contrat metier de l'inventaire. Le controleur ne parle qu'a cette interface :
-/// il ne connait ni EF Core, ni les Include necessaires au calcul du prix de vente.
+/// Contrat métier de l'inventaire. Le contrôleur ne parle qu'à cette interface :
+/// il ne connaît ni EF Core, ni les Include nécessaires au calcul du prix de vente.
 /// </summary>
 public interface IVehicleService
 {
-    /// <summary>Inventaire complet, reparations et marques chargees.</summary>
+    /// <summary>Inventaire complet, réparations et marques chargées.</summary>
     Task<IReadOnlyList<Vehicle>> GetInventoryAsync();
 
-    /// <summary>Fiche complete en lecture seule, ou null si l'identifiant est inconnu.</summary>
+    /// <summary>Fiche complète en lecture seule, ou null si l'identifiant est inconnu.</summary>
     Task<Vehicle?> GetDetailAsync(int id);
 
-    /// <summary>Vehicule suivi par le contexte, destine a une modification.</summary>
+    /// <summary>Véhicule suivi par le contexte, destiné à une modification.</summary>
     Task<Vehicle?> GetForEditAsync(int id);
 
-    /// <summary>Enregistre un nouveau vehicule et retourne son identifiant.</summary>
+    /// <summary>Enregistre un nouveau véhicule et retourne son identifiant.</summary>
     Task<int> AddAsync(Vehicle vehicle);
 
-    /// <summary>Retourne false si le vehicule n'existe plus.</summary>
+    /// <summary>Retourne false si le véhicule n'existe plus.</summary>
     Task<bool> UpdateAsync(Vehicle vehicle);
 
-    /// <summary>Retire le vehicule de la vente en renseignant sa date de vente.</summary>
+    /// <summary>Retire le véhicule de la vente en renseignant sa date de vente.</summary>
     Task<bool> MarkAsSoldAsync(int id, DateOnly saleDate);
 
-    /// <summary>Supprime le vehicule et, en cascade, ses reparations. False si l'identifiant est inconnu.</summary>
+    /// <summary>Supprime le véhicule et, en cascade, ses réparations. False si l'identifiant est inconnu.</summary>
     Task<bool> DeleteAsync(int id);
 
     /// <summary>
-    /// Retrouve la specification marque + modele + finition, ou cree ce qui manque dans le catalogue.
-    /// La comparaison ignore la casse et les espaces de bord ; la graphie deja en base est conservee.
+    /// Retrouve la spécification marque + modèle + finition, ou crée ce qui manque dans le catalogue.
+    /// La comparaison ignore la casse et les espaces de bord ; la graphie déjà en base est conservée.
     /// </summary>
     Task<int> GetOrCreateSpecificationIdAsync(string brandName, string modelName, string trimName);
 
-    /// <summary>Noms deja connus du catalogue, pour suggerer la saisie sans l'imposer.</summary>
+    /// <summary>Noms déjà connus du catalogue, pour suggérer la saisie sans l'imposer.</summary>
     Task<CatalogueNames> GetCatalogueNamesAsync();
 }

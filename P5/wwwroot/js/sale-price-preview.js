@@ -14,7 +14,7 @@
 
     // La saisie est française : « 10 990,50 ». On retire les espaces et on remplace la virgule.
     function parsePrice(text) {
-        const cleaned = text.replace(/[\s  ]/g, '').replace(',', '.');
+        const cleaned = text.replace(/[\s\u00a0\u202f]/g, '').replace(',', '.');
         return cleaned === '' ? NaN : Number(cleaned);
     }
 

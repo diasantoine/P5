@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace P5.Areas.Identity.Pages.Account
 {
     /// <summary>
-    /// Remplace la page d'inscription d'Identity par une version en français.
-    /// Tout le monde peut s'inscrire, mais un compte créé ici ne reçoit aucun rôle : il consulte
-    /// le site comme un visiteur. Seul le compte du gérant, créé au démarrage, a le rôle Admin.
+    /// Page d'inscription en français. Un compte créé ici ne reçoit aucun rôle et consulte le
+    /// site comme un visiteur ; seul le compte du gérant, créé au démarrage, a le rôle Admin.
     /// </summary>
     [AllowAnonymous]
     public class RegisterModel(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) : PageModel
@@ -55,7 +54,7 @@ namespace P5.Areas.Identity.Pages.Account
             {
                 UserName = Input.Email,
                 Email = Input.Email,
-                EmailConfirmed = true // aucun IEmailSender n'est configuré sur ce prototype
+                EmailConfirmed = true // le compte est confirmé immédiatement, sans envoi d'email
             };
 
             var result = await _userManager.CreateAsync(user, Input.Password);
