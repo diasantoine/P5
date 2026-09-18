@@ -57,9 +57,13 @@ qui porte elle-même le triplet marque + modèle + finition.
 
 `architecture.puml` décrit l'architecture telle qu'elle existe dans le code.
 Les services, les ViewModels, le `RepairsController` et les attributs
-`[Authorize]`/`[AllowAnonymous]` existent désormais tous ; seul le stockage de
-photo (`IPhotoStorageService`/`PhotoStorageService`, stéréotypés `<<planned>>`)
-reste à faire.
+`[Authorize]`/`[AllowAnonymous]` existent désormais tous.
+
+**Diagrammes en retard sur le code, à régénérer :** le stockage de photo
+(`IPhotoStorageService`/`PhotoStorageService`) est maintenant écrit et n'est plus
+`<<planned>>` ; `IVehicleService` a gagné `getOrCreateSpecificationId` et
+`getCatalogueNames` et perdu `getSpecificationOptions` ; l'écriture est réservée
+au rôle `Admin` depuis que l'inscription est ouverte.
 
 ## Règle de mise à jour
 

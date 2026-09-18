@@ -149,13 +149,4 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
         await _context.Brands.Select(b => b.Name).Distinct().OrderBy(n => n).ToListAsync(),
         await _context.CarModels.Select(m => m.Name).Distinct().OrderBy(n => n).ToListAsync(),
         await _context.Trims.Select(t => t.Name).Distinct().OrderBy(n => n).ToListAsync());
-
-    public async Task<IReadOnlyList<SpecificationOption>> GetSpecificationOptionsAsync() =>
-        await _context.VehicleSpecifications
-            .OrderBy(s => s.Brand!.Name)
-            .ThenBy(s => s.CarModel!.Name)
-            .ThenBy(s => s.Trim!.Name)
-            .Select(s => new SpecificationOption(s.Id, s.Brand!.Name + " " + s.CarModel!.Name + " " + s.Trim!.Name))
-            .AsNoTracking()
-            .ToListAsync();
 }

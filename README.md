@@ -47,7 +47,7 @@ L'inscription est ouverte à tous depuis le lien « S'inscrire », mais un compt
 dotnet test
 ```
 
-58 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services, et la restriction de toute écriture au rôle du gérant.
+68 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services, et la restriction de toute écriture au rôle du gérant.
 
 ---
 
@@ -104,7 +104,7 @@ Trois principes structurent le code.
 
 **Les formulaires passent par des ViewModels.** Ils ne contiennent que les champs saisissables. La date de vente et les valeurs calculées n'y figurent pas et ne peuvent donc pas être envoyées par une requête forgée.
 
-**Fermé par défaut.** Le contrôleur des véhicules porte `[Authorize]`, et seules la liste et la fiche sont ouvertes explicitement. Toute action qui modifie l'état passe par un POST avec jeton anti-CSRF.
+**Fermé par défaut.** Les contrôleurs portent `[Authorize(Roles = "Admin")]`, et seules la liste et la fiche sont ouvertes explicitement. Comme l'inscription est ouverte, être connecté ne suffit pas : il faut le rôle du gérant. Toute action qui modifie l'état passe par un POST avec jeton anti-CSRF.
 
 ---
 
@@ -127,7 +127,7 @@ Les données de départ sont les sept véhicules transmis par le client. Elles n
 
 ## Limites connues de ce prototype
 
-- **Le catalogue ne s'enrichit pas depuis le site.** Les marques, modèles et finitions proposés sont ceux des données de départ. Ajouter un véhicule d'un modèle absent demande une évolution du formulaire.
-- **L'envoi de photo n'est pas implémenté.** Le champ attend une URL.
+- **Le catalogue s'enrichit à la saisie, sans écran de gestion.** Une marque, un modèle ou une finition absents sont créés à l'enregistrement du véhicule. Une faute de frappe crée donc une entrée de trop : les suggestions sous chaque champ la limitent, mais rien dans le site ne permet encore de renommer ou de fusionner une entrée du catalogue.
+- **Un compte inscrit n'apporte pas encore de fonction de plus qu'une visite anonyme.** L'inscription est ouverte, l'écriture reste réservée au gérant.
 - **L'habillage graphique** suit le gabarit Bootstrap par défaut ; l'intégration des maquettes reste à faire.
-- Le site n'est pas prévu pour être mis en ligne : identifiants de démonstration versionnés, pas d'envoi d'e-mail, pas de compte utilisateur public.
+- Le site n'est pas prévu pour être mis en ligne : identifiants de démonstration versionnés, pas d'envoi d'e-mail, donc pas de confirmation d'adresse à l'inscription.

@@ -37,7 +37,4 @@ public interface IVehicleService
 
     /// <summary>Noms deja connus du catalogue, pour suggerer la saisie sans l'imposer.</summary>
     Task<CatalogueNames> GetCatalogueNamesAsync();
-
-    /// <summary>Specifications disponibles, libellees "Marque Modele Finition", triees.</summary>
-    Task<IReadOnlyList<SpecificationOption>> GetSpecificationOptionsAsync();
 }

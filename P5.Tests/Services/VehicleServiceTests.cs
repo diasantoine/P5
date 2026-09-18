@@ -123,14 +123,16 @@ public class VehicleServiceTests
     }
 
     [Fact]
-    public async Task GetSpecificationOptionsAsync_LabelsBrandModelAndTrim()
+    public async Task GetCatalogueNamesAsync_ListsEachLevelOfTheCatalogue()
     {
         using var context = CreateContext();
         var service = new VehicleService(context, Options.Create(new PricingOptions()));
 
-        var options = await service.GetSpecificationOptionsAsync();
+        var names = await service.GetCatalogueNamesAsync();
 
-        Assert.Equal("Ford Explorer XLT", Assert.Single(options).Label);
+        Assert.Equal("Ford", Assert.Single(names.Brands));
+        Assert.Equal("Explorer", Assert.Single(names.Models));
+        Assert.Equal("XLT", Assert.Single(names.Trims));
     }
 
     [Fact]
