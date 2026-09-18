@@ -38,11 +38,7 @@
                 <span asp-validation-for="PurchaseDate" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="PurchasePrice" class="form-label"></label>
-                <input asp-for="PurchasePrice" class="form-control" />
-                <span asp-validation-for="PurchasePrice" class="text-danger"></span>
-            </div>
+            <partial name="_PurchasePriceWithPreview" model="Model" />
 
             <div class="mb-3">
                 <label asp-for="AvailabilityDate" class="form-label"></label>
@@ -63,7 +59,7 @@
             </div>
 
             <div class="alert alert-info" role="note">
-                Le prix de vente est calculé automatiquement : prix d'achat + coût des réparations + 500 €.
+                Le prix de vente est calculé automatiquement : prix d'achat + coût des réparations + marge de @Model.Margin.ToString("C0").
                 Les réparations se saisissent depuis la fiche du véhicule, après enregistrement.
             </div>
 
@@ -75,4 +71,5 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/js/sale-price-preview.js" asp-append-version="true"></script>
 }

@@ -1,0 +1,24 @@
+@using System.Globalization
+@model P5.ViewModels.VehicleFormViewModel
+
+@* Champ « Prix d'achat » et, à sa droite, l'aperçu du prix de vente. L'aperçu n'est jamais posté :
+   le vrai prix reste calculé côté serveur par Vehicle.SalePrice. Sans JavaScript, il affiche la valeur
+   calculée au chargement de la page ; avec, sale-price-preview.js le recalcule à chaque saisie. *@
+<div class="mb-3 d-flex flex-wrap gap-3 align-items-start">
+    <div class="flex-grow-1">
+        <label asp-for="PurchasePrice" class="form-label"></label>
+        <input asp-for="PurchasePrice" class="form-control" inputmode="decimal" />
+        <span asp-validation-for="PurchasePrice" class="text-danger"></span>
+    </div>
+
+    <div class="border rounded p-2"
+         data-sale-price-preview
+         data-repairs-cost="@Model.RepairsCost.ToString(CultureInfo.InvariantCulture)"
+         data-margin="@Model.Margin.ToString(CultureInfo.InvariantCulture)">
+        <span class="d-block small text-muted" id="sale-price-preview-label">Prix de vente calculé</span>
+        <output for="PurchasePrice" aria-labelledby="sale-price-preview-label" aria-live="polite" class="d-block fw-bold fs-5">@((Model.PurchasePrice + Model.RepairsCost + Model.Margin).ToString("C"))</output>
+        <span class="d-block small text-muted">
+            prix d'achat + réparations (@Model.RepairsCost.ToString("C")) + marge (@Model.Margin.ToString("C"))
+        </span>
+    </div>
+</div>

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using P5.Configuration;
 using P5.Security;
 using P5.Services;
 using P5.ViewModels;
@@ -11,9 +13,10 @@ namespace P5.Controllers;
 // Fermé par défaut ; seules Index et Details, les pages publiques de la vitrine, restent accessibles à tous.
 // L'inscription est ouverte : être connecté ne suffit donc pas, il faut le rôle du gérant pour écrire.
 [Authorize(Roles = AppRoles.Admin)]
-public class VehiclesController(IVehicleService vehicles) : Controller
+public class VehiclesController(IVehicleService vehicles, IOptions<PricingOptions> pricing) : Controller
 {
     private readonly IVehicleService _vehicles = vehicles;
+    private readonly PricingOptions _pricing = pricing.Value;
 
     [AllowAnonymous]
     public async Task<IActionResult> Index() => View(await _vehicles.GetInventoryAsync());
@@ -38,7 +41,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
     public async Task<IActionResult> Create()
     {
         var form = new VehicleFormViewModel { Year = DateTime.Today.Year, PurchaseDate = DateOnly.FromDateTime(DateTime.Today) };
-        await PopulateSpecificationListAsync(form);
+        await PopulateFormAsync(form);
         return View(form);
     }
 
@@ -48,7 +51,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
     {
         if (!ModelState.IsValid)
         {
-            await PopulateSpecificationListAsync(form);
+            await PopulateFormAsync(form);
             return View(form);
         }
 
@@ -60,7 +63,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         catch (DbUpdateException ex)
         {
             AddSaveFailureError(ex, form);
-            await PopulateSpecificationListAsync(form);
+            await PopulateFormAsync(form);
             return View(form);
         }
     }
@@ -79,7 +82,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         }
 
         var form = VehicleFormViewModel.FromEntity(vehicle);
-        await PopulateSpecificationListAsync(form);
+        await PopulateFormAsync(form);
         return View(form);
     }
 
@@ -94,7 +97,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
 
         if (!ModelState.IsValid)
         {
-            await PopulateSpecificationListAsync(form);
+            await PopulateFormAsync(form);
             return View(form);
         }
 
@@ -116,7 +119,7 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         catch (DbUpdateException ex)
         {
             AddSaveFailureError(ex, form);
-            await PopulateSpecificationListAsync(form);
+            await PopulateFormAsync(form);
             return View(form);
         }
     }
@@ -165,10 +168,15 @@ public class VehiclesController(IVehicleService vehicles) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task PopulateSpecificationListAsync(VehicleFormViewModel form)
+    // Tout ce que le formulaire affiche sans jamais le poster : a refaire a chaque renvoi de la vue.
+    private async Task PopulateFormAsync(VehicleFormViewModel form)
     {
         var options = await _vehicles.GetSpecificationOptionsAsync();
         form.Specifications = options.Select(o => new SelectListItem(o.Label, o.Id.ToString()));
+
+        // Apercu du prix de vente : la marge vient de la configuration, les reparations de la base.
+        form.Margin = _pricing.FixedMargin;
+        form.RepairsCost = form.Id == 0 ? 0m : (await _vehicles.GetDetailAsync(form.Id))?.RepairsCost ?? 0m;
     }
 
     // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.

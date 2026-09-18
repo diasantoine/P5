@@ -55,6 +55,16 @@ public class VehicleFormViewModel
     [ValidateNever]
     public IEnumerable<SelectListItem> Specifications { get; set; } = [];
 
+    /// <summary>Marge de la configuration, pour l'apercu du prix de vente. Affichee, jamais postee.</summary>
+    [BindNever]
+    [ValidateNever]
+    public decimal Margin { get; set; }
+
+    /// <summary>Cout des reparations deja saisies, pour l'apercu du prix de vente. Affiche, jamais poste.</summary>
+    [BindNever]
+    [ValidateNever]
+    public decimal RepairsCost { get; set; }
+
     public static VehicleFormViewModel FromEntity(Vehicle v) => new()
     {
         Id = v.Id,
