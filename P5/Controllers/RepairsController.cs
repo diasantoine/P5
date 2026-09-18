@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using P5.Security;
 using P5.Services;
 using P5.ViewModels;
 
 namespace P5.Controllers;
 
 /// <summary>
-/// Aucune action publique : les reparations relevent entierement du back-office.
+/// Aucune action publique : les reparations relevent entierement du back-office, reserve au gerant.
 /// Toutes les redirections ramenent sur la fiche du vehicule concerne.
 /// </summary>
-[Authorize]
+[Authorize(Roles = AppRoles.Admin)]
 public class RepairsController(IRepairService repairs, IVehicleService vehicles) : Controller
 {
     private readonly IRepairService _repairs = repairs;

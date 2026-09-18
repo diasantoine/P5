@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using P5.Security;
 
 namespace P5.Data
 {
@@ -39,9 +40,18 @@ namespace P5.Data
                 return;
             }
 
-            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-            if (await userManager.FindByEmailAsync(email!) is not null)
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            if (!await roleManager.RoleExistsAsync(AppRoles.Admin))
             {
+                await roleManager.CreateAsync(new IdentityRole(AppRoles.Admin));
+            }
+
+            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+            var existing = await userManager.FindByEmailAsync(email!);
+            if (existing is not null)
+            {
+                // Une base créée avant l'ouverture de l'inscription contient déjà le compte, sans rôle.
+                await EnsureAdminRoleAsync(userManager, existing);
                 return;
             }
 
@@ -62,6 +72,16 @@ namespace P5.Data
                     .LogError("Compte gérant non créé : {Errors}",
                         string.Join(" ", result.Errors.Select(e => e.Description)));
                 return;
+            }
+
+            await EnsureAdminRoleAsync(userManager, manager);
+        }
+
+        private static async Task EnsureAdminRoleAsync(UserManager<IdentityUser> userManager, IdentityUser user)
+        {
+            if (!await userManager.IsInRoleAsync(user, AppRoles.Admin))
+            {
+                await userManager.AddToRoleAsync(user, AppRoles.Admin);
             }
         }
     }

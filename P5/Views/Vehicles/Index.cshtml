@@ -2,12 +2,12 @@
 
 @{
     ViewData["Title"] = "Inventaire";
-    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var isAdmin = User.IsInRole(P5.Security.AppRoles.Admin);
 }
 
 <h1>Inventaire des véhicules</h1>
 
-@if (isAuthenticated)
+@if (isAdmin)
 {
     <p>
         <a asp-action="Create" class="btn btn-primary">Ajouter un véhicule</a>
@@ -29,7 +29,7 @@ else
                     <th scope="col">Véhicule</th>
                     <th scope="col">@Html.DisplayNameFor(model => model.Year)</th>
                     @* Prix d'achat et coût des réparations sont des informations internes au garage, masquées aux visiteurs anonymes. *@
-                    @if (isAuthenticated)
+                    @if (isAdmin)
                     {
                         <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PurchasePrice)</th>
                         <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.RepairsCost)</th>
@@ -55,7 +55,7 @@ else
                         </td>
                         <td>@item.Designation</td>
                         <td>@item.Year</td>
-                        @if (isAuthenticated)
+                        @if (isAdmin)
                         {
                             <td class="text-end">@Html.DisplayFor(modelItem => item.PurchasePrice)</td>
                             <td class="text-end">@Html.DisplayFor(modelItem => item.RepairsCost)</td>
@@ -75,7 +75,7 @@ else
                         </td>
                         <td>
                             <a asp-action="Details" asp-route-id="@item.Id">Détails</a>
-                            @if (isAuthenticated)
+                            @if (isAdmin)
                             {
                                 <text> | </text>
                                 <a asp-action="Edit" asp-route-id="@item.Id">Modifier</a>

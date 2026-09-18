@@ -2,13 +2,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using P5.Security;
 using P5.Services;
 using P5.ViewModels;
 
 namespace P5.Controllers;
 
-// Fermé par défaut ; seules Index et Details, les pages publiques de la vitrine, restent accessibles aux anonymes.
-[Authorize]
+// Fermé par défaut ; seules Index et Details, les pages publiques de la vitrine, restent accessibles à tous.
+// L'inscription est ouverte : être connecté ne suffit donc pas, il faut le rôle du gérant pour écrire.
+[Authorize(Roles = AppRoles.Admin)]
 public class VehiclesController(IVehicleService vehicles) : Controller
 {
     private readonly IVehicleService _vehicles = vehicles;

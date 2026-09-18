@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = Model.Designation;
-    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var isAdmin = User.IsInRole(P5.Security.AppRoles.Admin);
 }
 
 <h1>@Model.Designation</h1>
@@ -28,9 +28,9 @@
 
     <div class="col-md-7">
         <h2 class="h5">Prix</h2>
-        @* Le prix de revient (achat, réparations, marge) est une information interne au garage : un visiteur anonyme ne voit que le prix de vente. *@
+        @* Le prix de revient (achat, réparations, marge) est une information interne au garage : seul le gérant la voit, tous les autres ne voient que le prix de vente. *@
         <table class="table">
-            @if (isAuthenticated)
+            @if (isAdmin)
             {
                 <caption>Décomposition du prix de vente.</caption>
             }
@@ -39,7 +39,7 @@
                 <caption>Prix de vente du véhicule.</caption>
             }
             <tbody>
-                @if (isAuthenticated)
+                @if (isAdmin)
                 {
                     <tr>
                         <th scope="row">@Html.DisplayNameFor(m => m.PurchasePrice)</th>
@@ -61,8 +61,8 @@
             </tbody>
         </table>
 
-        @* Les réparations et leur coût sont une information interne au garage, pas un argument de vente pour un visiteur anonyme. *@
-        @if (isAuthenticated)
+        @* Les réparations et leur coût sont une information interne au garage, réservée au gérant. *@
+        @if (isAdmin)
         {
             <h2 class="h5">Réparations</h2>
             @if (!Model.Repairs.Any())
@@ -112,7 +112,7 @@
             <p><span class="badge text-bg-secondary">Vendu le @Model.SaleDate?.ToString("dd/MM/yyyy")</span></p>
         }
 
-        @if (isAuthenticated)
+        @if (isAdmin)
         {
             <div class="d-flex gap-2 mt-4">
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Modifier l'annonce</a>
