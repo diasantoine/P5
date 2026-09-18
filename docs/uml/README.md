@@ -52,18 +52,22 @@ java -jar "C:\Program Files\PlantUML\plantuml.jar" -checkonly docs\uml\*.puml
 ## État de synchronisation avec le code
 
 `data-model.puml` décrit les six entités persistées, `VehicleSpecification`
-comprise : le véhicule ne porte plus qu'une clé étrangère vers cette table,
-qui porte elle-même le triplet marque + modèle + finition.
+comprise : le véhicule ne porte qu'une clé étrangère vers cette table, qui
+porte elle-même le triplet marque + modèle + finition. `IdentityUser` et
+`IdentityRole` y figurent en grisé, reliés par une association
+plusieurs-à-plusieurs : c'est la table de liaison `AspNetUserRoles` qui la
+matérialise en base, et c'est elle qui décide des droits d'écriture. Aucune
+association ne relie un compte à un véhicule : il n'y a pas de notion de
+propriétaire d'annonce.
 
 `architecture.puml` décrit l'architecture telle qu'elle existe dans le code.
-Les services, les ViewModels, le `RepairsController` et les attributs
-`[Authorize]`/`[AllowAnonymous]` existent désormais tous.
-
-**Diagrammes en retard sur le code, à régénérer :** le stockage de photo
-(`IPhotoStorageService`/`PhotoStorageService`) est maintenant écrit et n'est plus
-`<<planned>>` ; `IVehicleService` a gagné `getOrCreateSpecificationId` et
-`getCatalogueNames` et perdu `getSpecificationOptions` ; l'écriture est réservée
-au rôle `Admin` depuis que l'inscription est ouverte.
+Le stockage de photo (`IPhotoStorageService`/`PhotoStorageService`) est écrit
+et n'est plus `<<planned>>` ; `IVehicleService` porte `getOrCreateSpecificationId`
+et `getCatalogueNames`, et a perdu `getSpecificationOptions`. Le paquet
+`Security` porte le nom du rôle (`AppRoles`) et la traduction des messages
+d'Identity (`FrenchIdentityErrorDescriber`). L'écriture est réservée au rôle
+`Admin` sur `VehiclesController` et `RepairsController`, depuis que
+l'inscription est ouverte à tout le monde.
 
 ## Règle de mise à jour
 

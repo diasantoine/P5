@@ -59,6 +59,11 @@ class IdentityUser <<ASP.NET Identity>> #EEEEEE {
   -email : String
 }
 
+class IdentityRole <<ASP.NET Identity>> #EEEEEE {
+  -id : String
+  -name : String
+}
+
 note right of Vehicle
   {A Vehicle is one **physical unit** in stock,
   not a catalogue category.}
@@ -81,8 +86,14 @@ note bottom of Repair
 end note
 
 note right of IdentityUser
-  {Single manager account. No association with the
-  inventory: one user administers everything.}
+  {Registration is open to everyone. An account
+  carries no link to the inventory: write access
+  is granted by the Admin role, not by ownership.}
+
+  {The many-to-many association is materialised by
+  the AspNetUserRoles join table, whose primary key
+  is the pair of its two foreign keys (userId, roleId).
+  Only the manager's account holds the Admin role.}
 end note
 
 note left of Trim
@@ -127,6 +138,7 @@ CarModel -[hidden]right- VehicleSpecification
 VehicleSpecification -[hidden]down- Vehicle
 Vehicle -[hidden]down- Repair
 Repair -[hidden]right- IdentityUser
+IdentityUser -[hidden]down- IdentityRole
 
 Brand "1" -- "0..*" CarModel : offers >
 CarModel "1" -- "0..*" Trim : comes as >
@@ -135,6 +147,7 @@ CarModel "1" -- "0..*" VehicleSpecification
 Trim "1" -- "0..*" VehicleSpecification
 VehicleSpecification "1" -- "0..*" Vehicle : stocked as >
 Vehicle "1" *-- "0..*" Repair : undergoes >
+IdentityUser "0..*" -- "0..*" IdentityRole : holds >
 
 legend bottom right
   |= Notation |= Meaning |
@@ -161,6 +174,8 @@ legend bottom right
   | margin | marge |
   | designation | désignation |
   | availabilityDate / saleDate | date de disponibilité / date de vente |
+  | IdentityUser / IdentityRole | compte / rôle |
+  | Admin role | rôle administrateur (le gérant) |
 endlegend
 
 @enduml
