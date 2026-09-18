@@ -47,7 +47,7 @@ L'inscription est ouverte à tous depuis le lien « S'inscrire », mais un compt
 dotnet test
 ```
 
-68 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services, et la restriction de toute écriture au rôle du gérant.
+76 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services (dont l'enrichissement du catalogue et le contrôle des photos envoyées), et la restriction de toute écriture au rôle du gérant.
 
 ---
 
@@ -93,6 +93,8 @@ P5/
   Controllers/     aiguillage HTTP, sans aucune connaissance d'Entity Framework
   Views/           rendu Razor
   Configuration/   options de tarification
+  Security/        nom du rôle du gérant, messages d'Identity en français
+  Areas/Identity/  pages de connexion, d'inscription et de refus d'accès, en français
 P5.Tests/          tests xUnit
 docs/uml/          diagrammes de classes
 docs/maquettes/    maquettes de référence
