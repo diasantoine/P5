@@ -30,6 +30,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IRepairService, RepairService>();
+builder.Services.AddScoped<IPhotoStorageService, PhotoStorageService>();
 builder.Services.Configure<PricingOptions>(builder.Configuration.GetSection(PricingOptions.SectionName));
 
 builder.Services.AddRazorPages();

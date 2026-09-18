@@ -64,8 +64,16 @@ public class VehicleFormViewModel
     [Display(Name = "Description de l'annonce")]
     public string? Description { get; set; }
 
-    [StringLength(260)]
+    /// <summary>Fichier televerse. Facultatif : sans lui, l'annonce garde sa photo actuelle.</summary>
     [Display(Name = "Photo")]
+    public IFormFile? Photo { get; set; }
+
+    /// <summary>
+    /// Adresse de la photo actuelle, pour l'afficher dans le formulaire. Jamais postee : c'est le
+    /// service de stockage qui la fabrique, sinon un formulaire forge pourrait pointer n'importe ou.
+    /// </summary>
+    [BindNever]
+    [ValidateNever]
     public string? PhotoUrl { get; set; }
 
     /// <summary>Suggestions de saisie, alimentees par le controleur, jamais postees.</summary>
@@ -99,7 +107,7 @@ public class VehicleFormViewModel
         PhotoUrl = v.PhotoUrl
     };
 
-    /// <summary>Reporte les champs saisis sur l'entite, sans jamais toucher SaleDate.</summary>
+    /// <summary>Reporte les champs saisis sur l'entite, sans jamais toucher SaleDate ni PhotoUrl (geree par le controleur).</summary>
     public void ApplyTo(Vehicle v)
     {
         v.Vin = Vin;
@@ -109,7 +117,6 @@ public class VehicleFormViewModel
         v.PurchasePrice = PurchasePrice;
         v.AvailabilityDate = AvailabilityDate;
         v.Description = Description;
-        v.PhotoUrl = PhotoUrl;
     }
 
     public Vehicle ToEntity()

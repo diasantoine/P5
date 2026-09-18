@@ -9,7 +9,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <partial name="_SpecificationFields" model="Model" />
@@ -47,11 +47,8 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="PhotoUrl" class="form-label"></label>
-                <input asp-for="PhotoUrl" class="form-control" />
-                <span asp-validation-for="PhotoUrl" class="text-danger"></span>
-            </div>
+            <partial name="_PhotoField" model="Model" />
+
 
             <div class="alert alert-info" role="note">
                 Le prix de vente est calculé automatiquement : prix d'achat + coût des réparations + marge de @Model.Margin.ToString("C0").

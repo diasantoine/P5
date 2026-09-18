@@ -12,9 +12,10 @@ namespace P5.Controllers;
 // Fermé par défaut ; seules Index et Details, les pages publiques de la vitrine, restent accessibles à tous.
 // L'inscription est ouverte : être connecté ne suffit donc pas, il faut le rôle du gérant pour écrire.
 [Authorize(Roles = AppRoles.Admin)]
-public class VehiclesController(IVehicleService vehicles, IOptions<PricingOptions> pricing) : Controller
+public class VehiclesController(IVehicleService vehicles, IPhotoStorageService photos, IOptions<PricingOptions> pricing) : Controller
 {
     private readonly IVehicleService _vehicles = vehicles;
+    private readonly IPhotoStorageService _photos = photos;
     private readonly PricingOptions _pricing = pricing.Value;
 
     [AllowAnonymous]
@@ -48,20 +49,30 @@ public class VehiclesController(IVehicleService vehicles, IOptions<PricingOption
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(VehicleFormViewModel form)
     {
+        ValidatePhoto(form);
         if (!ModelState.IsValid)
         {
             await PopulateFormAsync(form);
             return View(form);
         }
 
+        string? newPhotoUrl = null;
         try
         {
             form.SpecificationId = await _vehicles.GetOrCreateSpecificationIdAsync(form.BrandName, form.ModelName, form.TrimName);
-            var id = await _vehicles.AddAsync(form.ToEntity());
+            var vehicle = form.ToEntity();
+            if (form.Photo is not null)
+            {
+                vehicle.PhotoUrl = newPhotoUrl = await _photos.SaveAsync(form.Photo);
+            }
+
+            var id = await _vehicles.AddAsync(vehicle);
             return RedirectToAction(nameof(Details), new { id });
         }
         catch (DbUpdateException ex)
         {
+            // L'annonce n'a pas ete enregistree : sa photo ne doit pas rester orpheline sur le disque.
+            _photos.Delete(newPhotoUrl);
             AddSaveFailureError(ex, form);
             await PopulateFormAsync(form);
             return View(form);
@@ -95,6 +106,7 @@ public class VehiclesController(IVehicleService vehicles, IOptions<PricingOption
             return NotFound();
         }
 
+        ValidatePhoto(form);
         if (!ModelState.IsValid)
         {
             await PopulateFormAsync(form);
@@ -109,15 +121,30 @@ public class VehiclesController(IVehicleService vehicles, IOptions<PricingOption
             return NotFound();
         }
 
+        var previousPhotoUrl = vehicle.PhotoUrl;
+        string? newPhotoUrl = null;
         try
         {
             form.SpecificationId = await _vehicles.GetOrCreateSpecificationIdAsync(form.BrandName, form.ModelName, form.TrimName);
             form.ApplyTo(vehicle);
+            if (form.Photo is not null)
+            {
+                vehicle.PhotoUrl = newPhotoUrl = await _photos.SaveAsync(form.Photo);
+            }
+
             await _vehicles.UpdateAsync(vehicle);
+
+            // L'ancienne photo n'est supprimee qu'une fois la nouvelle enregistree en base.
+            if (newPhotoUrl is not null)
+            {
+                _photos.Delete(previousPhotoUrl);
+            }
+
             return RedirectToAction(nameof(Details), new { id });
         }
         catch (DbUpdateException ex)
         {
+            _photos.Delete(newPhotoUrl);
             AddSaveFailureError(ex, form);
             await PopulateFormAsync(form);
             return View(form);
@@ -160,11 +187,13 @@ public class VehiclesController(IVehicleService vehicles, IOptions<PricingOption
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+        var photoUrl = (await _vehicles.GetDetailAsync(id))?.PhotoUrl;
         if (!await _vehicles.DeleteAsync(id))
         {
             return NotFound();
         }
 
+        _photos.Delete(photoUrl);
         return RedirectToAction(nameof(Index));
     }
 
@@ -175,7 +204,19 @@ public class VehiclesController(IVehicleService vehicles, IOptions<PricingOption
 
         // Apercu du prix de vente : la marge vient de la configuration, les reparations de la base.
         form.Margin = _pricing.FixedMargin;
-        form.RepairsCost = form.Id == 0 ? 0m : (await _vehicles.GetDetailAsync(form.Id))?.RepairsCost ?? 0m;
+
+        // En modification, le cout des reparations et la photo actuelle viennent de la base, jamais du formulaire.
+        var current = form.Id == 0 ? null : await _vehicles.GetDetailAsync(form.Id);
+        form.RepairsCost = current?.RepairsCost ?? 0m;
+        form.PhotoUrl = current?.PhotoUrl;
+    }
+
+    private void ValidatePhoto(VehicleFormViewModel form)
+    {
+        if (form.Photo is not null && _photos.Validate(form.Photo) is { } error)
+        {
+            ModelState.AddModelError(nameof(form.Photo), error);
+        }
     }
 
     // L'unicite du VIN n'est verifiable qu'en base (contrainte SQL) : seul l'echec de l'ecriture la revele.

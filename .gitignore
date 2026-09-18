@@ -85,7 +85,7 @@ coverage*.xml
 ## Uploads utilisateur (photos des annonces)
 ## Décommente si tu stockes les photos dans wwwroot/uploads.
 ## ---------------------------------------------------------------
-# **/wwwroot/uploads/
+**/wwwroot/uploads/
 
 ## ---------------------------------------------------------------
 ## Système

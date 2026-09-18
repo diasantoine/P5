@@ -1,0 +1,17 @@
+@model P5.ViewModels.VehicleFormViewModel
+
+<div class="mb-3">
+    @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+    {
+        <p class="mb-1">Photo actuelle :</p>
+        <img src="@Model.PhotoUrl" alt="Photo actuelle de l'annonce" class="img-thumbnail mb-2" style="max-width: 12rem;" />
+    }
+
+    <label asp-for="Photo" class="form-label"></label>
+    <input asp-for="Photo" type="file" accept="image/jpeg,image/png,image/webp" class="form-control" aria-describedby="photo-help" />
+    <div id="photo-help" class="form-text">
+        JPEG, PNG ou WebP, 5 Mo maximum.
+        @(string.IsNullOrWhiteSpace(Model.PhotoUrl) ? "" : "Laissez vide pour garder la photo actuelle.")
+    </div>
+    <span asp-validation-for="Photo" class="text-danger"></span>
+</div>
