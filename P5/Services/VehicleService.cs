@@ -108,6 +108,48 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
         return true;
     }
 
+    /// <summary>
+    /// Chaque niveau n'est cherche que si son parent existe deja : un modele ne peut pas exister
+    /// sous une marque qu'on vient de creer. Les entites nouvelles sont reliees par leurs navigations,
+    /// EF en deduit les cles etrangeres (y compris les composites) et tout part en un seul
+    /// SaveChanges, donc en une seule transaction : le catalogue n'est jamais a moitie ecrit.
+    /// </summary>
+    public async Task<int> GetOrCreateSpecificationIdAsync(string brandName, string modelName, string trimName)
+    {
+        brandName = brandName.Trim();
+        modelName = modelName.Trim();
+        trimName = trimName.Trim();
+
+        var brand = await _context.Brands
+            .FirstOrDefaultAsync(b => b.Name.ToLower() == brandName.ToLower())
+            ?? new Brand { Name = brandName };
+
+        var carModel = (brand.Id == 0 ? null : await _context.CarModels
+            .FirstOrDefaultAsync(m => m.BrandId == brand.Id && m.Name.ToLower() == modelName.ToLower()))
+            ?? new CarModel { Name = modelName, Brand = brand };
+
+        var trim = (carModel.Id == 0 ? null : await _context.Trims
+            .FirstOrDefaultAsync(t => t.CarModelId == carModel.Id && t.Name.ToLower() == trimName.ToLower()))
+            ?? new Trim { Name = trimName, CarModel = carModel };
+
+        var specification = trim.Id == 0 ? null : await _context.VehicleSpecifications
+            .FirstOrDefaultAsync(s => s.BrandId == brand.Id && s.CarModelId == carModel.Id && s.TrimId == trim.Id);
+
+        if (specification is null)
+        {
+            specification = new VehicleSpecification { Brand = brand, CarModel = carModel, Trim = trim };
+            _context.VehicleSpecifications.Add(specification);
+            await _context.SaveChangesAsync();
+        }
+
+        return specification.Id;
+    }
+
+    public async Task<CatalogueNames> GetCatalogueNamesAsync() => new(
+        await _context.Brands.Select(b => b.Name).Distinct().OrderBy(n => n).ToListAsync(),
+        await _context.CarModels.Select(m => m.Name).Distinct().OrderBy(n => n).ToListAsync(),
+        await _context.Trims.Select(t => t.Name).Distinct().OrderBy(n => n).ToListAsync());
+
     public async Task<IReadOnlyList<SpecificationOption>> GetSpecificationOptionsAsync() =>
         await _context.VehicleSpecifications
             .OrderBy(s => s.Brand!.Name)

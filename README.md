@@ -39,7 +39,7 @@ cd P5
 dotnet user-secrets set "AdminAccount:Password" "<votre mot de passe>"
 ```
 
-L'inscription publique est fermée : le site n'a qu'un seul compte.
+L'inscription est ouverte à tous depuis le lien « S'inscrire », mais un compte créé ainsi ne reçoit aucun rôle : il consulte le site comme un visiteur. Seul le compte du gérant, créé au démarrage, porte le rôle `Admin`, et seul ce rôle peut modifier quoi que ce soit.
 
 ### Lancer les tests
 
@@ -47,7 +47,7 @@ L'inscription publique est fermée : le site n'a qu'un seul compte.
 dotnet test
 ```
 
-50 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed et celui des services.
+58 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services, et la restriction de toute écriture au rôle du gérant.
 
 ---
 
@@ -55,8 +55,8 @@ dotnet test
 
 | Qui | Ce qu'il peut faire |
 |---|---|
-| Tout le monde | consulter l'inventaire et la fiche d'un véhicule, avec le prix de vente |
-| Le gérant, connecté | ajouter un véhicule, modifier une annonce, saisir et supprimer des réparations, marquer un véhicule comme vendu, supprimer une annonce |
+| Tout le monde, inscrit ou non | consulter l'inventaire et la fiche d'un véhicule, avec le prix de vente ; créer un compte et se connecter |
+| Le gérant, connecté (rôle `Admin`) | ajouter un véhicule, modifier une annonce, saisir et supprimer des réparations, marquer un véhicule comme vendu, supprimer une annonce |
 
 Le prix d'achat, le coût des réparations et la marge ne sont visibles que par le gérant : ce sont des informations internes.
 

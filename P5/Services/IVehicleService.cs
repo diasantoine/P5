@@ -29,6 +29,15 @@ public interface IVehicleService
     /// <summary>Supprime le vehicule et, en cascade, ses reparations. False si l'identifiant est inconnu.</summary>
     Task<bool> DeleteAsync(int id);
 
+    /// <summary>
+    /// Retrouve la specification marque + modele + finition, ou cree ce qui manque dans le catalogue.
+    /// La comparaison ignore la casse et les espaces de bord ; la graphie deja en base est conservee.
+    /// </summary>
+    Task<int> GetOrCreateSpecificationIdAsync(string brandName, string modelName, string trimName);
+
+    /// <summary>Noms deja connus du catalogue, pour suggerer la saisie sans l'imposer.</summary>
+    Task<CatalogueNames> GetCatalogueNamesAsync();
+
     /// <summary>Specifications disponibles, libellees "Marque Modele Finition", triees.</summary>
     Task<IReadOnlyList<SpecificationOption>> GetSpecificationOptionsAsync();
 }

@@ -164,4 +164,46 @@ public class VehicleServiceTests
 
         Assert.False(await service.DeleteAsync(999));
     }
+    [Fact]
+    public async Task GetOrCreateSpecificationIdAsync_ReusesExistingTriplet_IgnoringCaseAndSpaces()
+    {
+        using var context = CreateContext();
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
+
+        var id = await service.GetOrCreateSpecificationIdAsync("  ford ", "EXPLORER", "xlt");
+
+        Assert.Equal(1, id);
+        Assert.Equal(1, context.Brands.Count());
+        Assert.Equal(1, context.VehicleSpecifications.Count());
+    }
+
+    [Fact]
+    public async Task GetOrCreateSpecificationIdAsync_CreatesOnlyWhatIsMissing()
+    {
+        using var context = CreateContext();
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
+
+        var id = await service.GetOrCreateSpecificationIdAsync("Ford", "Edge", "SEL");
+
+        var spec = context.VehicleSpecifications.Single(s => s.Id == id);
+        Assert.Equal(1, context.Brands.Count());
+        Assert.Equal(2, context.CarModels.Count());
+        Assert.Equal(1, spec.BrandId);
+        Assert.Equal("Edge", context.CarModels.Single(m => m.Id == spec.CarModelId).Name);
+        Assert.Equal("SEL", context.Trims.Single(t => t.Id == spec.TrimId).Name);
+    }
+
+    [Fact]
+    public async Task GetOrCreateSpecificationIdAsync_CreatesAWholeNewBranch()
+    {
+        using var context = CreateContext();
+        var service = new VehicleService(context, Options.Create(new PricingOptions()));
+
+        var id = await service.GetOrCreateSpecificationIdAsync("Fiat", "500", "Lounge");
+
+        var spec = context.VehicleSpecifications
+            .Include(s => s.Brand).Include(s => s.CarModel).Include(s => s.Trim)
+            .Single(s => s.Id == id);
+        Assert.Equal("Fiat 500 Lounge", spec.Label);
+    }
 }
