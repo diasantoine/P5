@@ -1,10 +1,11 @@
 @model P5.Models.Vehicle
 
 @{
-    ViewData["Title"] = "Supprimer ce véhicule ?";
+    ViewData["Title"] = $"Supprimer « {Model.Designation} » ?";
 }
 
-<h1>Supprimer ce véhicule ?</h1>
+<h1>Supprimer « @Model.Designation » ?</h1>
+<p class="text-muted">Cette action est définitive.</p>
 
 <div class="row">
     <div class="col-md-7">
@@ -27,7 +28,7 @@
         }
 
         <div class="alert alert-info" role="note">
-            Pour une voiture vendue, préférez « Marquer vendu » à la suppression : elle reste ainsi dans l'historique.
+            Pour une voiture vendue, préférez « Marquer comme vendu » à la suppression : elle reste ainsi dans l'historique.
         </div>
 
         <form asp-action="Delete" method="post">

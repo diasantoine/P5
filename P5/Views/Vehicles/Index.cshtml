@@ -28,7 +28,7 @@ else
                     <th scope="col">Photo</th>
                     <th scope="col">Véhicule</th>
                     <th scope="col">@Html.DisplayNameFor(model => model.Year)</th>
-                    @* Prix d'achat et coût des réparations sont des informations internes au garage, masquées aux visiteurs anonymes. *@
+                    @* Prix d'achat et coût des réparations sont des informations internes au garage, réservées au gérant. *@
                     @if (isAdmin)
                     {
                         <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PurchasePrice)</th>
@@ -74,11 +74,12 @@ else
                             }
                         </td>
                         <td>
-                            <a asp-action="Details" asp-route-id="@item.Id">Détails</a>
+                            @* Le nom du véhicule, masqué à l'écran, distingue ces liens pour un lecteur d'écran qui les liste hors contexte. *@
+                            <a asp-action="Details" asp-route-id="@item.Id">Détails<span class="visually-hidden"> de @item.Designation</span></a>
                             @if (isAdmin)
                             {
                                 <text> | </text>
-                                <a asp-action="Edit" asp-route-id="@item.Id">Modifier</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id">Modifier<span class="visually-hidden"> @item.Designation</span></a>
                             }
                         </td>
                     </tr>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using P5.Configuration;
 using P5.Data;
+using P5.Security;
 using P5.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Aucun IEmailSender n'est configuré sur ce prototype : exiger un compte confirmé empêcherait tout inscrit de se connecter.
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
+    .AddErrorDescriber<FrenchIdentityErrorDescriber>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Culture unique et explicite : sans cela, le binding et le formatage des decimaux dependent de la culture du systeme hote.
@@ -73,7 +75,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Vehicles}/{action=Index}/{id?}") // la page d'accueil du site est l'inventaire
     .WithStaticAssets();
 
 app.MapRazorPages()

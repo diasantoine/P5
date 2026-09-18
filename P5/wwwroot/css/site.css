@@ -21,6 +21,14 @@ body {
   margin-bottom: 60px;
 }
 
+/* Trait pointillé de la maquette, entre la fiche et les réparations. */
+.dashed-separator {
+  border: 0;
+  border-top: 2px dashed var(--bs-secondary-color);
+  opacity: 1;
+  margin: 1.5rem 0;
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;

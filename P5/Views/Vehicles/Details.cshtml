@@ -5,6 +5,8 @@
     var isAdmin = User.IsInRole(P5.Security.AppRoles.Admin);
 }
 
+<p><a asp-action="Index" class="link-secondary">&#8592; Retour<span class="visually-hidden"> à l'inventaire</span></a></p>
+
 <h1>@Model.Designation</h1>
 <p class="text-muted">Millésime @Model.Year@(string.IsNullOrWhiteSpace(Model.Vin) ? "" : $" — VIN {Model.Vin}")</p>
 
@@ -27,17 +29,37 @@
     </div>
 
     <div class="col-md-7">
+        @* Bloc d'actions de la maquette (écran 05), au-dessus du prix. Réservé au gérant : un inscrit
+           sans rôle voit la même fiche qu'un visiteur anonyme (écran 07). *@
+        @if (isAdmin)
+        {
+            <p class="mb-1">Vous avez publié cette annonce, vous pouvez la :</p>
+            <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+                @* « modifier » et « supprimer » NAVIGUENT vers une autre page : ce sont des liens.
+                   La suppression réelle est un POST, sur la page de confirmation. *@
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="link-secondary">modifier<span class="visually-hidden"> l'annonce</span></a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="link-danger">supprimer<span class="visually-hidden"> l'annonce</span></a>
+
+                @* « Marquer comme vendu » AGIT : c'est un bouton dans un formulaire POST. Absent de la
+                   maquette, ajouté parce qu'une voiture vendue doit rester dans l'historique au lieu d'être effacée. *@
+                @if (Model.IsAvailable)
+                {
+                    <form asp-action="MarkAsSold" asp-route-id="@Model.Id" method="post" class="d-flex flex-wrap gap-2 align-items-center">
+                        <label for="saleDate" class="visually-hidden">Date de vente</label>
+                        <input type="date" id="saleDate" name="saleDate"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               min="@Model.PurchaseDate.ToString("yyyy-MM-dd")"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control form-control-sm w-auto" />
+                        <button type="submit" class="btn btn-sm btn-warning text-nowrap">Marquer comme vendu</button>
+                    </form>
+                }
+            </div>
+        }
+
         <h2 class="h5">Prix</h2>
         @* Le prix de revient (achat, réparations, marge) est une information interne au garage : seul le gérant la voit, tous les autres ne voient que le prix de vente. *@
         <table class="table">
-            @if (isAdmin)
-            {
-                <caption>Décomposition du prix de vente.</caption>
-            }
-            else
-            {
-                <caption>Prix de vente du véhicule.</caption>
-            }
+            <caption>@(isAdmin ? "Décomposition du prix de vente." : "Prix de vente du véhicule.")</caption>
             <tbody>
                 @if (isAdmin)
                 {
@@ -61,9 +83,38 @@
             </tbody>
         </table>
 
-        @* Les réparations et leur coût sont une information interne au garage, réservée au gérant. *@
+        @* Les quatre caractéristiques empilées de la maquette. *@
+        <h2 class="h5">Caractéristiques</h2>
+        <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Year)</dt>
+            <dd class="col-sm-8">@Model.Year</dd>
+
+            <dt class="col-sm-4">Marque</dt>
+            <dd class="col-sm-8">@Model.Specification?.Brand?.Name</dd>
+
+            <dt class="col-sm-4">Modèle</dt>
+            <dd class="col-sm-8">@Model.Specification?.CarModel?.Name</dd>
+
+            <dt class="col-sm-4">Finition</dt>
+            <dd class="col-sm-8">@Model.Specification?.Trim?.Name</dd>
+        </dl>
+
+        <h2 class="h5">Disponibilité</h2>
+        @if (Model.IsAvailable)
+        {
+            <p><span class="badge text-bg-success">Disponible</span></p>
+        }
+        else
+        {
+            <p><span class="badge text-bg-secondary">Vendu le @Model.SaleDate?.ToString("dd/MM/yyyy")</span></p>
+        }
+
+        @* Le trait pointillé de l'écran 07 : les réparations vivent sous la colonne de droite.
+           Information interne au garage, comme le prix de revient : réservée au gérant. *@
         @if (isAdmin)
         {
+            <hr class="dashed-separator" />
+
             <h2 class="h5">Réparations</h2>
             @if (!Model.Repairs.Any())
             {
@@ -101,36 +152,5 @@
                 Ajouter une réparation
             </a>
         }
-
-        <h2 class="h5">Disponibilité</h2>
-        @if (Model.IsAvailable)
-        {
-            <p><span class="badge text-bg-success">Disponible</span></p>
-        }
-        else
-        {
-            <p><span class="badge text-bg-secondary">Vendu le @Model.SaleDate?.ToString("dd/MM/yyyy")</span></p>
-        }
-
-        @if (isAdmin)
-        {
-            <div class="d-flex gap-2 mt-4">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Modifier l'annonce</a>
-
-                @if (Model.IsAvailable)
-                {
-                    <form asp-action="MarkAsSold" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
-                        <label for="saleDate" class="visually-hidden">Date de vente</label>
-                        <input type="date" id="saleDate" name="saleDate"
-                               value="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" />
-                        <button type="submit" class="btn btn-warning text-nowrap">Marquer vendu</button>
-                    </form>
-                }
-
-                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Supprimer</a>
-            </div>
-        }
     </div>
 </div>
-
-<p class="mt-4"><a asp-action="Index">Retour à l'inventaire</a></p>

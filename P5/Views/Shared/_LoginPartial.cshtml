@@ -1,16 +1,25 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
+@using P5.Security
 @inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
 
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
+    @* « Ajouter une voiture » ne s'affiche qu'à qui a le droit de publier : le gérant. Le masquer n'est
+       qu'un confort, la vraie protection est [Authorize(Roles = Admin)] sur le contrôleur. *@
+    @if (User.IsInRole(AppRoles.Admin))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Create">Ajouter une voiture</a>
+        </li>
+    }
     <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Bonjour @User.Identity?.Name !</a>
+        <span class="navbar-text">Bonjour @User.Identity?.Name !</span>
     </li>
     <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Se déconnecter</button>
+        @* Se déconnecter CHANGE l'état de la session : c'est un bouton dans un POST, jamais un lien. *@
+        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Vehicles", new { area = "" })" method="post">
+            <button type="submit" class="nav-link btn btn-link text-dark">Se déconnecter</button>
         </form>
     </li>
 }
