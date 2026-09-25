@@ -153,18 +153,16 @@ public class VehiclesController(IVehicleService vehicles, IPhotoStorageService p
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // La date de vente est saisie par le gérant ; en cas de refus, la fiche réaffiche le message.
     public async Task<IActionResult> MarkAsSold(int id, DateOnly? saleDate)
     {
-        var date = saleDate ?? DateOnly.FromDateTime(DateTime.Today);
-
-        if (date > DateOnly.FromDateTime(DateTime.Today))
+        if (saleDate is null || saleDate > DateOnly.FromDateTime(DateTime.Today))
         {
-            return BadRequest();
+            TempData["SaleError"] = "Indiquez la date de la vente, au plus tard aujourd'hui.";
         }
-
-        if (!await _vehicles.MarkAsSoldAsync(id, date))
+        else if (!await _vehicles.MarkAsSoldAsync(id, saleDate.Value))
         {
-            return NotFound();
+            TempData["SaleError"] = "La vente n'a pas été enregistrée : la date doit suivre la date d'achat, et une vente ne s'enregistre qu'une fois.";
         }
 
         return RedirectToAction(nameof(Details), new { id });
