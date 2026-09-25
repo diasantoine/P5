@@ -72,13 +72,11 @@ Le prix de vente **n'est jamais saisi ni stocké**. Il est recalculé à chaque 
 
 ## Modèle de données
 
-![Modèle de données](docs/uml/data-model.png)
-
-Six entités. Le catalogue est une hiérarchie à trois niveaux, **marque → modèle → finition**, et une table de spécification porte le triplet complet. Un véhicule ne référence que cette spécification : il atteint donc sa marque en une seule jointure, au lieu de traverser toute la chaîne.
+Six entités : `Brand`, `CarModel`, `Trim`, `VehicleSpecification`, `Vehicle`, `Repair`. Le catalogue est une hiérarchie à trois niveaux, **marque → modèle → finition**, et une table de spécification porte le triplet complet. Un véhicule ne référence que cette spécification : il atteint donc sa marque en une seule jointure, au lieu de traverser toute la chaîne.
 
 Deux clés étrangères **composites** garantissent la cohérence du triplet : la base refuse une spécification associant une marque à un modèle qui ne lui appartient pas.
 
-Le diagramme des couches applicatives est dans [`docs/uml/architecture.png`](docs/uml/architecture.png), et les conventions de notation sont expliquées dans [`docs/uml/README.md`](docs/uml/README.md).
+Les diagrammes de classes et d'architecture sont fournis séparément avec le livrable.
 
 ---
 
@@ -96,8 +94,6 @@ P5/
   Security/        nom du rôle du gérant, messages d'Identity en français
   Areas/Identity/  pages de connexion et de refus d'accès en français, inscription fermée
 P5.Tests/          tests xUnit
-docs/uml/          diagrammes de classes
-docs/maquettes/    maquettes de référence
 ```
 
 Trois principes structurent le code.
