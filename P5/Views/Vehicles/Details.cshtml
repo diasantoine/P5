@@ -5,20 +5,18 @@
     var isAdmin = User.IsInRole(P5.Security.AppRoles.Admin);
 }
 
-<p><a asp-action="Index" class="link-secondary">&#8592; Retour<span class="visually-hidden"> à l'inventaire</span></a></p>
+<p><a asp-action="Index" class="ev-back">&#8592; Retour<span class="visually-hidden"> à l'inventaire</span></a></p>
 
-<h1>@Model.Designation</h1>
-<p class="text-muted">Millésime @Model.Year@(string.IsNullOrWhiteSpace(Model.Vin) ? "" : $" — VIN {Model.Vin}")</p>
-
-<div class="row">
-    <div class="col-md-5">
+@* Photo à gauche, prix et caractéristiques à droite, comme la maquette. *@
+<div class="row g-4">
+    <div class="col-md-7">
         @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
         {
-            <img src="@Model.PhotoUrl" alt="Photo du véhicule : @Model.Designation" class="img-fluid rounded mb-3" />
+            <img src="@Model.PhotoUrl" alt="Photo du véhicule : @Model.Designation" class="img-fluid w-100 mb-3" />
         }
         else
         {
-            <p class="text-muted">Aucune photo pour ce véhicule.</p>
+            <div class="ev-photo-placeholder d-flex align-items-center justify-content-center mb-3">Aucune photo pour ce véhicule.</div>
         }
 
         @if (!string.IsNullOrWhiteSpace(Model.Description))
@@ -28,38 +26,56 @@
         }
     </div>
 
-    <div class="col-md-7">
+    <div class="col-md-5">
+        <h1 class="ev-vehicle-title">@Model.Year @Model.Designation@(string.IsNullOrWhiteSpace(Model.Vin) ? "" : $" — VIN {Model.Vin}")</h1>
+
         @* Actions réservées au gérant. *@
         @if (isAdmin)
         {
             <p class="mb-1">Vous avez publié cette annonce, vous pouvez la :</p>
-            <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+            <p class="d-flex gap-3">
                 @* Liens vers la page de modification et vers la page de confirmation de suppression. *@
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="link-secondary">modifier<span class="visually-hidden"> l'annonce</span></a>
-                <a asp-action="Delete" asp-route-id="@Model.Id" class="link-danger">supprimer<span class="visually-hidden"> l'annonce</span></a>
-
-                @* « Marquer comme vendu » agit : c'est un bouton dans un formulaire POST. *@
-                @if (Model.IsAvailable)
-                {
-                    <form asp-action="MarkAsSold" asp-route-id="@Model.Id" method="post" class="d-flex flex-wrap gap-2 align-items-center">
-                        <label for="saleDate" class="visually-hidden">Date de vente</label>
-                        <input type="date" id="saleDate" name="saleDate"
-                               value="@DateTime.Today.ToString("yyyy-MM-dd")"
-                               min="@Model.PurchaseDate.ToString("yyyy-MM-dd")"
-                               max="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control form-control-sm w-auto" />
-                        <button type="submit" class="btn btn-sm btn-warning text-nowrap">Marquer comme vendu</button>
-                    </form>
-                }
-            </div>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="ev-link-edit">modifier<span class="visually-hidden"> l'annonce</span></a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="ev-link-delete">supprimer<span class="visually-hidden"> l'annonce</span></a>
+            </p>
         }
 
-        <h2 class="h5">Prix</h2>
-        @* Le prix de revient (achat, réparations, marge) est une information interne au garage : seul le gérant la voit, tous les autres ne voient que le prix de vente. *@
-        <table class="table">
-            <caption>@(isAdmin ? "Décomposition du prix de vente." : "Prix de vente du véhicule.")</caption>
-            <tbody>
-                @if (isAdmin)
-                {
+        @if (TempData["SaleError"] is string saleError)
+        {
+            <div class="alert alert-danger" role="alert">@saleError</div>
+        }
+
+        <h2 class="ev-price-title">Prix de vente</h2>
+        <p class="ev-price">@Html.DisplayFor(m => m.SalePrice)</p>
+
+        <dl class="ev-specs">
+            <dt>@Html.DisplayNameFor(m => m.Year)</dt>
+            <dd>@Model.Year</dd>
+
+            <dt>Marque</dt>
+            <dd>@Model.Specification?.Brand?.Name</dd>
+
+            <dt>Modèle</dt>
+            <dd>@Model.Specification?.CarModel?.Name</dd>
+
+            <dt>Finition</dt>
+            <dd>@Model.Specification?.Trim?.Name</dd>
+        </dl>
+
+        @if (!Model.IsAvailable)
+        {
+            <p><span class="badge text-bg-secondary">Vendu le @Model.SaleDate?.ToString("dd/MM/yyyy")</span></p>
+        }
+
+        @* Sous le trait pointillé : le prix de revient, la vente et les réparations, informations internes au garage réservées au gérant. *@
+        @if (isAdmin)
+        {
+            <hr class="dashed-separator" />
+
+            <h2 class="h5">Prix de revient</h2>
+            <table class="table table-sm">
+                <caption>Décomposition du prix de vente.</caption>
+                <tbody>
                     <tr>
                         <th scope="row">@Html.DisplayNameFor(m => m.PurchasePrice)</th>
                         <td class="text-end">@Html.DisplayFor(m => m.PurchasePrice)</td>
@@ -72,44 +88,25 @@
                         <th scope="row">Marge</th>
                         <td class="text-end">@Model.Margin.ToString("C")</td>
                     </tr>
-                }
-                <tr class="table-active fw-bold">
-                    <th scope="row">@Html.DisplayNameFor(m => m.SalePrice)</th>
-                    <td class="text-end">@Html.DisplayFor(m => m.SalePrice)</td>
-                </tr>
-            </tbody>
-        </table>
+                    <tr class="table-active fw-bold">
+                        <th scope="row">@Html.DisplayNameFor(m => m.SalePrice)</th>
+                        <td class="text-end">@Html.DisplayFor(m => m.SalePrice)</td>
+                    </tr>
+                </tbody>
+            </table>
 
-        @* Les quatre caractéristiques du véhicule, affichées empilées. *@
-        <h2 class="h5">Caractéristiques</h2>
-        <dl class="row">
-            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Year)</dt>
-            <dd class="col-sm-8">@Model.Year</dd>
-
-            <dt class="col-sm-4">Marque</dt>
-            <dd class="col-sm-8">@Model.Specification?.Brand?.Name</dd>
-
-            <dt class="col-sm-4">Modèle</dt>
-            <dd class="col-sm-8">@Model.Specification?.CarModel?.Name</dd>
-
-            <dt class="col-sm-4">Finition</dt>
-            <dd class="col-sm-8">@Model.Specification?.Trim?.Name</dd>
-        </dl>
-
-        <h2 class="h5">Disponibilité</h2>
-        @if (Model.IsAvailable)
-        {
-            <p><span class="badge text-bg-success">Disponible</span></p>
-        }
-        else
-        {
-            <p><span class="badge text-bg-secondary">Vendu le @Model.SaleDate?.ToString("dd/MM/yyyy")</span></p>
-        }
-
-        @* Réparations : information interne au garage, comme le prix de revient, réservée au gérant. *@
-        @if (isAdmin)
-        {
-            <hr class="dashed-separator" />
+            @* « Marquer comme vendu » agit : c'est un bouton dans un formulaire POST, avec la date de vente saisie. *@
+            @if (Model.IsAvailable)
+            {
+                <h2 class="h5">Vente</h2>
+                <form asp-action="MarkAsSold" asp-route-id="@Model.Id" method="post" class="d-flex flex-wrap gap-2 align-items-center mb-4">
+                    <label for="saleDate" class="form-label mb-0">Date de vente</label>
+                    <input type="date" id="saleDate" name="saleDate" required
+                           min="@Model.PurchaseDate.ToString("yyyy-MM-dd")"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control form-control-sm w-auto" />
+                    <button type="submit" class="btn btn-sm btn-primary text-nowrap">Marquer comme vendu</button>
+                </form>
+            }
 
             <h2 class="h5">Réparations</h2>
             @if (!Model.Repairs.Any())
@@ -144,7 +141,7 @@
                 </table>
             }
 
-            <a asp-controller="Repairs" asp-action="Create" asp-route-vehicleId="@Model.Id" class="btn btn-sm btn-outline-secondary">
+            <a asp-controller="Repairs" asp-action="Create" asp-route-vehicleId="@Model.Id" class="btn btn-sm btn-outline-primary">
                 Ajouter une réparation
             </a>
         }

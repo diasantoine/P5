@@ -1,90 +1,71 @@
 @model IEnumerable<P5.Models.Vehicle>
 
 @{
-    ViewData["Title"] = "Inventaire";
+    ViewData["Title"] = "Nos voitures";
     var isAdmin = User.IsInRole(P5.Security.AppRoles.Admin);
 }
 
-<h1>Inventaire des véhicules</h1>
-
-@if (isAdmin)
-{
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Ajouter un véhicule</a>
-    </p>
-}
+<div class="text-center mb-5">
+    <h1 class="ev-page-title">Nos voitures</h1>
+    @if (isAdmin)
+    {
+        <a asp-action="Create" class="btn btn-primary btn-lg">+ Ajouter une voiture</a>
+    }
+</div>
 
 @if (!Model.Any())
 {
-    <p>Aucun véhicule dans l'inventaire pour le moment.</p>
+    <p class="text-center">Aucun véhicule dans l'inventaire pour le moment.</p>
 }
 else
 {
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <caption>@Model.Count() véhicule(s) dans l'inventaire.</caption>
-            <thead>
-                <tr>
-                    <th scope="col">Photo</th>
-                    <th scope="col">Véhicule</th>
-                    <th scope="col">@Html.DisplayNameFor(model => model.Year)</th>
-                    @* Prix d'achat et coût des réparations sont des informations internes au garage, réservées au gérant. *@
-                    @if (isAdmin)
-                    {
-                        <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.PurchasePrice)</th>
-                        <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.RepairsCost)</th>
-                    }
-                    <th scope="col" class="text-end">@Html.DisplayNameFor(model => model.SalePrice)</th>
-                    <th scope="col">Disponibilité</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
+    @* Une carte par véhicule, deux par ligne : photo à gauche, prix et caractéristiques à droite. *@
+    <ul class="list-unstyled row row-cols-1 row-cols-lg-2 g-5">
+        @foreach (var item in Model)
+        {
+            <li class="col">
+                <article class="ev-card">
+                    @* La carte entière mène à la fiche ; le nom du véhicule distingue les liens pour un lecteur d'écran. *@
+                    <a asp-action="Details" asp-route-id="@item.Id" class="ev-card-link">
+                        <div class="ev-card-photo">
                             @if (!string.IsNullOrWhiteSpace(item.PhotoUrl))
                             {
-                                <img src="@item.PhotoUrl" alt="Photo du véhicule : @item.Designation" width="80" class="img-thumbnail" />
+                                <img src="@item.PhotoUrl" alt="Photo du véhicule : @item.Designation" />
                             }
                             else
                             {
-                                <span class="text-muted">—</span>
+                                <div class="ev-photo-placeholder d-flex align-items-center justify-content-center">Aucune photo</div>
                             }
-                        </td>
-                        <td>@item.Designation</td>
-                        <td>@item.Year</td>
-                        @if (isAdmin)
-                        {
-                            <td class="text-end">@Html.DisplayFor(modelItem => item.PurchasePrice)</td>
-                            <td class="text-end">@Html.DisplayFor(modelItem => item.RepairsCost)</td>
-                        }
-                        <td class="text-end fw-bold">@Html.DisplayFor(modelItem => item.SalePrice)</td>
-                        <td>
-                            @if (item.IsAvailable)
+                        </div>
+                        <div class="ev-card-body">
+                            <h2 class="ev-card-title">Prix de vente</h2>
+                            <p class="ev-card-price">@Html.DisplayFor(modelItem => item.SalePrice)</p>
+                            <dl class="ev-card-specs">
+                                <dt>Année</dt>
+                                <dd>@item.Year</dd>
+                                <dt>Marque</dt>
+                                <dd>@item.Specification?.Brand?.Name</dd>
+                                <dt>Modèle</dt>
+                                <dd>@item.Specification?.CarModel?.Name</dd>
+                                <dt>Finition</dt>
+                                <dd>@item.Specification?.Trim?.Name</dd>
+                            </dl>
+                            @if (!item.IsAvailable)
                             {
-                                <span class="badge text-bg-success">Disponible</span>
+                                <span class="badge text-bg-secondary">Vendu le @item.SaleDate?.ToString("dd/MM/yyyy")</span>
                             }
-                            else
-                            {
-                                <span class="badge text-bg-secondary">
-                                    Vendu le @item.SaleDate?.ToString("dd/MM/yyyy")
-                                </span>
-                            }
-                        </td>
-                        <td>
-                            @* Le nom du véhicule, masqué à l'écran, distingue ces liens pour un lecteur d'écran qui les liste hors contexte. *@
-                            <a asp-action="Details" asp-route-id="@item.Id">Détails<span class="visually-hidden"> de @item.Designation</span></a>
-                            @if (isAdmin)
-                            {
-                                <text> | </text>
-                                <a asp-action="Edit" asp-route-id="@item.Id">Modifier<span class="visually-hidden"> @item.Designation</span></a>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                            <span class="visually-hidden">Voir la fiche de @item.Designation</span>
+                        </div>
+                    </a>
+                    @* Le gérant accède à la modification depuis la liste. *@
+                    @if (isAdmin)
+                    {
+                        <p class="ev-card-actions">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="ev-link-edit">modifier<span class="visually-hidden"> @item.Designation</span></a>
+                        </p>
+                    }
+                </article>
+            </li>
+        }
+    </ul>
 }

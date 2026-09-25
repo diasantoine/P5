@@ -1,5 +1,33 @@
+/* Charte de la maquette : deux couleurs de la palette, une serif pour les titres, une sans-serif pour le reste.
+   Les variables Bootstrap sont surchargées pour que les composants existants suivent la charte sans changer de balisage. */
+:root {
+  --ev-gold: #d9a963;
+  --ev-brown-dark: #2c1810;
+  --ev-brown-muted: #796157;
+  --ev-red: #d70000;
+  --ev-grey: #6b6b6b;
+  --ev-font-serif: "Libre Baskerville", Georgia, "Times New Roman", serif;
+  --ev-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --bs-body-font-family: var(--ev-font-sans);
+  --bs-body-color: var(--ev-brown-dark);
+  --bs-body-color-rgb: 44, 24, 16;
+  --bs-heading-color: var(--ev-brown-dark);
+  --bs-link-color: var(--ev-brown-dark);
+  --bs-link-color-rgb: 44, 24, 16;
+  --bs-link-hover-color: var(--ev-brown-muted);
+  --bs-link-hover-color-rgb: 121, 97, 87;
+  --bs-primary: var(--ev-gold);
+  --bs-primary-rgb: 217, 169, 99;
+  --bs-danger: var(--ev-red);
+  --bs-danger-rgb: 215, 0, 0;
+  --bs-secondary-color: var(--ev-brown-muted);
+}
+
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,23 +36,216 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
   margin-bottom: 60px;
 }
 
-/* Trait pointillé entre la fiche et les réparations. */
+main {
+  padding-top: 2rem;
+}
+
+h1, h2, h3, .navbar-brand {
+  font-family: var(--ev-font-serif);
+  font-weight: 700;
+}
+
+/* Bouton doré au texte brun, comme « + Ajouter une voiture » et « Se connecter » de la maquette. */
+.btn-primary {
+  --bs-btn-color: var(--ev-brown-dark);
+  --bs-btn-bg: var(--ev-gold);
+  --bs-btn-border-color: var(--ev-gold);
+  --bs-btn-hover-color: var(--ev-brown-dark);
+  --bs-btn-hover-bg: #c99850;
+  --bs-btn-hover-border-color: #c99850;
+  --bs-btn-active-color: var(--ev-brown-dark);
+  --bs-btn-active-bg: #b8873f;
+  --bs-btn-active-border-color: #b8873f;
+  --bs-btn-disabled-color: var(--ev-brown-dark);
+  --bs-btn-disabled-bg: var(--ev-gold);
+  --bs-btn-disabled-border-color: var(--ev-gold);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--ev-brown-dark);
+  --bs-btn-border-color: var(--ev-gold);
+  --bs-btn-hover-color: var(--ev-brown-dark);
+  --bs-btn-hover-bg: var(--ev-gold);
+  --bs-btn-hover-border-color: var(--ev-gold);
+  --bs-btn-active-color: var(--ev-brown-dark);
+  --bs-btn-active-bg: var(--ev-gold);
+  --bs-btn-active-border-color: var(--ev-gold);
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--ev-brown-muted);
+}
+
+/* En-tête : logo serif à gauche, liens bruns à droite, page courante en gras. */
+.navbar {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.navbar .navbar-brand {
+  font-size: 1.5rem;
+  color: var(--ev-brown-dark);
+}
+
+.navbar .nav-link,
+.navbar .navbar-text {
+  display: block;
+  color: var(--ev-brown-dark);
+  padding: 0.5rem 1rem;
+}
+
+.navbar .nav-link.active {
+  font-weight: 700;
+}
+
+/* Inventaire : titre italique centré et cartes sur deux colonnes. */
+.ev-page-title {
+  font-family: var(--ev-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 2.75rem;
+  color: var(--ev-brown-muted);
+  margin-bottom: 1.5rem;
+}
+
+.ev-card-link {
+  display: flex;
+  gap: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ev-card-link:hover .ev-card-title,
+.ev-card-link:focus .ev-card-title {
+  text-decoration: underline;
+}
+
+/* La photo s'affiche entière dans une case 4/3, avec des bandes beiges si son format diffère. */
+.ev-card-photo {
+  flex: 0 0 62%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #f3efeb;
+}
+
+.ev-card-photo img,
+.ev-card-photo .ev-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ev-card-body {
+  flex: 1 1 auto;
+  padding-top: 20%;
+}
+
+.ev-card-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.ev-card-price {
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+}
+
+.ev-card-specs {
+  margin-bottom: 0.5rem;
+}
+
+.ev-card-specs dt {
+  color: var(--ev-brown-muted);
+  font-weight: 400;
+  float: left;
+  clear: left;
+  margin-right: 0.35rem;
+}
+
+.ev-card-specs dt::after {
+  content: " :";
+}
+
+.ev-card-specs dd {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.ev-card-actions {
+  margin: 0.5rem 0 0 calc(62% + 0.75rem);
+}
+
+/* Fiche véhicule. */
+.ev-back {
+  color: var(--ev-brown-muted);
+  text-decoration: none;
+}
+
+.ev-back:hover, .ev-back:focus {
+  text-decoration: underline;
+}
+
+.ev-vehicle-title {
+  font-family: var(--ev-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.25rem;
+  color: var(--ev-brown-muted);
+}
+
+.ev-price-title {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.ev-price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.ev-specs {
+  margin-bottom: 0;
+}
+
+.ev-specs dt {
+  color: var(--ev-brown-muted);
+  font-weight: 400;
+}
+
+.ev-specs dd {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.ev-link-edit {
+  color: var(--ev-grey);
+}
+
+.ev-link-delete {
+  color: var(--ev-red);
+}
+
+.ev-link-edit:hover, .ev-link-edit:focus,
+.ev-link-delete:hover, .ev-link-delete:focus {
+  color: var(--ev-brown-dark);
+}
+
+.ev-photo-placeholder {
+  aspect-ratio: 4 / 3;
+  background: #f3efeb;
+  color: var(--ev-brown-muted);
+}
+
+/* Trait pointillé entre la fiche et la partie réservée au gérant. */
 .dashed-separator {
   border: 0;
-  border-top: 2px dashed var(--bs-secondary-color);
+  border-top: 2px dashed var(--ev-brown-muted);
   opacity: 1;
   margin: 1.5rem 0;
 }

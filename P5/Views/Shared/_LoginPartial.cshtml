@@ -9,7 +9,7 @@
     @if (User.IsInRole(AppRoles.Admin))
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Create">Ajouter une voiture</a>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Create" ? "active" : "")" asp-area="" asp-controller="Vehicles" asp-action="Create">Ajouter une voiture</a>
         </li>
     }
     <li class="nav-item">
@@ -18,17 +18,20 @@
     <li class="nav-item">
         @* Se déconnecter change l'état de la session : c'est un bouton dans un POST, jamais un lien. *@
         <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Vehicles", new { area = "" })" method="post">
-            <button type="submit" class="nav-link btn btn-link text-dark">Se déconnecter</button>
+            <button type="submit" class="nav-link btn btn-link">Se déconnecter</button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Se connecter</a>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Se connecter</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">S'inscrire</a>
-    </li>
+    @*
+        Inscription fermée : seul le compte du gérant existe. Lien conservé pour une évolution éventuelle.
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">S'inscrire</a>
+        </li>
+    *@
 }
 </ul>
