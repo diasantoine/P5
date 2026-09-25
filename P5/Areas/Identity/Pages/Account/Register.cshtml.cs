@@ -1,11 +1,27 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace P5.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Remplace la page d'inscription d'Identity : le site n'a qu'un compte, celui du gérant,
+    /// créé au démarrage. Une page portée par le projet l'emporte sur celle de la bibliothèque
+    /// Microsoft.AspNetCore.Identity.UI. Le code de l'inscription ouverte est conservé en
+    /// commentaire ci-dessous, pour une évolution éventuelle.
+    /// </summary>
+    [AllowAnonymous]
+    public class RegisterModel : PageModel
+    {
+        public IActionResult OnGet() => NotFound();
+
+        public IActionResult OnPost() => NotFound();
+    }
+
+    /*
+    using System.ComponentModel.DataAnnotations;
+    using Microsoft.AspNetCore.Identity;
+
     /// <summary>
     /// Page d'inscription en français. Un compte créé ici ne reçoit aucun rôle et consulte le
     /// site comme un visiteur ; seul le compte du gérant, créé au démarrage, a le rôle Admin.
@@ -54,7 +70,8 @@ namespace P5.Areas.Identity.Pages.Account
             {
                 UserName = Input.Email,
                 Email = Input.Email,
-                EmailConfirmed = true // le compte est confirmé immédiatement, sans envoi d'email
+                // Le compte est confirmé immédiatement, sans envoi d'email.
+                EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(user, Input.Password);
@@ -74,4 +91,5 @@ namespace P5.Areas.Identity.Pages.Account
             return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl! : Url.Content("~/"));
         }
     }
+    */
 }

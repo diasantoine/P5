@@ -26,11 +26,13 @@
                 <label asp-for="Input.RememberMe" class="form-check-label"></label>
             </div>
 
-            @* « Se connecter » envoie le formulaire ; « S'inscrire » est un lien vers une autre page. *@
             <div class="d-flex flex-wrap gap-3 align-items-center">
                 <button type="submit" class="btn btn-primary">Se connecter</button>
-                <span>ou</span>
-                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-primary">S'inscrire</a>
+                @*
+                    Inscription fermée : seul le compte du gérant existe. Lien conservé pour une évolution éventuelle.
+                    <span>ou</span>
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-primary">S'inscrire</a>
+                *@
             </div>
         </form>
     </div>
