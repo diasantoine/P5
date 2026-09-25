@@ -39,7 +39,7 @@ cd P5
 dotnet user-secrets set "AdminAccount:Password" "<votre mot de passe>"
 ```
 
-L'inscription est ouverte à tous depuis le lien « S'inscrire », mais un compte créé ainsi ne reçoit aucun rôle : il consulte le site comme un visiteur. Seul le compte du gérant, créé au démarrage, porte le rôle `Admin`, et seul ce rôle peut modifier quoi que ce soit.
+L'inscription est fermée : le site n'a qu'un compte, celui du gérant, créé au démarrage avec le rôle `Admin`. La page d'inscription répond 404 ; son code est conservé en commentaire, et les contrôleurs exigent déjà le rôle plutôt qu'une simple connexion, pour qu'une ouverture de l'inscription reste possible sans rien changer d'autre.
 
 ### Lancer les tests
 
@@ -47,7 +47,7 @@ L'inscription est ouverte à tous depuis le lien « S'inscrire », mais un compt
 dotnet test
 ```
 
-76 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services (dont l'enrichissement du catalogue et le contrôle des photos envoyées), et la restriction de toute écriture au rôle du gérant.
+82 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services (dont l'enrichissement du catalogue et le contrôle des photos envoyées), la restriction de toute écriture au rôle du gérant, la fermeture de l'inscription et le contrôle de la date de vente saisie.
 
 ---
 
@@ -55,8 +55,8 @@ dotnet test
 
 | Qui | Ce qu'il peut faire |
 |---|---|
-| Tout le monde, inscrit ou non | consulter l'inventaire et la fiche d'un véhicule, avec le prix de vente ; créer un compte et se connecter |
-| Le gérant, connecté (rôle `Admin`) | ajouter un véhicule, modifier une annonce, saisir et supprimer des réparations, marquer un véhicule comme vendu, supprimer une annonce |
+| Tout le monde | consulter l'inventaire et la fiche d'un véhicule, avec le prix de vente |
+| Le gérant, connecté (rôle `Admin`) | ajouter un véhicule, modifier une annonce, saisir et supprimer des réparations, marquer un véhicule comme vendu à une date saisie, supprimer une annonce |
 
 Le prix d'achat, le coût des réparations et la marge ne sont visibles que par le gérant : ce sont des informations internes.
 
@@ -94,7 +94,7 @@ P5/
   Views/           rendu Razor
   Configuration/   options de tarification
   Security/        nom du rôle du gérant, messages d'Identity en français
-  Areas/Identity/  pages de connexion, d'inscription et de refus d'accès, en français
+  Areas/Identity/  pages de connexion et de refus d'accès en français, inscription fermée
 P5.Tests/          tests xUnit
 docs/uml/          diagrammes de classes
 docs/maquettes/    maquettes de référence
@@ -106,7 +106,7 @@ Trois principes structurent le code.
 
 **Les formulaires passent par des ViewModels.** Ils ne contiennent que les champs saisissables. La date de vente et les valeurs calculées n'y figurent pas et ne peuvent donc pas être envoyées par une requête forgée.
 
-**Fermé par défaut.** Les contrôleurs portent `[Authorize(Roles = "Admin")]`, et seules la liste et la fiche sont ouvertes explicitement. Comme l'inscription est ouverte, être connecté ne suffit pas : il faut le rôle du gérant. Toute action qui modifie l'état passe par un POST avec jeton anti-CSRF.
+**Fermé par défaut.** Les contrôleurs portent `[Authorize(Roles = "Admin")]`, et seules la liste et la fiche sont ouvertes explicitement. Être connecté ne suffit pas : il faut le rôle du gérant. Toute action qui modifie l'état passe par un POST avec jeton anti-CSRF.
 
 ---
 
@@ -130,6 +130,6 @@ Les données de départ sont les sept véhicules transmis par le client. Elles n
 ## Limites connues de ce prototype
 
 - **Le catalogue s'enrichit à la saisie, sans écran de gestion.** Une marque, un modèle ou une finition absents sont créés à l'enregistrement du véhicule. Une faute de frappe crée donc une entrée de trop : les suggestions sous chaque champ la limitent, mais rien dans le site ne permet encore de renommer ou de fusionner une entrée du catalogue.
-- **Un compte inscrit n'apporte pas encore de fonction de plus qu'une visite anonyme.** L'inscription est ouverte, l'écriture reste réservée au gérant.
-- **L'habillage graphique** suit le gabarit Bootstrap par défaut ; l'intégration des maquettes reste à faire.
-- Le site n'est pas prévu pour être mis en ligne : identifiants de démonstration versionnés, pas d'envoi d'e-mail, donc pas de confirmation d'adresse à l'inscription.
+- **Un seul compte, celui du gérant.** L'inscription est fermée : un compte inscrit n'aurait aujourd'hui aucune fonction de plus qu'une visite anonyme. Le code de l'inscription est conservé en commentaire pour une évolution éventuelle.
+- **L'habillage graphique** suit les maquettes pour la charte (couleurs, polices, en-tête), l'inventaire en cartes et la fiche véhicule ; le formulaire et les pages de confirmation restent au gabarit Bootstrap.
+- Le site n'est pas prévu pour être mis en ligne : identifiants de démonstration versionnés, pas d'envoi d'e-mail.
