@@ -31,7 +31,8 @@ namespace P5.Data
             var explorerXlt   = Spec(ford,       "Explorer", "XLT");
             var civicLx       = Spec(honda,      "Civic",    "LX");
             var gtiS          = Spec(volkswagen, "GTI",      "S");
-            var edgeSel       = Spec(ford,       "Edge",     "SEL"); // 2e Ford : la marque est partagée
+            // Deuxième Ford : la marque est partagée.
+            var edgeSel       = Spec(ford,       "Edge",     "SEL");
 
             // Chaque véhicule n'a qu'une réparation, avec un libellé et un coût global.
             db.Vehicles.AddRange(

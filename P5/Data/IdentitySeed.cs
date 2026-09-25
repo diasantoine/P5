@@ -56,7 +56,8 @@ namespace P5.Data
             {
                 UserName = email,
                 Email = email,
-                EmailConfirmed = true // le compte est confirmé immédiatement, sans envoi d'email
+                // Le compte est confirmé immédiatement, sans envoi d'email.
+                EmailConfirmed = true
             };
 
             var result = await userManager.CreateAsync(manager, password!);

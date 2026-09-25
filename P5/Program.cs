@@ -83,9 +83,10 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// La page d'accueil du site est l'inventaire.
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Vehicles}/{action=Index}/{id?}") // la page d'accueil du site est l'inventaire
+    pattern: "{controller=Vehicles}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.MapRazorPages()

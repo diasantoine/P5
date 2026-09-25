@@ -32,10 +32,11 @@ namespace P5.Data
                 // ce qui interdit en base un modèle qui n'appartient pas à la marque choisie.
                 entity.HasAlternateKey(m => new { m.Id, m.BrandId });
 
+                // Restrict interdit de supprimer une marque utilisée.
                 entity.HasOne(m => m.Brand)
                       .WithMany(ma => ma.CarModels)
                       .HasForeignKey(m => m.BrandId)
-                      .OnDelete(DeleteBehavior.Restrict); // interdit de supprimer une marque utilisée
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<Trim>(entity =>

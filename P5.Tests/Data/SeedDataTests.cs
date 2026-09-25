@@ -66,7 +66,8 @@ public sealed class SeedDataTests : IDisposable
         }
 
         using var check = NewContext();
-        Assert.Equal(6, await check.Brands.CountAsync());   // Ford est partagé par deux véhicules
+        // Ford est partagé par deux véhicules.
+        Assert.Equal(6, await check.Brands.CountAsync());
         Assert.Equal(7, await check.CarModels.CountAsync());
         Assert.Equal(7, await check.Trims.CountAsync());
         Assert.Equal(7, await check.VehicleSpecifications.CountAsync());
