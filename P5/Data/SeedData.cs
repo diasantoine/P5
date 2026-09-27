@@ -34,15 +34,15 @@ namespace P5.Data
             // Deuxième Ford : la marque est partagée.
             var edgeSel       = Spec(ford,       "Edge",     "SEL");
 
-            // Chaque véhicule n'a qu'une réparation, avec un libellé et un coût global.
+            // Chaque véhicule n'a qu'une réparation, avec un libellé et un coût global, et une photo servie depuis wwwroot/images/vehicles.
             db.Vehicles.AddRange(
-                Vehicle(miataLe,      2019, new(2022, 1, 7), 1800m,  new(2022, 4, 7),  new(2022, 4, 8),  "Restauration complète",        7600m),
-                Vehicle(libertySport, 2007, new(2022, 4, 2), 4500m,  new(2022, 4, 7),  new(2022, 4, 9),  "Roulements des roues avant",   350m),
-                Vehicle(scenicTce,    2007, new(2022, 4, 4), 1800m,  new(2022, 4, 8),  null,             "Radiateur, freins",            690m),
-                Vehicle(explorerXlt,  2017, new(2022, 4, 5), 24350m, new(2022, 4, 9),  null,             "Pneus, freins",                1100m),
-                Vehicle(civicLx,      2008, new(2022, 4, 6), 4000m,  new(2022, 4, 9),  new(2022, 4, 9),  "Climatisation, freins",        475m),
-                Vehicle(gtiS,         2016, new(2022, 4, 6), 15250m, new(2022, 4, 10), new(2022, 4, 12), "Pneus",                        440m),
-                Vehicle(edgeSel,      2013, new(2022, 4, 7), 10990m, new(2022, 4, 11), new(2022, 4, 12), "Pneus, freins, climatisation", 950m));
+                Vehicle(miataLe,      2019, new(2022, 1, 7), 1800m,  new(2022, 4, 7),  new(2022, 4, 8),  "Restauration complète",        7600m, "miata"),
+                Vehicle(libertySport, 2007, new(2022, 4, 2), 4500m,  new(2022, 4, 7),  new(2022, 4, 9),  "Roulements des roues avant",   350m,  "liberty"),
+                Vehicle(scenicTce,    2007, new(2022, 4, 4), 1800m,  new(2022, 4, 8),  null,             "Radiateur, freins",            690m,  "scenic"),
+                Vehicle(explorerXlt,  2017, new(2022, 4, 5), 24350m, new(2022, 4, 9),  null,             "Pneus, freins",                1100m, "explorer"),
+                Vehicle(civicLx,      2008, new(2022, 4, 6), 4000m,  new(2022, 4, 9),  new(2022, 4, 9),  "Climatisation, freins",        475m,  "civic"),
+                Vehicle(gtiS,         2016, new(2022, 4, 6), 15250m, new(2022, 4, 10), new(2022, 4, 12), "Pneus",                        440m,  "gti"),
+                Vehicle(edgeSel,      2013, new(2022, 4, 7), 10990m, new(2022, 4, 11), new(2022, 4, 12), "Pneus, freins, climatisation", 950m,  "edge"));
 
             await db.SaveChangesAsync();
         }
@@ -55,10 +55,11 @@ namespace P5.Data
             return new VehicleSpecification { Brand = brand, CarModel = carModel, Trim = trim };
         }
 
-        /// <summary>Un véhicule de l'inventaire, avec sa réparation unique.</summary>
+        /// <summary>Un véhicule de l'inventaire, avec sa réparation unique et sa photo.</summary>
         private static Vehicle Vehicle(
             VehicleSpecification spec, int year, DateOnly purchaseDate, decimal purchasePrice,
-            DateOnly availabilityDate, DateOnly? saleDate, string repairDescription, decimal repairCost)
+            DateOnly availabilityDate, DateOnly? saleDate, string repairDescription, decimal repairCost,
+            string photoName)
             => new()
             {
                 Specification = spec,
@@ -67,6 +68,7 @@ namespace P5.Data
                 PurchasePrice = purchasePrice,
                 AvailabilityDate = availabilityDate,
                 SaleDate = saleDate,
+                PhotoUrl = $"/images/vehicles/{photoName}.jpg",
                 Repairs = [new Repair { Description = repairDescription, Cost = repairCost }]
             };
     }

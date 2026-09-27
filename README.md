@@ -121,6 +121,20 @@ puis relancer l'application, qui la recrée et la remplit.
 
 Les données de départ sont les sept véhicules transmis par le client. Elles ne sont insérées que si la base est vide : une base déjà remplie n'est jamais écrasée.
 
+### Crédits des photos de l'inventaire
+
+Les photos des sept véhicules de départ sont dans `P5/wwwroot/images/vehicles`. Elles proviennent de Wikimedia Commons et illustrent le modèle, pas l'exemplaire vendu.
+
+| Véhicule | Auteur | Licence |
+|---|---|---|
+| [Mazda Miata](https://commons.wikimedia.org/wiki/File:2019_Mazda_MX-5_30th_Anniversary_Edition_-571.jpg) | Calreyn88 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| [Jeep Liberty](https://commons.wikimedia.org/wiki/File:2005-2007_Jeep_Liberty_-_no_watermark.jpg) | Bull-Doser | Domaine public |
+| [Renault Scénic](https://commons.wikimedia.org/wiki/File:Renault_Scenic_front_20070926.jpg) | Rudolf Stricker | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| [Ford Explorer](https://commons.wikimedia.org/wiki/File:2017_Ford_Explorer_XLT_3.5L_(U502_facelift)_front_7.22.19.jpg) | Kevauto | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| [Honda Civic](https://commons.wikimedia.org/wiki/File:2006-2008_Honda_Civic_LX_sedan_--_09-22-2010.jpg) | IFCAR | Domaine public |
+| [Volkswagen GTI](https://commons.wikimedia.org/wiki/File:Volkswagen_Golf_GTI_(Mk_VII)_Washington_DC_Metro_Area,_USA_(1).jpg) | OWS Photography | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0) |
+| [Ford Edge](https://commons.wikimedia.org/wiki/File:Ford_Edge_SEL_2013.jpg) | RL GNZLZ | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+
 ---
 
 ## Limites connues de ce prototype
