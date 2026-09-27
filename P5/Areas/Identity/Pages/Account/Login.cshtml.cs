@@ -56,11 +56,11 @@ namespace P5.Areas.Identity.Pages.Account
 
             if (result.Succeeded)
             {
-                // LocalRedirect refuse une adresse externe : pas de redirection ouverte après la connexion.
+                // Redirige uniquement vers une adresse du site.
                 return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl! : Url.Content("~/"));
             }
 
-            // Le même message que l'adresse soit inconnue ou le mot de passe faux : on ne révèle pas quels comptes existent.
+            // Même message pour une adresse inconnue et pour un mot de passe faux.
             ModelState.AddModelError(string.Empty, result.IsLockedOut
                 ? "Trop de tentatives : ce compte est verrouillé quelques minutes."
                 : "Adresse email ou mot de passe incorrect.");

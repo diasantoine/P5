@@ -39,9 +39,8 @@ namespace P5.Data.Migrations
                         principalColumns: new[] { "Id", "CarModelId" }, onDelete: ReferentialAction.Restrict);
                 });
 
-            // 3. Une spécification par finition existante. Une finition n'appartient qu'à un
-            //    modèle, qui n'appartient qu'à une marque : le triplet est déterminé, et toutes
-            //    les entrées du catalogue restent proposables dans la liste déroulante.
+            // 3. Une spécification par finition existante : une finition n'appartient qu'à un
+            //    modèle, qui n'appartient qu'à une marque, le triplet est donc déterminé.
             migrationBuilder.Sql("""
                 INSERT INTO [VehicleSpecifications] ([BrandId], [CarModelId], [TrimId])
                 SELECT m.[BrandId], t.[CarModelId], t.[Id]

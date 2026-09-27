@@ -87,7 +87,7 @@ namespace P5.Areas.Identity.Pages.Account
 
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            // LocalRedirect refuse une adresse externe : pas de redirection ouverte après l'inscription.
+            // Redirige uniquement vers une adresse du site.
             return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl! : Url.Content("~/"));
         }
     }

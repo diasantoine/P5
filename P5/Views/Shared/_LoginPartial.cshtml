@@ -16,7 +16,7 @@
         <span class="navbar-text">Bonjour @User.Identity?.Name !</span>
     </li>
     <li class="nav-item">
-        @* Se déconnecter change l'état de la session : c'est un bouton dans un POST, jamais un lien. *@
+        @* Déconnexion par un bouton dans un formulaire POST. *@
         <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Vehicles", new { area = "" })" method="post">
             <button type="submit" class="nav-link btn btn-link">Se déconnecter</button>
         </form>

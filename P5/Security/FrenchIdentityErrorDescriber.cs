@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Identity;
 namespace P5.Security
 {
     /// <summary>
-    /// Identity produit ses messages d'erreur en anglais. On ne surcharge que ceux qu'un visiteur
-    /// peut réellement rencontrer en s'inscrivant ; les autres, internes, gardent leur texte d'origine.
-    /// La politique de mot de passe n'est pas touchée : on traduit les refus, on ne les affaiblit pas.
+    /// Traduit en français les messages d'erreur d'Identity qu'un visiteur peut rencontrer ;
+    /// les autres gardent leur texte d'origine.
     /// </summary>
     public class FrenchIdentityErrorDescriber : IdentityErrorDescriber
     {

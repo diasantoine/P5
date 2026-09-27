@@ -42,8 +42,7 @@ public class RepairsController(IRepairService repairs, IVehicleService vehicles)
 
         if (!ModelState.IsValid)
         {
-            // VehicleDesignation n'est jamais reposté (cf. RepairFormViewModel) : elle est
-            // reconstituée ici pour que le formulaire renvoyé ne l'affiche pas vide.
+            // VehicleDesignation n'est pas postée : elle est rechargée avant de renvoyer le formulaire.
             var vehicle = await _vehicles.GetDetailAsync(form.VehicleId);
             form.VehicleDesignation = vehicle?.Designation ?? string.Empty;
             return View(form);

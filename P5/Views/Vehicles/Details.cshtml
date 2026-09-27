@@ -7,7 +7,7 @@
 
 <p><a asp-action="Index" class="ev-back">&#8592; Retour<span class="visually-hidden"> à l'inventaire</span></a></p>
 
-@* Photo à gauche, prix et caractéristiques à droite, comme la maquette. *@
+@* Photo à gauche, prix et caractéristiques à droite. *@
 <div class="row g-4">
     <div class="col-md-7">
         @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
@@ -95,7 +95,7 @@
                 </tbody>
             </table>
 
-            @* « Marquer comme vendu » agit : c'est un bouton dans un formulaire POST, avec la date de vente saisie. *@
+            @* Formulaire POST « Marquer comme vendu », avec la date de vente saisie. *@
             @if (Model.IsAvailable)
             {
                 <h2 class="h5">Vente</h2>

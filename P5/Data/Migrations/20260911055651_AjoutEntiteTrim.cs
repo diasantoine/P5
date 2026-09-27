@@ -8,15 +8,8 @@ namespace P5.Data.Migrations
 {
     /// <summary>
     /// La finition devient une entité du catalogue (Marque > Modèle > Finition) et le
-    /// véhicule ne référence plus que sa finition : Vehicle -> Trim -> CarModel -> Brand.
-    ///
-    /// Écrite à la main. La version générée par "dotnet ef migrations add" faisait deux
-    /// choses inacceptables : elle supprimait la colonne texte Trim AVANT d'en avoir
-    /// tiré les lignes de la nouvelle table, et elle renommait CarModelId en TrimId en
-    /// comptant sur le fait que les identifiants coïncident dans le seed — vrai pour les
-    /// 7 véhicules de départ, faux pour tout véhicule saisi ensuite.
-    /// Ici les données existantes sont converties avant que quoi que ce soit ne soit
-    /// supprimé, quel que soit le contenu de la base.
+    /// véhicule référence sa finition : Vehicle -> Trim -> CarModel -> Brand.
+    /// Les données existantes sont converties avant toute suppression de colonne.
     /// </summary>
     public partial class AjoutEntiteTrim : Migration
     {
@@ -128,9 +121,7 @@ namespace P5.Data.Migrations
                 name: "Trim",
                 table: "Vehicles");
 
-            // 6. Au passage, les contraintes restées en français prennent leur nom
-            //    anglais : c'est ce décalage qui aurait fait échouer la version générée
-            //    de cette migration, et il aurait piégé chaque migration suivante.
+            // 6. Les contraintes restées en français prennent leur nom anglais.
             migrationBuilder.Sql("EXEC sp_rename N'PK_Marques', N'PK_Brands';");
             migrationBuilder.Sql("EXEC sp_rename N'PK_ModelesVoiture', N'PK_CarModels';");
             migrationBuilder.Sql("EXEC sp_rename N'PK_Vehicules', N'PK_Vehicles';");

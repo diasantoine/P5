@@ -10,19 +10,15 @@ namespace P5.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Renommage pur : RenameTable/RenameColumn/RenameIndex conservent les
-            // données existantes (contrairement au DropTable+CreateTable généré par
-            // défaut par "dotnet ef migrations add", qui perdrait tout sans le seed).
+            // Renomme tables, colonnes et index en conservant les données existantes.
 
             migrationBuilder.RenameTable(name: "Marques", newName: "Brands");
             migrationBuilder.RenameTable(name: "ModelesVoiture", newName: "CarModels");
             migrationBuilder.RenameTable(name: "Vehicules", newName: "Vehicles");
             migrationBuilder.RenameTable(name: "Reparations", newName: "Repairs");
 
-            // L'index filtré sur CodeVin ne suit pas un renommage de colonne : SQL
-            // Server ne met pas à jour le texte de son prédicat ("[CodeVin] IS NOT
-            // NULL"). Il doit être supprimé avant le renommage de la colonne et
-            // recréé ensuite avec le nouveau nom.
+            // L'index filtré sur le VIN est supprimé avant le renommage de la colonne
+            // et recréé ensuite avec le nouveau nom.
             migrationBuilder.DropIndex(name: "IX_Vehicules_CodeVin", table: "Vehicles");
 
             migrationBuilder.RenameColumn(name: "Nom", table: "Brands", newName: "Name");
@@ -55,10 +51,7 @@ namespace P5.Data.Migrations
                 unique: true,
                 filter: "[Vin] IS NOT NULL");
 
-            // Note : les noms de contraintes PK_/FK_ (ex. "PK_Marques",
-            // "FK_ModelesVoiture_Marques_MarqueId") ne sont pas renommés ici. Ils
-            // continuent de fonctionner tels quels ; seuls tables, colonnes et index
-            // sont dans le périmètre de ce renommage.
+            // Les contraintes PK_ et FK_ gardent leur nom français.
         }
 
         /// <inheritdoc />

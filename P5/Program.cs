@@ -20,7 +20,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddErrorDescriber<FrenchIdentityErrorDescriber>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Culture fixée explicitement : le binding et le formatage des décimaux sont ainsi indépendants de la culture du système hôte.
+// Culture française pour le binding et le formatage des décimaux et des dates.
 var cultureFr = new CultureInfo("fr-FR");
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -29,8 +29,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = [cultureFr];
 });
 
-// MVC rédige en anglais les messages qu'il produit lui-même (champ non numérique, valeur illisible,
-// champ obligatoire d'un type valeur). Ils sont vus par l'utilisateur, donc traduits.
+// Traduit les messages de validation produits par MVC lui-même (champ non numérique,
+// valeur illisible, champ obligatoire d'un type valeur).
 builder.Services.AddControllersWithViews(options =>
 {
     var messages = options.ModelBindingMessageProvider;
@@ -74,7 +74,7 @@ app.UseHttpsRedirection();
 
 app.UseRequestLocalization();
 
-// MapStaticAssets ne sert que les fichiers présents au build ; les photos téléversées à l'exécution ont besoin de UseStaticFiles.
+// Sert les photos téléversées à l'exécution, absentes du build.
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -9,7 +9,7 @@ namespace P5.Data
     /// </summary>
     public static class SeedData
     {
-        /// <summary>La marque est la racine du catalogue : une base qui en possède une a déjà été alimentée, par ce seed ou par l'utilisateur.</summary>
+        /// <summary>Une base qui possède déjà une marque a déjà été alimentée.</summary>
         public static async Task SeedAsync(ApplicationDbContext db)
         {
             if (await db.Brands.AnyAsync())

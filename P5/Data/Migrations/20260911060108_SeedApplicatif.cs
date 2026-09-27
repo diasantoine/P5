@@ -8,12 +8,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace P5.Data.Migrations
 {
     /// <summary>
-    /// Le seed passe de déclaratif (HasData dans OnModelCreating, données figées dans
-    /// les migrations) à applicatif (SeedData.SeedAsync au lancement, uniquement si la
-    /// base est vide). Retirer les HasData du modèle fait générer par EF Core la
-    /// suppression des lignes qu'ils avaient insérées : c'est le contenu de ce Up().
-    /// Au lancement suivant, le seed applicatif réinsère le même inventaire. Sur une
-    /// base qui contient d'autres données, seules les 7 lignes d'origine sont retirées.
+    /// Retire les 7 lignes d'inventaire insérées par HasData ; SeedData.SeedAsync les
+    /// réinsère au lancement si la base est vide.
     /// </summary>
     public partial class SeedApplicatif : Migration
     {

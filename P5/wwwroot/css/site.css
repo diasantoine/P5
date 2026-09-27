@@ -1,5 +1,5 @@
-/* Charte de la maquette : deux couleurs de la palette, une serif pour les titres, une sans-serif pour le reste.
-   Les variables Bootstrap sont surchargées pour que les composants existants suivent la charte sans changer de balisage. */
+/* Charte graphique : deux couleurs, une serif pour les titres, une sans-serif pour le reste.
+   Les variables Bootstrap sont surchargées pour que les composants existants suivent la charte. */
 :root {
   --ev-gold: #d9a963;
   --ev-brown-dark: #2c1810;
@@ -49,7 +49,7 @@ h1, h2, h3, .navbar-brand {
   font-weight: 700;
 }
 
-/* Bouton doré au texte brun, comme « + Ajouter une voiture » et « Se connecter » de la maquette. */
+/* Bouton doré au texte brun : « + Ajouter une voiture » et « Se connecter ». */
 .btn-primary {
   --bs-btn-color: var(--ev-brown-dark);
   --bs-btn-bg: var(--ev-gold);
