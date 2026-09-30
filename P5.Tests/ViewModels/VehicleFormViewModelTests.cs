@@ -32,7 +32,7 @@ public class VehicleFormViewModelTests
     [Theory]
     [InlineData(nameof(VehicleFormViewModel.Margin))]
     [InlineData(nameof(VehicleFormViewModel.RepairsCost))]
-    [InlineData(nameof(VehicleFormViewModel.SpecificationId))]
+    [InlineData(nameof(VehicleFormViewModel.TrimId))]
     [InlineData(nameof(VehicleFormViewModel.Catalogue))]
     public void DisplayOnlyProperties_AreNeverBound(string propertyName)
     {

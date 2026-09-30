@@ -29,55 +29,55 @@ public class ApplicationDbContextModelTests
     }
 
     [Fact]
-    public void Vehicle_HasASingleForeignKey_TowardItsSpecification()
+    public void CarModel_NameIsUniquePerBrand()
+    {
+        var carModel = BuildModel().FindEntityType(typeof(CarModel))!;
+
+        var uniqueIndex = Assert.Single(carModel.GetIndexes(), i => i.IsUnique);
+
+        Assert.Equal(["BrandId", "Name"], uniqueIndex.Properties.Select(p => p.Name));
+    }
+
+    [Fact]
+    public void Vehicle_HasASingleForeignKey_TowardItsTrim()
     {
         var vehicle = BuildModel().FindEntityType(typeof(Vehicle))!;
 
-        var toSpecification = Assert.Single(vehicle.GetForeignKeys());
+        var toTrim = Assert.Single(vehicle.GetForeignKeys());
 
-        Assert.Equal(typeof(VehicleSpecification), toSpecification.PrincipalEntityType.ClrType);
-        Assert.True(toSpecification.IsRequired);
-        Assert.Equal(DeleteBehavior.Restrict, toSpecification.DeleteBehavior);
+        Assert.Equal(typeof(Trim), toTrim.PrincipalEntityType.ClrType);
+        Assert.Equal(["TrimId"], toTrim.Properties.Select(p => p.Name));
+        Assert.True(toTrim.IsRequired);
+        Assert.Equal(DeleteBehavior.Restrict, toTrim.DeleteBehavior);
     }
 
-    [Fact]
-    public void Specification_CannotPairAModelWithAnotherBrand()
+    [Theory]
+    [InlineData(typeof(CarModel), typeof(Brand), "BrandId")]
+    [InlineData(typeof(Trim), typeof(CarModel), "CarModelId")]
+    public void Catalogue_EachLevelPointsOnlyToItsParent(Type child, Type parent, string foreignKey)
     {
-        var specification = BuildModel().FindEntityType(typeof(VehicleSpecification))!;
+        var entity = BuildModel().FindEntityType(child)!;
 
-        var toCarModel = Assert.Single(specification.GetForeignKeys(), f => f.PrincipalEntityType.ClrType == typeof(CarModel));
+        var toParent = Assert.Single(entity.GetForeignKeys());
 
-        Assert.Equal(["CarModelId", "BrandId"], toCarModel.Properties.Select(p => p.Name));
-        Assert.Equal(["Id", "BrandId"], toCarModel.PrincipalKey.Properties.Select(p => p.Name));
+        Assert.Equal(parent, toParent.PrincipalEntityType.ClrType);
+        Assert.Equal([foreignKey], toParent.Properties.Select(p => p.Name));
+        Assert.Equal(DeleteBehavior.Restrict, toParent.DeleteBehavior);
     }
 
     [Fact]
-    public void Specification_CannotPairATrimWithAnotherModel()
+    public void Vehicle_StoresNeitherBrandNorModel()
     {
-        var specification = BuildModel().FindEntityType(typeof(VehicleSpecification))!;
+        var model = BuildModel();
+        var vehicle = model.FindEntityType(typeof(Vehicle))!;
 
-        var toTrim = Assert.Single(specification.GetForeignKeys(), f => f.PrincipalEntityType.ClrType == typeof(Trim));
-
-        Assert.Equal(["TrimId", "CarModelId"], toTrim.Properties.Select(p => p.Name));
-        Assert.Equal(["Id", "CarModelId"], toTrim.PrincipalKey.Properties.Select(p => p.Name));
+        Assert.Null(vehicle.FindProperty("BrandId"));
+        Assert.Null(vehicle.FindProperty("CarModelId"));
+        Assert.DoesNotContain(model.GetEntityTypes(), e => e.ClrType.Name == "VehicleSpecification");
     }
 
     [Fact]
-    public void Specification_TripletIsUnique()
-    {
-        var specification = BuildModel().FindEntityType(typeof(VehicleSpecification))!;
-
-        var uniqueIndex = Assert.Single(specification.GetIndexes(), i => i.IsUnique);
-
-        Assert.Equal(["BrandId", "CarModelId", "TrimId"], uniqueIndex.Properties.Select(p => p.Name));
-    }
-
-    /// <summary>
-    /// Les clés étrangères composites empêchent d'enregistrer une spécification
-    /// dont le modèle n'appartient pas à la marque déclarée.
-    /// </summary>
-    [Fact]
-    public async Task Specification_CannotPersistAModelThatBelongsToAnotherBrand()
+    public async Task Trim_UsedByAVehicle_CannotBeDeleted()
     {
         using var connection = new SqliteConnection("DataSource=:memory:");
         connection.Open();
@@ -89,20 +89,17 @@ public class ApplicationDbContextModelTests
         {
             context.Database.EnsureCreated();
 
-            var ford = new Brand { Id = 1, Name = "Ford" };
-            var renault = new Brand { Id = 2, Name = "Renault" };
-            var explorer = new CarModel { Id = 1, Name = "Explorer", BrandId = 1 };
-            var xlt = new Trim { Id = 1, Name = "XLT", CarModelId = 1 };
-            context.Brands.AddRange(ford, renault);
-            context.CarModels.Add(explorer);
-            context.Trims.Add(xlt);
+            var ford = new Brand { Name = "Ford" };
+            var explorer = new CarModel { Name = "Explorer", Brand = ford };
+            var xlt = new Trim { Name = "XLT", CarModel = explorer };
+            context.Vehicles.Add(new Vehicle { Trim = xlt, Year = 2017, PurchaseDate = new(2022, 4, 5), PurchasePrice = 24350m });
             await context.SaveChangesAsync();
-
-            // Explorer (id 1) appartient à Ford (id 1) : le rattacher à Renault (id 2)
-            // viole la clé étrangère composite (CarModelId, BrandId) -> (Id, BrandId).
-            context.VehicleSpecifications.Add(new VehicleSpecification { BrandId = 2, CarModelId = 1, TrimId = 1 });
-
-            await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync());
         }
+
+        // Un second contexte ne suit que la finition : c'est la base qui refuse la suppression.
+        using var check = new ApplicationDbContext(options);
+        check.Trims.Remove(check.Trims.Single());
+
+        await Assert.ThrowsAsync<DbUpdateException>(() => check.SaveChangesAsync());
     }
 }

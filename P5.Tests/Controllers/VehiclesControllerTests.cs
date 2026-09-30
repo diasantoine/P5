@@ -93,7 +93,7 @@ public class VehiclesControllerTests
         public Task<int> AddAsync(Vehicle vehicle) => throw new NotSupportedException();
         public Task<bool> UpdateAsync(Vehicle vehicle) => throw new NotSupportedException();
         public Task<bool> DeleteAsync(int id) => throw new NotSupportedException();
-        public Task<int> GetOrCreateSpecificationIdAsync(string brandName, string modelName, string trimName) => throw new NotSupportedException();
+        public Task<int> GetOrCreateTrimIdAsync(string brandName, string modelName, string trimName) => throw new NotSupportedException();
         public Task<CatalogueNames> GetCatalogueNamesAsync() => throw new NotSupportedException();
     }
 

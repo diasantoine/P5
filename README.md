@@ -47,7 +47,7 @@ L'inscription est fermée : le site n'a qu'un compte, celui du gérant, créé a
 dotnet test
 ```
 
-82 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services (dont l'enrichissement du catalogue et le contrôle des photos envoyées), la restriction de toute écriture au rôle du gérant, la fermeture de l'inscription et le contrôle de la date de vente saisie.
+83 tests. Ils couvrent la règle métier sur les sept lignes de l'inventaire du client, la configuration de la base, le comportement du seed, celui des services (dont l'enrichissement du catalogue et le contrôle des photos envoyées), la restriction de toute écriture au rôle du gérant, la fermeture de l'inscription et le contrôle de la date de vente saisie.
 
 ---
 
@@ -72,9 +72,9 @@ Le prix de vente **n'est jamais saisi ni stocké**. Il est recalculé à chaque 
 
 ## Modèle de données
 
-Six entités : `Brand`, `CarModel`, `Trim`, `VehicleSpecification`, `Vehicle`, `Repair`. Le catalogue est une hiérarchie à trois niveaux, **marque → modèle → finition**, et une table de spécification porte le triplet complet. Un véhicule ne référence que cette spécification : il atteint donc sa marque en une seule jointure, au lieu de traverser toute la chaîne.
+Cinq entités : `Brand`, `CarModel`, `Trim`, `Vehicle`, `Repair`. Le catalogue est une hiérarchie à trois niveaux, **marque → modèle → finition** : un modèle appartient à une marque, une finition à un modèle. Un véhicule ne référence que sa finition, et atteint son modèle et sa marque en remontant la chaîne. Chaque information n'est écrite qu'à un seul endroit, conformément à la troisième forme normale.
 
-Deux clés étrangères **composites** garantissent la cohérence du triplet : la base refuse une spécification associant une marque à un modèle qui ne lui appartient pas.
+Un nom de modèle est unique par marque, un nom de finition unique par modèle. Supprimer une marque, un modèle ou une finition encore utilisés est refusé par la base.
 
 Les diagrammes de classes et d'architecture sont fournis séparément avec le livrable.
 
@@ -84,7 +84,7 @@ Les diagrammes de classes et d'architecture sont fournis séparément avec le li
 
 ```
 P5/
-  Models/          les six entités persistées
+  Models/          les cinq entités persistées
   Data/            DbContext, migrations, seed de l'inventaire et du compte gérant
   Services/        toute la logique d'accès aux données, derrière des interfaces
   ViewModels/      les seules surfaces exposées aux formulaires

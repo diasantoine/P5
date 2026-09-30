@@ -59,7 +59,7 @@ public class VehiclesController(IVehicleService vehicles, IPhotoStorageService p
         string? newPhotoUrl = null;
         try
         {
-            form.SpecificationId = await _vehicles.GetOrCreateSpecificationIdAsync(form.BrandName, form.ModelName, form.TrimName);
+            form.TrimId = await _vehicles.GetOrCreateTrimIdAsync(form.BrandName, form.ModelName, form.TrimName);
             var vehicle = form.ToEntity();
             if (form.Photo is not null)
             {
@@ -125,7 +125,7 @@ public class VehiclesController(IVehicleService vehicles, IPhotoStorageService p
         string? newPhotoUrl = null;
         try
         {
-            form.SpecificationId = await _vehicles.GetOrCreateSpecificationIdAsync(form.BrandName, form.ModelName, form.TrimName);
+            form.TrimId = await _vehicles.GetOrCreateTrimIdAsync(form.BrandName, form.ModelName, form.TrimName);
             form.ApplyTo(vehicle);
             if (form.Photo is not null)
             {

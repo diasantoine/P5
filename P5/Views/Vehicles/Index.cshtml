@@ -44,11 +44,11 @@ else
                                 <dt>Année</dt>
                                 <dd>@item.Year</dd>
                                 <dt>Marque</dt>
-                                <dd>@item.Specification?.Brand?.Name</dd>
+                                <dd>@item.Trim?.CarModel?.Brand?.Name</dd>
                                 <dt>Modèle</dt>
-                                <dd>@item.Specification?.CarModel?.Name</dd>
+                                <dd>@item.Trim?.CarModel?.Name</dd>
                                 <dt>Finition</dt>
-                                <dd>@item.Specification?.Trim?.Name</dd>
+                                <dd>@item.Trim?.Name</dd>
                             </dl>
                             @if (!item.IsAvailable)
                             {

@@ -21,6 +21,6 @@ namespace P5.Models
 
         public CarModel? CarModel { get; set; }
 
-        public ICollection<VehicleSpecification> Specifications { get; set; } = [];
+        public ICollection<Vehicle> Vehicles { get; set; } = [];
     }
 }

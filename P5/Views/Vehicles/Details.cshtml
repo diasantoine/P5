@@ -53,13 +53,13 @@
             <dd>@Model.Year</dd>
 
             <dt>Marque</dt>
-            <dd>@Model.Specification?.Brand?.Name</dd>
+            <dd>@Model.Trim?.CarModel?.Brand?.Name</dd>
 
             <dt>Modèle</dt>
-            <dd>@Model.Specification?.CarModel?.Name</dd>
+            <dd>@Model.Trim?.CarModel?.Name</dd>
 
             <dt>Finition</dt>
-            <dd>@Model.Specification?.Trim?.Name</dd>
+            <dd>@Model.Trim?.Name</dd>
         </dl>
 
         @if (!Model.IsAvailable)

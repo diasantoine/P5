@@ -42,11 +42,11 @@ public class VehicleFormViewModel
 
     /// <summary>
     /// Jamais postée : le contrôleur la déduit des trois noms saisis, en retrouvant
-    /// ou en créant l'entrée de catalogue.
+    /// ou en créant la finition dans le catalogue.
     /// </summary>
     [BindNever]
     [ValidateNever]
-    public int SpecificationId { get; set; }
+    public int TrimId { get; set; }
 
     [Required(ErrorMessage = "La date d'achat est obligatoire.")]
     [DataType(DataType.Date)]
@@ -99,10 +99,10 @@ public class VehicleFormViewModel
         Id = v.Id,
         Vin = v.Vin,
         Year = v.Year,
-        SpecificationId = v.SpecificationId,
-        BrandName = v.Specification?.Brand?.Name ?? string.Empty,
-        ModelName = v.Specification?.CarModel?.Name ?? string.Empty,
-        TrimName = v.Specification?.Trim?.Name ?? string.Empty,
+        TrimId = v.TrimId,
+        BrandName = v.Trim?.CarModel?.Brand?.Name ?? string.Empty,
+        ModelName = v.Trim?.CarModel?.Name ?? string.Empty,
+        TrimName = v.Trim?.Name ?? string.Empty,
         PurchaseDate = v.PurchaseDate,
         PurchasePrice = v.PurchasePrice,
         AvailabilityDate = v.AvailabilityDate,
@@ -115,7 +115,7 @@ public class VehicleFormViewModel
     {
         v.Vin = Vin;
         v.Year = Year;
-        v.SpecificationId = SpecificationId;
+        v.TrimId = TrimId;
         v.PurchaseDate = PurchaseDate;
         v.PurchasePrice = PurchasePrice;
         v.AvailabilityDate = AvailabilityDate;

@@ -24,11 +24,10 @@ namespace P5.Models
         [Display(Name = "Année")]
         public int Year { get; set; }
 
-        // Une seule clé étrangère vers le catalogue : la spécification porte le triplet
-        // marque + modèle + finition, chacun accessible en une jointure depuis elle.
-        [Display(Name = "Modèle et finition")]
-        public int SpecificationId { get; set; }
-        public VehicleSpecification? Specification { get; set; }
+        // La finition porte le modèle, qui porte la marque.
+        [Display(Name = "Finition")]
+        public int TrimId { get; set; }
+        public Trim? Trim { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Date d'achat")]
@@ -86,6 +85,7 @@ namespace P5.Models
 
         [NotMapped]
         [Display(Name = "Véhicule")]
-        public string Designation => Specification?.Label ?? string.Empty;
+        public string Designation => string.Join(' ', new[] { Trim?.CarModel?.Brand?.Name, Trim?.CarModel?.Name, Trim?.Name }
+            .Where(n => !string.IsNullOrWhiteSpace(n)));
     }
 }

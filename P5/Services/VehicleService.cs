@@ -12,14 +12,12 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
     private readonly decimal _margin = pricing.Value.FixedMargin;
 
     /// <summary>
-    /// Charge les réparations et, via la spécification, la marque, le modèle et la
-    /// finition, nécessaires au calcul du prix de vente et à la désignation du véhicule.
+    /// Charge les réparations et la chaîne finition, modèle, marque, nécessaires au calcul
+    /// du prix de vente et à la désignation du véhicule.
     /// </summary>
     private IQueryable<Vehicle> WithDependencies() =>
         _context.Vehicles
-            .Include(v => v.Specification!).ThenInclude(s => s.Brand)
-            .Include(v => v.Specification!).ThenInclude(s => s.CarModel)
-            .Include(v => v.Specification!).ThenInclude(s => s.Trim)
+            .Include(v => v.Trim!).ThenInclude(t => t.CarModel!).ThenInclude(m => m.Brand)
             .Include(v => v.Repairs);
 
     public async Task<IReadOnlyList<Vehicle>> GetInventoryAsync()
@@ -110,7 +108,7 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
     /// exister sous une marque tout juste créée. Les entités nouvelles sont reliées par leurs
     /// navigations et enregistrées en une seule transaction.
     /// </summary>
-    public async Task<int> GetOrCreateSpecificationIdAsync(string brandName, string modelName, string trimName)
+    public async Task<int> GetOrCreateTrimIdAsync(string brandName, string modelName, string trimName)
     {
         brandName = brandName.Trim();
         modelName = modelName.Trim();
@@ -128,17 +126,13 @@ public class VehicleService(ApplicationDbContext context, IOptions<PricingOption
             .FirstOrDefaultAsync(t => t.CarModelId == carModel.Id && t.Name.ToLower() == trimName.ToLower()))
             ?? new Trim { Name = trimName, CarModel = carModel };
 
-        var specification = trim.Id == 0 ? null : await _context.VehicleSpecifications
-            .FirstOrDefaultAsync(s => s.BrandId == brand.Id && s.CarModelId == carModel.Id && s.TrimId == trim.Id);
-
-        if (specification is null)
+        if (trim.Id == 0)
         {
-            specification = new VehicleSpecification { Brand = brand, CarModel = carModel, Trim = trim };
-            _context.VehicleSpecifications.Add(specification);
+            _context.Trims.Add(trim);
             await _context.SaveChangesAsync();
         }
 
-        return specification.Id;
+        return trim.Id;
     }
 
     public async Task<CatalogueNames> GetCatalogueNamesAsync() => new(

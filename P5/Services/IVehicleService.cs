@@ -30,10 +30,10 @@ public interface IVehicleService
     Task<bool> DeleteAsync(int id);
 
     /// <summary>
-    /// Retrouve la spécification marque + modèle + finition, ou crée ce qui manque dans le catalogue.
+    /// Retrouve la finition sous ce modèle et cette marque, ou crée ce qui manque dans le catalogue.
     /// La comparaison ignore la casse et les espaces de bord ; la graphie déjà en base est conservée.
     /// </summary>
-    Task<int> GetOrCreateSpecificationIdAsync(string brandName, string modelName, string trimName);
+    Task<int> GetOrCreateTrimIdAsync(string brandName, string modelName, string trimName);
 
     /// <summary>Noms déjà connus du catalogue, pour suggérer la saisie sans l'imposer.</summary>
     Task<CatalogueNames> GetCatalogueNamesAsync();

@@ -25,14 +25,14 @@ namespace P5.Data
             var honda      = new Brand { Name = "Honda" };
             var volkswagen = new Brand { Name = "Volkswagen" };
 
-            var miataLe       = Spec(mazda,      "Miata",    "LE");
-            var libertySport  = Spec(jeep,       "Liberty",  "Sport");
-            var scenicTce     = Spec(renault,    "Scénic",   "TCe");
-            var explorerXlt   = Spec(ford,       "Explorer", "XLT");
-            var civicLx       = Spec(honda,      "Civic",    "LX");
-            var gtiS          = Spec(volkswagen, "GTI",      "S");
+            var miataLe       = NewTrim(mazda,      "Miata",    "LE");
+            var libertySport  = NewTrim(jeep,       "Liberty",  "Sport");
+            var scenicTce     = NewTrim(renault,    "Scénic",   "TCe");
+            var explorerXlt   = NewTrim(ford,       "Explorer", "XLT");
+            var civicLx       = NewTrim(honda,      "Civic",    "LX");
+            var gtiS          = NewTrim(volkswagen, "GTI",      "S");
             // Deuxième Ford : la marque est partagée.
-            var edgeSel       = Spec(ford,       "Edge",     "SEL");
+            var edgeSel       = NewTrim(ford,       "Edge",     "SEL");
 
             // Chaque véhicule n'a qu'une réparation, avec un libellé et un coût global, et une photo servie depuis wwwroot/images/vehicles.
             db.Vehicles.AddRange(
@@ -47,22 +47,21 @@ namespace P5.Data
             await db.SaveChangesAsync();
         }
 
-        /// <summary>Crée un modèle chez une marque et l'une de ses finitions, réunis dans une spécification.</summary>
-        private static VehicleSpecification Spec(Brand brand, string carModelName, string trimName)
+        /// <summary>Crée un modèle chez une marque et l'une de ses finitions.</summary>
+        private static Trim NewTrim(Brand brand, string carModelName, string trimName)
         {
             var carModel = new CarModel { Name = carModelName, Brand = brand };
-            var trim = new Trim { Name = trimName, CarModel = carModel };
-            return new VehicleSpecification { Brand = brand, CarModel = carModel, Trim = trim };
+            return new Trim { Name = trimName, CarModel = carModel };
         }
 
         /// <summary>Un véhicule de l'inventaire, avec sa réparation unique et sa photo.</summary>
         private static Vehicle Vehicle(
-            VehicleSpecification spec, int year, DateOnly purchaseDate, decimal purchasePrice,
+            Trim trim, int year, DateOnly purchaseDate, decimal purchasePrice,
             DateOnly availabilityDate, DateOnly? saleDate, string repairDescription, decimal repairCost,
             string photoName)
             => new()
             {
-                Specification = spec,
+                Trim = trim,
                 Year = year,
                 PurchaseDate = purchaseDate,
                 PurchasePrice = purchasePrice,
